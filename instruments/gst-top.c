@@ -16,7 +16,7 @@ main (int argc, char *argv[])
 # error GStreamer API calls interception is not supported on this platform
 #endif
   
-  setenv ("GST_DEBUG_DUMP_INTERCEPT_PATH", "gst-top.intercept", 1);
+  setenv ("GST_INTERCEPT_OUTPUT_FILE", "gst-top.intercept", 1);
   
   gint status = 0;
   GError *error = NULL;
