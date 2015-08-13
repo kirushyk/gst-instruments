@@ -9,7 +9,7 @@ main (int argc, char *argv[])
   
 #if defined(__APPLE__)
   g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
-  g_setenv ("DYLD_INSERT_LIBRARIES", "libgstintercept.dylib", TRUE);
+  g_setenv ("DYLD_INSERT_LIBRARIES", "/usr/local/lib/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
   g_setenv ("LD_PRELOAD", "libgstintercept.so", TRUE);
 #else
