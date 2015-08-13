@@ -56,7 +56,7 @@ GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint siz
 void
 deinit ()
 {
-  if (output && output != stderr && output != stdout)
+  if (output != stderr && output != stdout)
     fclose (output);
   dlclose (libgstreamer);
 }
@@ -114,7 +114,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   gpointer *element = get_downstack_element (pad);
   
-  fprintf (output, "{%llu} %s: %p {\n", get_thread_id (thread), GST_ELEMENT_NAME (element), element);
+  fprintf (output, "element-entered %llu %s %p\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element);
 
   u64 start = get_cpu_time (thread);
   
@@ -123,7 +123,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   u64 duration = get_cpu_time (thread) - start;
   mach_port_deallocate (mach_task_self (), thread);
   
-  fprintf (output, "} %s: %p (%llu µs)\n", GST_ELEMENT_NAME (element), element, duration);
+  fprintf (output, "element-exited %llu %s %p %llu\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element, duration);
   
   return result;
 }
@@ -152,7 +152,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   gpointer *element = get_downstack_element (pad);
   
-  fprintf (output, "{%llu} %s: %p {\n", get_thread_id (thread), GST_ELEMENT_NAME (element), element);
+  fprintf (output, "element-entered %llu %s %p\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element);
   
   u64 start = get_cpu_time (thread);
 
@@ -160,8 +160,8 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
 
   u64 duration = get_cpu_time (thread) - start;
   mach_port_deallocate (mach_task_self (), thread);
-
-  fprintf (output, "} %s: %p (%llu µs)\n", GST_ELEMENT_NAME (element), element, duration);
+  
+  fprintf (output, "element-exited %llu %s %p %llu\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element, duration);
   
   return result;
 }
@@ -190,7 +190,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   gpointer *element = get_downstack_element (pad);
   
-  fprintf (output, "{%llu} %s: %p {\n", get_thread_id (thread), GST_ELEMENT_NAME (element), element);
+  fprintf (output, "element-entered %llu %s %p\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element);
 
   u64 start = get_cpu_time (thread);
 
@@ -199,7 +199,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   u64 duration = get_cpu_time (thread) - start;
   mach_port_deallocate (mach_task_self (), thread);
   
-  fprintf (output, "} %s: %p (%llu µs)\n", GST_ELEMENT_NAME (element), element, duration);
+  fprintf (output, "element-exited %llu %s %p %llu\n", get_thread_id (thread), GST_ELEMENT_NAME(element), element, duration);
 
   return result;
 }
