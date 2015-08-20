@@ -4,7 +4,7 @@ CFLAGS = $(shell pkg-config --cflags $(DEPS))
 LIBS = $(shell pkg-config --libs $(DEPS))
 
 libgstintercept.dylib: $(SRC)
-	$(CC) -dynamiclib -o libgstintercept.dylib -ldl $(LIBS) $(CFLAGS) $(SRC)
+	$(CC) -dynamiclib -o libgstintercept.dylib -fPIC -ldl $(LIBS) $(CFLAGS) $(SRC)
 
 intercept.so: $(SRC)
 	gcc -shared -fPIC -ldl -O2 -o intercept.so $(LIBS) $(CFLAGS) $(SRC)

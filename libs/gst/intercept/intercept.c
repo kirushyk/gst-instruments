@@ -33,6 +33,7 @@ static guint64 get_cpu_time (thread_port_t thread) {
 void *libgstreamer = NULL;
 GMutex output_mutex;
 
+GstStateChangeReturn (*gst_element_change_state_orig) (GstElement * element, GstStateChange transition) = NULL;
 GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
 GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NULL;
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
@@ -83,6 +84,49 @@ gpointer get_downstack_element(gpointer pad)
   return element;
 }
 
+GstStateChangeReturn
+gst_element_change_state (GstElement * element, GstStateChange transition)
+{
+  GstStateChangeReturn result;
+  
+  if (gst_element_change_state_orig == NULL)
+  {
+    gst_element_change_state_orig = dlsym (get_libgstreamer (), "gst_element_change_state");
+    
+    if (gst_element_change_state_orig == NULL)
+    {
+      GST_ERROR ("can not link to gst_element_change_state\n");
+      return GST_FLOW_CUSTOM_ERROR;
+    }
+    else
+    {
+      GST_INFO ("gst_element_change_state linked: %p\n", gst_element_change_state_orig);
+    }
+  }
+  
+  thread_port_t thread = mach_thread_self ();
+  
+  guint64 start = get_cpu_time (thread);
+  
+  g_mutex_lock (&output_mutex);
+  fprintf (output, "element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element), element, start);
+  fflush (output);
+  g_mutex_unlock (&output_mutex);
+  
+  result = gst_element_change_state_orig (element, transition);
+  
+  guint64 end = get_cpu_time (thread);
+  guint64 duration = end - start;
+  mach_port_deallocate (mach_task_self (), thread);
+  
+  g_mutex_lock (&output_mutex);
+  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+  fflush (output);
+  g_mutex_unlock (&output_mutex);
+  
+  return result;
+}
+
 GstFlowReturn
 gst_pad_push (GstPad *pad, GstBuffer *buffer)
 {
@@ -99,7 +143,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
     }
     else
     {
-      GST_ERROR ("gst_pad_push linked: %p\n", gst_pad_push_orig);
+      GST_INFO ("gst_pad_push linked: %p\n", gst_pad_push_orig);
     }
   }
   
@@ -110,10 +154,10 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);
   fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
   
   result = gst_pad_push_orig (pad, buffer);
   
@@ -121,10 +165,10 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   guint64 duration = end - start;
   mach_port_deallocate (mach_task_self (), thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
 
   return result;
 }
@@ -145,7 +189,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
     }
     else
     {
-      GST_ERROR ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
+      GST_INFO ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
     }
   }
   
@@ -156,9 +200,9 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   guint64 start = get_cpu_time (thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);  fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
 
   result = gst_pad_push_list_orig (pad, list);
   
@@ -166,10 +210,10 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   guint64 duration = end - start;
   mach_port_deallocate (mach_task_self (), thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
   
   return result;
 }
@@ -190,7 +234,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
     }
     else
     {
-      GST_ERROR ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
+      GST_INFO ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
     }
   }
   
@@ -203,10 +247,10 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   if (element_from && element)
   {
-    g_mutex_lock(&output_mutex);
+    g_mutex_lock (&output_mutex);
     fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);
     fflush (output);
-    g_mutex_unlock(&output_mutex);
+    g_mutex_unlock (&output_mutex);
   }
   
   result = gst_pad_push_event_orig (pad, event);
@@ -217,10 +261,10 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   if (element_from && element)
   {
-    g_mutex_lock(&output_mutex);
+    g_mutex_lock (&output_mutex);
     fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
     fflush (output);
-    g_mutex_unlock(&output_mutex);
+    g_mutex_unlock (&output_mutex);
   }
   
   return result;
@@ -242,7 +286,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     }
     else
     {
-      GST_ERROR ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
+      GST_INFO ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
     }
   }
   
@@ -253,9 +297,9 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);  fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
 
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
@@ -263,10 +307,10 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   guint64 duration = end - start;
   mach_port_deallocate (mach_task_self (), thread);
   
-  g_mutex_lock(&output_mutex);
+  g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
-  g_mutex_unlock(&output_mutex);
+  g_mutex_unlock (&output_mutex);
 
   return result;
 }
