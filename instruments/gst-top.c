@@ -43,6 +43,7 @@ main (int argc, char *argv[])
 typedef struct GstTaskRecord
 {
   gpointer identifier;
+  guint64 current_downstack_time;
   guint64 total_downstack_time;
   
   gboolean in_upstack;
@@ -67,7 +68,7 @@ void
 for_each_task (gpointer key, gpointer value, gpointer user_data)
 {
   GstTaskRecord *task = value;
-  g_print ("%s: %5.3f ms\n", task->name->str, task->total_upstack_time * 0.001);
+  g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.001, task->total_downstack_time * 0.001);
 }
 
 void
@@ -144,7 +145,8 @@ parse_output (const char *filename)
           {
             element->is_subtop = FALSE;
           }
-          task->total_downstack_time = 0;
+          task->total_downstack_time += task->current_downstack_time;
+          task->current_downstack_time = 0;
         }
         else
         {
@@ -173,8 +175,8 @@ parse_output (const char *filename)
             g_printerr ("couldn't find element %p: %s\n", element_id, element_name);
             exit (2);
           }
-          element->total_time += duration - task->total_downstack_time;
-          task->total_downstack_time = duration;
+          element->total_time += duration - task->current_downstack_time;
+          task->current_downstack_time = duration;
           if (element->is_subtop)
           {
             task->enter_upstack_time = thread_time;

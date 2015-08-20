@@ -33,18 +33,6 @@ static guint64 get_cpu_time (thread_port_t thread) {
     (guint64) info.system_time.microseconds;
 }
 
-static guint64 get_thread_id (thread_port_t thread) {
-  mach_msg_type_number_t count = THREAD_IDENTIFIER_INFO_COUNT;
-  thread_identifier_info_data_t info;
-  
-  int kr = thread_info (thread, THREAD_IDENTIFIER_INFO, (thread_info_t) &info, &count);
-  if (kr != KERN_SUCCESS) {
-    return 0;
-  }
-  
-  return (guint64) info.thread_id;
-}
-
 void *libgstreamer = NULL;
 GMutex output_mutex;
 
