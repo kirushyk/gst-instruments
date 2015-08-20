@@ -48,12 +48,10 @@ static guint64 get_thread_id (thread_port_t thread) {
 void *libgstreamer = NULL;
 GMutex output_mutex;
 
-/*
-void (*gst_task_func_orig) (GstTask * task) = NULL;
-*/
 GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
 GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NULL;
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
+gboolean (*gst_pad_push_event_orig) (GstPad *pad, GstEvent *event) = NULL;
 
 void
 deinit ()
@@ -98,37 +96,16 @@ gst_debug_log (GstDebugCategory *category, GstDebugLevel level, const gchar *fil
   }
 }
 
-/*
-void
-gst_task_func (GstTask * task)
-{
-  if (gst_task_func_orig == NULL)
-  {
-    gst_task_func_orig = dlsym (get_libgstreamer (), "gst_task_func");
-    
-    if (gst_task_func_orig == NULL)
-    {
-      GST_ERROR ("can not link to gst_task_func\n");
-      return;
-    }
-    else
-    {
-      GST_ERROR ("gst_task_func linked: %p\n", gst_task_func_orig);
-    }
-  }
-  
-  fprintf (output, "task-entered %p\n", g_thread_self ());
-  gst_task_func (task);
-  fprintf (output, "task-exited %p\n", g_thread_self ());
-}
- */
-
 gpointer get_downstack_element(gpointer pad)
 {
   gpointer element = pad;
   do
   {
-    element = GST_PAD_PARENT (GST_PAD_PEER (element));
+    gpointer peer = GST_PAD_PEER (element);
+    if (peer)
+      element = GST_PAD_PARENT (peer);
+    else
+      return NULL;
   }
   while (!GST_IS_ELEMENT (element));
   
@@ -222,6 +199,58 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
   g_mutex_unlock(&output_mutex);
+  
+  return result;
+}
+
+gboolean
+gst_pad_push_event (GstPad *pad, GstEvent *event)
+{
+  gboolean result;
+  
+  if (gst_pad_push_event_orig == NULL)
+  {
+    gst_pad_push_event_orig = dlsym (get_libgstreamer (), "gst_pad_push_event");
+    
+    if (gst_pad_push_event_orig == NULL)
+    {
+      GST_ERROR ("can not link to gst_pad_push_event\n");
+      return FALSE;
+    }
+    else
+    {
+      GST_ERROR ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
+    }
+  }
+  
+  thread_port_t thread = mach_thread_self ();
+  
+  gpointer element_from = gst_pad_get_parent_element (pad);
+  gpointer element = get_downstack_element (pad);
+  
+  guint64 start = get_cpu_time (thread);
+  
+  if (element_from && element)
+  {
+    g_mutex_lock(&output_mutex);
+    fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);
+    fflush (output);
+    g_mutex_unlock(&output_mutex);
+  }
+  
+  result = gst_pad_push_event_orig (pad, event);
+  
+  guint64 end = get_cpu_time (thread);
+  guint64 duration = end - start;
+  mach_port_deallocate (mach_task_self (), thread);
+  
+  if (element_from && element)
+  {
+    g_mutex_lock(&output_mutex);
+    fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+    fflush (output);
+    g_mutex_unlock(&output_mutex);
+  }
   
   return result;
 }
