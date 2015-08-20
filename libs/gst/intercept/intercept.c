@@ -67,20 +67,6 @@ get_libgstreamer ()
   return libgstreamer;
 }
 
-void
-gst_debug_log (GstDebugCategory *category, GstDebugLevel level, const gchar *file, const gchar *function, gint line, GObject *object, const gchar *format, ...)//va_list args)
-{
-  if (g_ascii_strcasecmp (category->name, "task") == 0)
-  {
-    get_libgstreamer ();
-    
-    g_mutex_lock (&output_mutex);
-    fprintf (output, "task %p\n", g_thread_self ());
-    fflush (output);
-    g_mutex_unlock (&output_mutex);
-  }
-}
-
 gpointer get_downstack_element(gpointer pad)
 {
   gpointer element = pad;
