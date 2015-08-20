@@ -135,16 +135,9 @@ parse_output (const char *filename)
             task->exit_upstack_time = thread_time;
             task->total_upstack_time += task->exit_upstack_time - task->enter_upstack_time;
             task->in_upstack = FALSE;
-            task->name = g_string_new (from_element_name);
             if (task->name == NULL)
             {
-            }
-            else
-            {
-              if (task->name->str[3] == '0')
-              {
-                fprintf(stderr, "\n%lu\n", thread_time);
-              }
+              task->name = g_string_new (from_element_name);
             }
           }
           else
