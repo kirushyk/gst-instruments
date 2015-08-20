@@ -101,7 +101,7 @@ parse_output (const char *filename)
         gchar element_name[1000];
         gpointer element_id;
         guint64 thread_time;
-        if (fscanf (input, "%p %s %p %s %p %" G_GUINT64_FORMAT"\n", &task_id, from_element_name, &from_element_id, element_name, &element_id, &thread_time) == 6)
+        if (fscanf (input, "%p %s %p %s %p %" G_GUINT64_FORMAT "\n", &task_id, from_element_name, &from_element_id, element_name, &element_id, &thread_time) == 6)
         {
           GstElementRecord *element = g_hash_table_lookup (elements, element_id);
           if (!element)
@@ -114,7 +114,7 @@ parse_output (const char *filename)
             g_hash_table_insert (elements, element_id, element);
           }
           
-          g_assert_true(element != NULL);
+          g_assert_true (element != NULL);
             
           GstTaskRecord *task = g_hash_table_lookup (tasks, task_id);
           if (!task)
@@ -127,7 +127,7 @@ parse_output (const char *filename)
             g_hash_table_insert (tasks, task_id, task);
           }
             
-          g_assert_true(task != NULL);
+          g_assert_true (task != NULL);
             
           if (task->in_upstack)
           {
@@ -159,7 +159,7 @@ parse_output (const char *filename)
         gpointer element_id;
         guint64 thread_time;
         guint64 duration;
-        if (fscanf (input, "%p %s %p %" G_GUINT64_FORMAT" %" G_GUINT64_FORMAT"\n", &task_id, element_name, &element_id, &thread_time, &duration) == 5)
+        if (fscanf (input, "%p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", &task_id, element_name, &element_id, &thread_time, &duration) == 5)
         {
           GstTaskRecord *task = g_hash_table_lookup (tasks, task_id);
           if (!task)
@@ -218,5 +218,3 @@ parse_output (const char *filename)
   g_hash_table_destroy (elements);
   g_hash_table_destroy (tasks);
 }
-
-
