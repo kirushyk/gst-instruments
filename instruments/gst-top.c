@@ -68,14 +68,14 @@ void
 for_each_task (gpointer key, gpointer value, gpointer user_data)
 {
   GstTaskRecord *task = value;
-  g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.001, task->total_downstack_time * 0.001);
+  g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.000001, task->total_downstack_time * 0.000001);
 }
 
 void
 for_each_element (gpointer key, gpointer value, gpointer user_data)
 {
   GstElementRecord *element = value;
-  g_print ("%s: %5.3f ms\n", element->name->str, element->total_time * 0.001);
+  g_print ("%s: %5.3f ms\n", element->name->str, element->total_time * 0.000001);
 }
 
 void

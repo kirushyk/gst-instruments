@@ -19,18 +19,15 @@
 static FILE *output = NULL;
 
 static guint64 get_cpu_time (thread_port_t thread) {
-  mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
-  thread_basic_info_data_t info;
+  mach_msg_type_number_t count = THREAD_EXTENDED_INFO_COUNT;
+  thread_extended_info_data_t info;
   
-  int kr = thread_info (thread, THREAD_BASIC_INFO, (thread_info_t) &info, &count);
+  int kr = thread_info (thread, THREAD_EXTENDED_INFO, (thread_info_t) &info, &count);
   if (kr != KERN_SUCCESS) {
     return 0;
   }
   
-  return (guint64) info.user_time.seconds * (guint64) 1e6 +
-    (guint64) info.user_time.microseconds +
-    (guint64) info.system_time.seconds * (guint64) 1e6 +
-    (guint64) info.system_time.microseconds;
+  return (guint64) info.pth_user_time + info.pth_system_time;
 }
 
 void *libgstreamer = NULL;
