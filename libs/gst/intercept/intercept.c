@@ -137,7 +137,9 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
+#if __APPLE__
   mach_port_deallocate (mach_task_self (), thread);
+#endif
   
   g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
@@ -183,7 +185,9 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
+#if __APPLE__
   mach_port_deallocate (mach_task_self (), thread);
+#endif
   
   g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
@@ -228,7 +232,9 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
+#if __APPLE__
   mach_port_deallocate (mach_task_self (), thread);
+#endif
   
   g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
@@ -277,7 +283,9 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
+#if __APPLE__
   mach_port_deallocate (mach_task_self (), thread);
+#endif
   
   if (element_from && element)
   {
@@ -325,7 +333,9 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
+#if __APPLE__
   mach_port_deallocate (mach_task_self (), thread);
+#endif
   
   g_mutex_lock (&output_mutex);
   fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
