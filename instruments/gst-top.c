@@ -16,7 +16,7 @@ main (int argc, char *argv[])
   g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
   g_setenv ("DYLD_INSERT_LIBRARIES", "/usr/local/lib/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
-  g_setenv ("LD_PRELOAD", "libgstintercept.so", TRUE);
+  g_setenv ("LD_PRELOAD", "/usr/local/lib/libgstintercept.so", TRUE);
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif

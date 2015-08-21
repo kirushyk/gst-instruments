@@ -55,7 +55,11 @@ get_libgstreamer ()
   atexit (deinit);
   
   if (libgstreamer == NULL)
+#if defined(__APPLE__)
     libgstreamer = dlopen ("libgstreamer-1.0.dylib", RTLD_NOW);
+#else
+    libgstreamer = dlopen ("/usr/local/lib/libgstreamer-1.0.so", RTLD_NOW);
+#endif
   
   const gchar * output_filename = g_getenv ("GST_INTERCEPT_OUTPUT_FILE");
   if (output_filename)
