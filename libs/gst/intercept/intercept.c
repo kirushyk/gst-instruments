@@ -12,13 +12,22 @@
 #include <signal.h>
 #include <time.h>
 
+#if __APPLE__
 #include <mach/mach_init.h>
 #include <mach/thread_act.h>
 #include <mach/mach_port.h>
+#define THREAD thread_port_t
+#else
+#include <signal.h>
+#include <time.h>
+#define THREAD int
+THREAD mach_thread_self() {return 0;}
+#endif
 
 static FILE *output = NULL;
 
-static guint64 get_cpu_time (thread_port_t thread) {
+static guint64 get_cpu_time (THREAD thread) {
+#if __APPLE__
   mach_msg_type_number_t count = THREAD_EXTENDED_INFO_COUNT;
   thread_extended_info_data_t info;
   
@@ -28,6 +37,13 @@ static guint64 get_cpu_time (thread_port_t thread) {
   }
   
   return (guint64) info.pth_user_time + info.pth_system_time;
+#else
+  struct timespec ts;
+  if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts))
+    return 0;
+  
+  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
+#endif
 }
 
 void *libgstreamer = NULL;
@@ -108,7 +124,7 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
     }
   }
   
-  thread_port_t thread = mach_thread_self ();
+  THREAD thread = mach_thread_self ();
   
   guint64 start = get_cpu_time (thread);
   
@@ -151,7 +167,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
     }
   }
   
-  thread_port_t thread = mach_thread_self ();
+  THREAD thread = mach_thread_self ();
   
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
@@ -197,7 +213,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
     }
   }
   
-  thread_port_t thread = mach_thread_self ();
+  THREAD thread = mach_thread_self ();
   
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
@@ -242,7 +258,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
     }
   }
   
-  thread_port_t thread = mach_thread_self ();
+  THREAD thread = mach_thread_self ();
   
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
@@ -294,7 +310,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     }
   }
   
-  thread_port_t thread = mach_thread_self();
+  THREAD thread = mach_thread_self();
   
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);

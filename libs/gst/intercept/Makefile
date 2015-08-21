@@ -7,7 +7,7 @@ libgstintercept.dylib: $(SRC)
 	$(CC) -dynamiclib -o libgstintercept.dylib -fPIC -ldl $(LIBS) $(CFLAGS) $(SRC)
 
 libgstintercept.so: $(SRC)
-	gcc -shared -o libgstintercept.so -fPIC -ldl $(LIBS) $(CFLAGS) $(SRC)
+	gcc -shared -o libgstintercept.so -fPIC -ldl -pthread $(LIBS) $(CFLAGS) $(SRC)
 
 install: libgstintercept.dylib
 	cp libgstintercept.dylib /usr/local/lib/
