@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <dlfcn.h> 
 #include <stdlib.h>
-
+#include <ffi/ffi.h>
 #include <signal.h>
 #include <time.h>
 
