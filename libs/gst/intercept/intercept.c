@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <dlfcn.h> 
 #include <stdlib.h>
-#include <ffi/ffi.h>
 #include <signal.h>
 #include <time.h>
 
@@ -24,7 +23,7 @@
 THREAD mach_thread_self() {return 0;}
 #endif
 
-#define LGI_ELEMENT_NAME (element) ((element) ? GST_ELEMENT_NAME(element) : "0")
+#define LGI_ELEMENT_NAME(e) ((e != NULL) ? GST_ELEMENT_NAME((e)) : "0")
 
 static FILE *output = NULL;
 
