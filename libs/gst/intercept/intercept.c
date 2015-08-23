@@ -24,6 +24,8 @@
 THREAD mach_thread_self() {return 0;}
 #endif
 
+#define LGI_ELEMENT_NAME (element) ((element) ? GST_ELEMENT_NAME(element) : "0")
+
 static FILE *output = NULL;
 
 static guint64 get_cpu_time (THREAD thread) {
@@ -129,7 +131,7 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
   guint64 start = get_cpu_time (thread);
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element), element, start);
+  fprintf (output, "element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME(element), element, start);
   fflush (output);
   g_mutex_unlock (&output_mutex);
   
@@ -142,7 +144,7 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
 #endif
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
   g_mutex_unlock (&output_mutex);
   
@@ -177,7 +179,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   guint64 start = get_cpu_time (thread);
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);
+  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start);
   fflush (output);
   g_mutex_unlock (&output_mutex);
   
@@ -190,7 +192,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
 #endif
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
   g_mutex_unlock (&output_mutex);
 
@@ -225,7 +227,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   guint64 start = get_cpu_time (thread);
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);  fflush (output);
+  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start);  fflush (output);
   g_mutex_unlock (&output_mutex);
 
   result = gst_pad_push_list_orig (pad, list);
@@ -237,7 +239,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
 #endif
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
   g_mutex_unlock (&output_mutex);
   
@@ -274,7 +276,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   if (element_from && element)
   {
     g_mutex_lock (&output_mutex);
-    fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);
+    fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start);
     fflush (output);
     g_mutex_unlock (&output_mutex);
   }
@@ -290,7 +292,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   if (element_from && element)
   {
     g_mutex_lock (&output_mutex);
-    fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+    fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration);
     fflush (output);
     g_mutex_unlock (&output_mutex);
   }
@@ -326,7 +328,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   guint64 start = get_cpu_time (thread);
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME(element_from), element_from, GST_ELEMENT_NAME(element), element, start);  fflush (output);
+  fprintf (output, "element-entered %p %s %p %s %p %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start);  fflush (output);
   g_mutex_unlock (&output_mutex);
 
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
@@ -338,7 +340,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 #endif
   
   g_mutex_lock (&output_mutex);
-  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), GST_ELEMENT_NAME (element), element, end, duration);
+  fprintf (output, "element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration);
   fflush (output);
   g_mutex_unlock (&output_mutex);
 
