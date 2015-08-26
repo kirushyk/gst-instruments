@@ -127,17 +127,18 @@ parse_output (const char *filename)
             task->identifier = task_id;
             task->total_upstack_time = 0;
             task->enter_upstack_time = 0;
-            task->in_upstack = FALSE;
+            task->in_upstack = TRUE;
             g_hash_table_insert (tasks, task_id, task);
           }
             
           g_assert_true (task != NULL);
-            
+          
           if (task->in_upstack)
           {
             element->is_subtop = TRUE;
             task->exit_upstack_time = thread_time;
-            task->total_upstack_time += task->exit_upstack_time - task->enter_upstack_time;
+            if (task->enter_upstack_time > 0)
+              task->total_upstack_time += task->exit_upstack_time - task->enter_upstack_time;
             task->in_upstack = FALSE;
             if (task->name == NULL)
             {
