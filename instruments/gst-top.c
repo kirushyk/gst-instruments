@@ -43,15 +43,16 @@ main (int argc, char *argv[])
 typedef struct GstTaskRecord
 {
   gpointer identifier;
+  gpointer upstack_element_identifier;
+  GString *name;
+  
   guint64 current_downstack_time;
   guint64 total_downstack_time;
   
   gboolean in_upstack;
   guint64 enter_upstack_time;
   guint64 exit_upstack_time;
-  
   guint64 total_upstack_time;
-  GString *name;
 } GstTaskRecord;
 GHashTable *tasks = NULL;
 
@@ -68,9 +69,21 @@ void
 for_each_task (gpointer key, gpointer value, gpointer user_data)
 {
   GstTaskRecord *task = value;
-  if (task->name)
+  if (task->upstack_element_identifier)
   {
-    g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.000001, task->total_downstack_time * 0.000001);
+    GstElementRecord *upstack_element = g_hash_table_lookup (elements, task->upstack_element_identifier);
+    
+    if (!upstack_element)
+    {
+      upstack_element = g_new0 (GstElementRecord, 1);
+      upstack_element->is_subtop = FALSE;
+      upstack_element->identifier = task->upstack_element_identifier;
+      upstack_element->total_time = 0;
+      upstack_element->name = g_string_new (task->name->str);
+      g_hash_table_insert (elements, task->upstack_element_identifier, upstack_element);
+    }
+    
+    upstack_element->total_time += task->total_upstack_time;
   }
 }
 
@@ -128,6 +141,8 @@ parse_output (const char *filename)
             task->total_upstack_time = 0;
             task->enter_upstack_time = 0;
             task->in_upstack = TRUE;
+            task->name = NULL;
+            task->upstack_element_identifier = NULL;
             g_hash_table_insert (tasks, task_id, task);
           }
             
@@ -142,6 +157,7 @@ parse_output (const char *filename)
             task->in_upstack = FALSE;
             if (task->name == NULL)
             {
+              task->upstack_element_identifier = from_element_id;
               task->name = g_string_new (from_element_name);
             }
           }
