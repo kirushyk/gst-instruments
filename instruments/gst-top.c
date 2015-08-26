@@ -68,7 +68,10 @@ void
 for_each_task (gpointer key, gpointer value, gpointer user_data)
 {
   GstTaskRecord *task = value;
-  g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.000001, task->total_downstack_time * 0.000001);
+  if (task->name)
+  {
+    g_print ("%s: %5.3f ms (downstack: %5.3f ms)\n", task->name->str, task->total_upstack_time * 0.000001, task->total_downstack_time * 0.000001);
+  }
 }
 
 void
@@ -124,7 +127,7 @@ parse_output (const char *filename)
             task->identifier = task_id;
             task->total_upstack_time = 0;
             task->enter_upstack_time = 0;
-            task->in_upstack = TRUE;
+            task->in_upstack = FALSE;
             g_hash_table_insert (tasks, task_id, task);
           }
             
