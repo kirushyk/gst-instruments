@@ -23,6 +23,11 @@
 THREAD mach_thread_self() {return 0;}
 #endif
 
+void gst_pipeline_dump_to_file(GstPipeline *pipeline, gchar *filename)
+{
+  
+}
+
 #define LGI_ELEMENT_NAME(e) ((e != NULL) ? GST_ELEMENT_NAME((e)) : "0")
 
 static FILE *output = NULL;
