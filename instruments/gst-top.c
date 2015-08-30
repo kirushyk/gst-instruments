@@ -7,7 +7,7 @@ void parse_output(const char *filename);
 int
 main (int argc, char *argv[])
 {
-  const char dump_filename[] = "gst-top.intercept";
+  const char dump_filename[] = "gst-top.gsttrace";
   
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
