@@ -23,7 +23,7 @@
 THREAD mach_thread_self() {return 0;}
 #endif
 
-void gst_pipeline_dump_to_file(GstPipeline *pipeline, gchar *filename)
+void gst_pipeline_dump_to_file(GstPipeline *pipeline, const gchar *filename)
 {
   
 }
