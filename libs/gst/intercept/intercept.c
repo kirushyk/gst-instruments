@@ -88,7 +88,7 @@ get_libgstreamer ()
 gpointer trace_heir (GstElement * element)
 {
   GstObject *parent = NULL;
-  for (parent = GST_OBJECT(element); parent != NULL; parent = GST_OBJECT_PARENT(parent));
+  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent));
   if (GST_IS_PIPELINE(parent))
   {
     return parent;
