@@ -87,8 +87,8 @@ get_libgstreamer ()
 
 gpointer trace_heir (GstElement * element)
 {
-  GstElement *parent = NULL;
-  for (parent = element; parent != NULL; parent = GST_OBJECT_PARENT(parent));
+  GstObject *parent = NULL;
+  for (parent = GST_OBJECT(element); parent != NULL; parent = GST_OBJECT_PARENT(parent));
   if (GST_IS_PIPELINE(parent))
   {
     return parent;
@@ -117,7 +117,7 @@ GstStateChangeReturn
 gst_element_change_state (GstElement * element, GstStateChange transition)
 {
   GstStateChangeReturn result;
-  GstPipeline pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_element_change_state_orig == NULL)
   {
@@ -159,7 +159,7 @@ GstFlowReturn
 gst_pad_push (GstPad *pad, GstBuffer *buffer)
 {
   GstFlowReturn result;
-  GstPipeline pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_orig == NULL)
   {
@@ -178,10 +178,10 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   THREAD thread = mach_thread_self ();
   
-  pipeline = trace_heir (element);
-  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
+  
+  pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
   
@@ -204,7 +204,7 @@ GstFlowReturn
 gst_pad_push_list (GstPad *pad, GstBufferList *list)
 {
   GstFlowReturn result;
-  GstPipeline pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_list_orig == NULL)
   {
@@ -223,10 +223,10 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   THREAD thread = mach_thread_self ();
   
-  pipeline = trace_heir (element);
-  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
+  
+  pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
   
@@ -249,7 +249,7 @@ gboolean
 gst_pad_push_event (GstPad *pad, GstEvent *event)
 {
   gboolean result;
-  GstPipeline pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_event_orig == NULL)
   {
@@ -268,10 +268,10 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   THREAD thread = mach_thread_self ();
   
-  pipeline = trace_heir (element);
-  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
+  
+  pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
   
@@ -300,7 +300,7 @@ GstFlowReturn
 gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 {
   GstFlowReturn result;
-  GstPipeline pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_pull_range_orig == NULL)
   {
@@ -319,10 +319,10 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   THREAD thread = mach_thread_self();
   
-  pipeline = trace_heir (element);
-  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
+  
+  pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
   
