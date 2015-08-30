@@ -10,7 +10,7 @@ void                gst_pipeline_dump_to_file              (GstPipeline        *
                                                             const gchar        *filename);
 
 void                trace_add_entry                        (GstPipeline        *pipeline,
-                                                            const gchar        *entry);
+                                                            const gchar        *text);
 
 G_END_DECLS
 
