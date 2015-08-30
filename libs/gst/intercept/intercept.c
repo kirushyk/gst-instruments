@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
+#include "trace.h"
 
 #if __APPLE__
 #include <mach/mach_init.h>
@@ -22,11 +23,6 @@
 #define THREAD int
 THREAD mach_thread_self() {return 0;}
 #endif
-
-void gst_pipeline_dump_to_file(GstPipeline *pipeline, const gchar *filename)
-{
-  
-}
 
 #define LGI_ELEMENT_NAME(e) ((e != NULL) ? GST_ELEMENT_NAME((e)) : "0")
 
