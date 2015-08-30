@@ -22,7 +22,7 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
   for (iterator = trace_entries; iterator != NULL; iterator = iterator->next)
   {
     TraceEntry *entry = (TraceEntry *)iterator->data;
-    if (entry->pipeline == pipeline)
+    if ((pipeline == NULL) || (entry->pipeline == pipeline))
     {
       GList *next = iterator->next->next;
       if (next)
@@ -36,6 +36,11 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
   fclose (output);
   
   g_mutex_unlock (&trace_mutex);
+}
+
+void trace_init (void)
+{
+  g_mutex_init(&trace_mutex);
 }
 
 void

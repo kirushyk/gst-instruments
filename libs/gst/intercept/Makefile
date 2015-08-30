@@ -1,4 +1,4 @@
-SRC = intercept.c
+SRC = intercept.c trace.c
 DEPS = gstreamer-1.0
 CFLAGS = $(shell pkg-config --cflags $(DEPS))
 LIBS = $(shell pkg-config --libs $(DEPS))
