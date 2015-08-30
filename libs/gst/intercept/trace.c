@@ -24,6 +24,7 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
     TraceEntry *entry = (TraceEntry *)iterator->data;
     if ((pipeline == NULL) || (entry->pipeline == pipeline))
     {
+      /*
       if (iterator->prev)
       {
         GList *prev = iterator->prev->prev;
@@ -35,6 +36,7 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
       {
         iterator->prev = NULL;
       }
+      */
       
       fprintf(output, "%s\n", entry->text);
     }
