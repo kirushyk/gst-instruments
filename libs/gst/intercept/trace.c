@@ -6,7 +6,7 @@ GMutex trace_mutex;
 typedef struct TraceEntry
 {
   GstPipeline *pipeline;
-  gchar *text;
+  const gchar *text;
 } TraceEntry;
 
 GList *trace_entries = NULL;
@@ -19,15 +19,22 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
   
   FILE *output = fopen (filename, "wt");
   
-  for (iterator = trace_entries; iterator != NULL; iterator = iterator->next)
+  for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev)
   {
     TraceEntry *entry = (TraceEntry *)iterator->data;
     if ((pipeline == NULL) || (entry->pipeline == pipeline))
     {
-      GList *next = iterator->next->next;
-      if (next)
-        next->prev = iterator;
-      iterator->next = iterator->next->next;
+      if (iterator->prev)
+      {
+        GList *prev = iterator->prev->prev;
+        if (prev)
+          prev->next = iterator;
+        iterator->prev = prev;
+      }
+      else
+      {
+        iterator->prev = NULL;
+      }
       
       fprintf(output, "%s\n", entry->text);
     }
@@ -40,7 +47,7 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
 
 void trace_init (void)
 {
-  g_mutex_init(&trace_mutex);
+  g_mutex_init (&trace_mutex);
 }
 
 void
