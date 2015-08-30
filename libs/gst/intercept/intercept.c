@@ -85,7 +85,19 @@ get_libgstreamer ()
   return libgstreamer;
 }
 
-gpointer get_downstack_element(gpointer pad)
+gpointer trace_heir (GstElement * element)
+{
+  GstElement *parent = NULL;
+  for (parent = element; parent != NULL; parent = GST_OBJECT_PARENT(parent));
+  if (GST_IS_PIPELINE(parent))
+  {
+    return parent;
+    // trace_add_entry(parent, "heir %s %p %s %p", LGI_ELEMENT_NAME(element), element, LGI_ELEMENT_NAME(parent), parent);
+  }
+  return NULL;
+}
+
+gpointer get_downstack_element (gpointer pad)
 {
   gpointer element = pad;
   do
@@ -105,6 +117,7 @@ GstStateChangeReturn
 gst_element_change_state (GstElement * element, GstStateChange transition)
 {
   GstStateChangeReturn result;
+  GstPipeline pipeline = NULL;
   
   if (gst_element_change_state_orig == NULL)
   {
@@ -123,9 +136,11 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
   
   THREAD thread = mach_thread_self ();
   
+  pipeline = trace_heir (element);
+  
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (NULL, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, start));
   
   result = gst_element_change_state_orig (element, transition);
   
@@ -135,7 +150,7 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (NULL, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   
   return result;
 }
@@ -144,6 +159,7 @@ GstFlowReturn
 gst_pad_push (GstPad *pad, GstBuffer *buffer)
 {
   GstFlowReturn result;
+  GstPipeline pipeline = NULL;
   
   if (gst_pad_push_orig == NULL)
   {
@@ -162,12 +178,14 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   THREAD thread = mach_thread_self ();
   
+  pipeline = trace_heir (element);
+  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (NULL, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   
   result = gst_pad_push_orig (pad, buffer);
   
@@ -177,7 +195,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (NULL, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
 
   return result;
 }
@@ -186,6 +204,7 @@ GstFlowReturn
 gst_pad_push_list (GstPad *pad, GstBufferList *list)
 {
   GstFlowReturn result;
+  GstPipeline pipeline = NULL;
   
   if (gst_pad_push_list_orig == NULL)
   {
@@ -204,12 +223,14 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   THREAD thread = mach_thread_self ();
   
+  pipeline = trace_heir (element);
+  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (NULL, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
 
   result = gst_pad_push_list_orig (pad, list);
   
@@ -219,7 +240,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (NULL, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   
   return result;
 }
@@ -228,6 +249,7 @@ gboolean
 gst_pad_push_event (GstPad *pad, GstEvent *event)
 {
   gboolean result;
+  GstPipeline pipeline = NULL;
   
   if (gst_pad_push_event_orig == NULL)
   {
@@ -246,6 +268,8 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   THREAD thread = mach_thread_self ();
   
+  pipeline = trace_heir (element);
+  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
   
@@ -253,7 +277,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   if (element_from && element)
   {
-      trace_add_entry (NULL, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+      trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   }
   
   result = gst_pad_push_event_orig (pad, event);
@@ -266,7 +290,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   if (element_from && element)
   {
-      trace_add_entry (NULL, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+      trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   }
   
   return result;
@@ -276,6 +300,7 @@ GstFlowReturn
 gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 {
   GstFlowReturn result;
+  GstPipeline pipeline = NULL;
   
   if (gst_pad_pull_range_orig == NULL)
   {
@@ -294,12 +319,14 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   THREAD thread = mach_thread_self();
   
+  pipeline = trace_heir (element);
+  
   gpointer element_from = gst_pad_get_parent_element (pad);
   gpointer element = get_downstack_element (pad);
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (NULL, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
 
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
@@ -309,7 +336,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (NULL, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
 
   return result;
 }
