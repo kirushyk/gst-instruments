@@ -9,6 +9,9 @@ G_BEGIN_DECLS
 void                gst_pipeline_dump_to_file              (GstPipeline        *pipeline,
                                                             const gchar        *filename);
 
+void                trace_add_entry                        (GstPipeline        *pipeline,
+                                                            const gchar        *entry);
+
 G_END_DECLS
 
 #endif
