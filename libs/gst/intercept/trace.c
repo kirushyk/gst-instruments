@@ -47,6 +47,8 @@ void
 trace_add_entry (GstPipeline *pipeline, const gchar *text)
 {
   TraceEntry *entry = g_new0(TraceEntry, 1);
+  entry->pipeline = pipeline;
+  entry->text = text;
   
   g_mutex_lock (&trace_mutex);
   trace_entries = g_list_prepend (trace_entries, entry);
