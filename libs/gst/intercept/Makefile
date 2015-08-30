@@ -3,18 +3,23 @@ DEPS = gstreamer-1.0
 CFLAGS = $(shell pkg-config --cflags $(DEPS))
 LIBS = $(shell pkg-config --libs $(DEPS))
 
-libgstintercept.dylib: $(SRC)
-	$(CC) -dynamiclib -o libgstintercept.dylib -fPIC -ldl $(LIBS) $(CFLAGS) $(SRC)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+  SHARED = -dynamiclib
+  TARGET = libgstintercept.dylib
+endif
+ifeq ($(UNAME_S),Linux)
+  SHARED = -shared
+  TARGET = libgstintercept.so
+endif
 
-libgstintercept.so: $(SRC)
-	gcc -shared -o libgstintercept.so -fPIC -ldl -pthread $(LIBS) $(CFLAGS) $(SRC)
+PREFIX = /usr/local/
 
-install: libgstintercept.dylib
-	cp libgstintercept.dylib /usr/local/lib/
+$(TARGET): $(SRC)
+	gcc $(SHARED) -o $(TARGET) -fPIC -ldl -pthread $(LIBS) $(CFLAGS) $(SRC)
 
-install-so: libgstintercept.so
-	cp libgstintercept.so /usr/local/lib/
+install: $(TARGET)
+	cp $(TARGET) $(PREFIX)/lib/
 
 clean:
-	rm -rf ./*so*
-	rm -rf ./*dylib*
+	rm -rf $(TARGET)
