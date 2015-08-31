@@ -53,24 +53,11 @@ GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
 GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NULL;
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
 gboolean (*gst_pad_push_event_orig) (GstPad *pad, GstEvent *event) = NULL;
-
-void
-deinit ()
-{
-  const gchar * output_filename = g_getenv ("GST_INTERCEPT_OUTPUT_FILE");
-  if (output_filename)
-  {
-    gst_pipeline_dump_to_file(NULL, output_filename);
-  }
-  
-  dlclose (libgstreamer);
-}
+GstStateChangeReturn (*gst_element_set_state_orig) (GstElement *element, GstState state) = NULL;
 
 void *
 get_libgstreamer ()
 {
-  atexit (deinit);
-  
   if (libgstreamer == NULL)
   {
 #if __APPLE__
@@ -85,16 +72,19 @@ get_libgstreamer ()
   return libgstreamer;
 }
 
-gpointer trace_heir (GstElement * element)
+gpointer trace_heir (GstElement *element)
 {
   GstObject *parent = NULL;
-  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent));
-  if (GST_IS_PIPELINE(parent))
+  
+  if (element == NULL)
+    return NULL;
+  
+  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent))
   {
-    return parent;
-    // trace_add_entry(parent, "heir %s %p %s %p", LGI_ELEMENT_NAME(element), element, LGI_ELEMENT_NAME(parent), parent);
+    // fprintf(stderr, "tracer: %s %p\n", LGI_ELEMENT_NAME(parent), parent);
   }
-  return NULL;
+  
+  return parent;
 }
 
 gpointer get_downstack_element (gpointer pad)
@@ -117,7 +107,7 @@ GstStateChangeReturn
 gst_element_change_state (GstElement * element, GstStateChange transition)
 {
   GstStateChangeReturn result;
-  GstPipeline *pipeline = NULL;
+  GstElement *pipeline = NULL;
   
   if (gst_element_change_state_orig == NULL)
   {
@@ -159,7 +149,7 @@ GstFlowReturn
 gst_pad_push (GstPad *pad, GstBuffer *buffer)
 {
   GstFlowReturn result;
-  GstPipeline *pipeline = NULL;
+  GstElement *pipeline = NULL;
   
   if (gst_pad_push_orig == NULL)
   {
@@ -204,7 +194,7 @@ GstFlowReturn
 gst_pad_push_list (GstPad *pad, GstBufferList *list)
 {
   GstFlowReturn result;
-  GstPipeline *pipeline = NULL;
+  GstElement *pipeline = NULL;
   
   if (gst_pad_push_list_orig == NULL)
   {
@@ -249,7 +239,7 @@ gboolean
 gst_pad_push_event (GstPad *pad, GstEvent *event)
 {
   gboolean result;
-  GstPipeline *pipeline = NULL;
+  GstElement *pipeline = NULL;
   
   if (gst_pad_push_event_orig == NULL)
   {
@@ -300,7 +290,7 @@ GstFlowReturn
 gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 {
   GstFlowReturn result;
-  GstPipeline *pipeline = NULL;
+  GstElement *pipeline = NULL;
   
   if (gst_pad_pull_range_orig == NULL)
   {
@@ -338,5 +328,38 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
 
+  return result;
+}
+
+GstStateChangeReturn
+gst_element_set_state (GstElement *element, GstState state)
+{
+  GstStateChangeReturn result;
+  
+  if (gst_element_set_state_orig == NULL)
+  {
+    gst_element_set_state_orig = dlsym (get_libgstreamer (), "gst_element_set_state");
+    
+    if (gst_element_set_state_orig == NULL)
+    {
+      GST_ERROR ("can not link to gst_element_set_state\n");
+      return GST_FLOW_CUSTOM_ERROR;
+    }
+    else
+    {
+      GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
+    }
+  }
+  
+  result = gst_element_set_state_orig (element, state);
+  
+  if (state == GST_STATE_NULL)
+  {
+    if (GST_IS_PIPELINE (element))
+    {
+      gst_element_dump_to_file (element, GST_OBJECT_NAME (element));
+    }
+  }
+  
   return result;
 }

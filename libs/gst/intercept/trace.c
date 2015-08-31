@@ -5,14 +5,14 @@ GMutex trace_mutex;
 
 typedef struct TraceEntry
 {
-  GstPipeline *pipeline;
-  const gchar *text;
+  GstElement *pipeline;
+  gchar *text;
 } TraceEntry;
 
 GList *trace_entries = NULL;
 
 void
-gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
+gst_element_dump_to_file (GstElement *pipeline, const gchar *filename)
 {
   GList *iterator;
   g_mutex_lock (&trace_mutex);
@@ -22,26 +22,37 @@ gst_pipeline_dump_to_file (GstPipeline *pipeline, const gchar *filename)
   for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev)
   {
     TraceEntry *entry = (TraceEntry *)iterator->data;
-    if ((pipeline == NULL) || (entry->pipeline == pipeline))
+    if (entry)
     {
-      /*
-      if (iterator->prev)
+      if ((pipeline == NULL) || (entry->pipeline == pipeline))
       {
-        GList *prev = iterator->prev->prev;
-        if (prev)
-          prev->next = iterator;
-        iterator->prev = prev;
+        fprintf(output, "%s\n", entry->text);
+        
+        /*
+        iterator->data = NULL;
+        g_free(entry->text);
+        g_free(entry);
+        */
       }
-      else
-      {
-        iterator->prev = NULL;
-      }
-      */
-      
-      fprintf(output, "%s\n", entry->text);
     }
   }
   
+  // g_list_free(trace_entries);
+  // trace_entries = NULL;
+  
+  /*
+  if (iterator->prev)
+  {
+    GList *prev = iterator->prev->prev;
+    if (prev)
+      prev->next = iterator;
+    iterator->prev = prev;
+  }
+  else
+  {
+    iterator->prev = NULL;
+  }
+  */
   fclose (output);
   
   g_mutex_unlock (&trace_mutex);
@@ -53,9 +64,9 @@ void trace_init (void)
 }
 
 void
-trace_add_entry (GstPipeline *pipeline, const gchar *text)
+trace_add_entry (GstElement *pipeline, gchar *text)
 {
-  TraceEntry *entry = g_new0(TraceEntry, 1);
+  TraceEntry *entry = g_new0 (TraceEntry, 1);
   entry->pipeline = pipeline;
   entry->text = text;
   

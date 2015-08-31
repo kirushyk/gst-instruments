@@ -6,13 +6,13 @@
 
 G_BEGIN_DECLS
 
-void                gst_pipeline_dump_to_file              (GstPipeline        *pipeline,
+void                gst_element_dump_to_file               (GstElement         *pipeline,
                                                             const gchar        *filename);
 
 void                trace_init                             (void);
 
-void                trace_add_entry                        (GstPipeline        *pipeline,
-                                                            const gchar        *text);
+void                trace_add_entry                        (GstElement         *pipeline,
+                                                            gchar              *text);
 
 G_END_DECLS
 

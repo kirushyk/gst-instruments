@@ -1,6 +1,10 @@
+#include <dlfcn.h>
 #include <glib.h>
+#include <gst/gst.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+void (*gst_pipeline_dump_to_file) (GstPipeline *pipeline, const gchar *filename) = NULL;
 
 void parse_output(const char *filename);
 
@@ -21,12 +25,14 @@ main (int argc, char *argv[])
 # error GStreamer API calls interception is not supported on this platform
 #endif
   
-  g_setenv ("GST_INTERCEPT_OUTPUT_FILE", dump_filename, TRUE);
-  // g_setenv ("GST_DEBUG", "task:DEBUG", TRUE);
-  
   gint status = 0;
   GError *error = NULL;
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
+
+  /*
+  gst_pipeline_dump_to_file = dlsym(RTLD_DEFAULT, "gst_pipeline_dump_to_file");
+  gst_pipeline_dump_to_file(NULL, dump_filename);
+   */
   
   if (error)
   {
