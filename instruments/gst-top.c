@@ -9,8 +9,6 @@ void parse_output(const char *filename);
 int
 main (int argc, char *argv[])
 {
-  const char dump_filename[] = "gst-top.gsttrace";
-  
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
   
@@ -23,11 +21,12 @@ main (int argc, char *argv[])
 # error GStreamer API calls interception is not supported on this platform
 #endif
   
+  g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
+  g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", "gst-top", TRUE);
+  
   gint status = 0;
   GError *error = NULL;
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
-
-  g_setenv("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
   
   if (error)
   {
@@ -35,7 +34,7 @@ main (int argc, char *argv[])
   }
   else
   {
-    parse_output(dump_filename);
+    parse_output("gst-top.gsttrace");
   }
   
   return 0;
