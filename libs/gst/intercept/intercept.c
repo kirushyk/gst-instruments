@@ -357,7 +357,10 @@ gst_element_set_state (GstElement *element, GstState state)
   {
     if (GST_IS_PIPELINE (element))
     {
-      gst_element_dump_to_file (element, GST_OBJECT_NAME (element));
+      const gchar *path = g_getenv ("GST_DEBUG_DUMP_TRACE_DIR");
+      gchar *filename = g_strdup_printf ("%s/%s.gsttrace", path ? path : ".", GST_OBJECT_NAME (element));
+      gst_element_dump_to_file (element, filename);
+      g_free (filename);
     }
   }
   

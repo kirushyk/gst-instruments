@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void (*gst_pipeline_dump_to_file) (GstPipeline *pipeline, const gchar *filename) = NULL;
-
 void parse_output(const char *filename);
 
 int
@@ -29,10 +27,7 @@ main (int argc, char *argv[])
   GError *error = NULL;
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
 
-  /*
-  gst_pipeline_dump_to_file = dlsym(RTLD_DEFAULT, "gst_pipeline_dump_to_file");
-  gst_pipeline_dump_to_file(NULL, dump_filename);
-   */
+  g_setenv("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
   
   if (error)
   {

@@ -28,31 +28,18 @@ gst_element_dump_to_file (GstElement *pipeline, const gchar *filename)
       {
         fprintf(output, "%s\n", entry->text);
         
-        /*
         iterator->data = NULL;
         g_free(entry->text);
         g_free(entry);
+        /*
         */
       }
     }
   }
   
-  // g_list_free(trace_entries);
-  // trace_entries = NULL;
+  /// @todo: Optimize removal
+  trace_entries = g_list_remove_all(trace_entries, NULL);
   
-  /*
-  if (iterator->prev)
-  {
-    GList *prev = iterator->prev->prev;
-    if (prev)
-      prev->next = iterator;
-    iterator->prev = prev;
-  }
-  else
-  {
-    iterator->prev = NULL;
-  }
-  */
   fclose (output);
   
   g_mutex_unlock (&trace_mutex);
