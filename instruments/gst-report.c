@@ -44,6 +44,16 @@ typedef struct GstElementRecord
   GString *name;
 } GstElementRecord;
 GHashTable *elements = NULL;
+GArray *elements_sorted = NULL;
+
+gint
+elements_compare_func (gconstpointer a, gconstpointer b)
+{
+  //return g_ascii_strcasecmp ((*(GstElementRecord **)a)->name->str,
+  //                           (*(GstElementRecord **)b)->name->str);
+  
+  return (gint64)(*(GstElementRecord **)b)->total_time - (gint64)(*(GstElementRecord **)a)->total_time;
+}
 
 void
 for_each_task (gpointer key, gpointer value, gpointer user_data)
@@ -70,8 +80,7 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
 void
 for_each_element (gpointer key, gpointer value, gpointer user_data)
 {
-  GstElementRecord *element = value;
-  g_print ("%s: %5.3f ms\n", element->name->str, element->total_time * 0.000001);
+  g_array_append_val (elements_sorted, value);
 }
 
 void
@@ -186,8 +195,6 @@ parse_output (const char *filename)
           {
             task->in_upstack = FALSE;
           }
-          
-          // g_print ("%p %s %p %" G_GUINT64_FORMAT"\n", task_id, element_name, element_id, duration);
         }
         else
         {
@@ -213,10 +220,21 @@ parse_output (const char *filename)
   }
   fclose (input);
   
-  g_hash_table_foreach (tasks, for_each_task, NULL);
-  g_print ("\n");
-  g_hash_table_foreach (elements, for_each_element, NULL);
+  gint index = 0;
   
+  g_hash_table_foreach (tasks, for_each_task, NULL);
+  
+  gint elements_count = g_hash_table_size (elements);
+  elements_sorted = g_array_sized_new (FALSE, FALSE, sizeof(gpointer), elements_count);
+  g_hash_table_foreach (elements, for_each_element, NULL);
+  g_array_sort (elements_sorted, elements_compare_func);
+  for (index = 0; index < elements_count; index++)
+  {
+    GstElementRecord *element = g_array_index (elements_sorted, GstElementRecord *, index);
+    g_print ("%s: %5.3f ms\n", element->name->str, element->total_time * 0.000001);
+  }
+  
+  g_array_free (elements_sorted, TRUE);
   g_hash_table_destroy (elements);
   g_hash_table_destroy (tasks);
 }
