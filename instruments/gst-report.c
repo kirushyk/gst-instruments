@@ -100,8 +100,17 @@ parse_output (const char *filename)
     gchar event_name[1000];
     if (fscanf (input, "%s", event_name) == 1)
     {
-      // g_print ("%s: ", event_name);
-      if (g_ascii_strcasecmp (event_name, "element-entered") == 0)
+      if (g_ascii_strcasecmp (event_name, "element-discovered") == 0)
+      {
+        gpointer element_id;
+        gchar element_name[1000];
+        gchar element_type_name[1000];
+        if (fscanf (input, "%p %s %s\n", &element_id, element_name, element_type_name) == 3)
+        {
+          
+        }
+      }
+      else if (g_ascii_strcasecmp (event_name, "element-entered") == 0)
       {
         gpointer task_id;
         gchar from_element_name[1000];
