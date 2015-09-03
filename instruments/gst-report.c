@@ -49,10 +49,12 @@ GArray *elements_sorted = NULL;
 gint
 elements_compare_func (gconstpointer a, gconstpointer b)
 {
-  //return g_ascii_strcasecmp ((*(GstElementRecord **)a)->name->str,
-  //                           (*(GstElementRecord **)b)->name->str);
-  
-  return (gint64)(*(GstElementRecord **)b)->total_time - (gint64)(*(GstElementRecord **)a)->total_time;
+  gint diff = (gint64)(*(GstElementRecord **)b)->total_time - (gint64)(*(GstElementRecord **)a)->total_time;
+  if (diff > 0)
+    return 1;
+  else if (diff < 0)
+    return -1;
+  return 0;
 }
 
 void
