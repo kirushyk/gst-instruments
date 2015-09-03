@@ -353,8 +353,9 @@ gst_element_set_state (GstElement *element, GstState state)
   
   result = gst_element_set_state_orig (element, state);
   
-  if (state == GST_STATE_NULL)
+  switch (state)
   {
+  case GST_STATE_NULL:
     if (GST_IS_PIPELINE (element))
     {
       const gchar *path = g_getenv ("GST_DEBUG_DUMP_TRACE_DIR");
@@ -363,6 +364,42 @@ gst_element_set_state (GstElement *element, GstState state)
       gst_element_dump_to_file (element, filename);
       g_free (filename);
     }
+    break;
+
+  case GST_STATE_PAUSED:
+    if (GST_IS_PIPELINE (element))
+    {
+      GstIterator *it = gst_bin_iterate_recurse (GST_BIN (element));
+      GValue item = G_VALUE_INIT;
+      gboolean done = FALSE;
+      while (!done) {
+        switch (gst_iterator_next (it, &item)) {
+          case GST_ITERATOR_OK:
+            {
+              GstElement *internal = g_value_get_object (&item);
+              trace_add_entry (element, g_strdup_printf ("element-discovered %p %s %s", internal, LGI_ELEMENT_NAME (internal), G_OBJECT_TYPE_NAME (internal)));
+              g_value_reset (&item);
+            }
+            break;
+          case GST_ITERATOR_RESYNC:
+            gst_iterator_resync (it);
+            break;
+          case GST_ITERATOR_ERROR:
+            done = TRUE;
+            break;
+          case GST_ITERATOR_DONE:
+            done = TRUE;
+            break;
+        }
+      }
+      g_value_unset (&item);
+      gst_iterator_free (it);
+    }
+    break;
+      
+  default:
+    break;
+
   }
   
   return result;
