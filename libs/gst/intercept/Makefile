@@ -5,12 +5,12 @@ LIBS = $(shell pkg-config --libs $(DEPS))
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-  SHARED = -dynamiclib
-  TARGET = libgstintercept.dylib
+	SHARED = -dynamiclib
+	TARGET = libgstintercept.dylib
 endif
 ifeq ($(UNAME_S),Linux)
-  SHARED = -shared
-  TARGET = libgstintercept.so
+	SHARED = -shared
+	TARGET = libgstintercept.so
 endif
 
 PREFIX = /usr/local/

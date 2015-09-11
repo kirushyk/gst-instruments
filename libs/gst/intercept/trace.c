@@ -31,8 +31,6 @@ gst_element_dump_to_file (GstElement *pipeline, const gchar *filename)
         iterator->data = NULL;
         g_free(entry->text);
         g_free(entry);
-        /*
-        */
       }
     }
   }
