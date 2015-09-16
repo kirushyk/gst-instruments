@@ -81,7 +81,7 @@ gpointer trace_heir (GstElement *element)
   
   for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent))
   {
-    // fprintf(stderr, "tracer: %s %p\n", LGI_ELEMENT_NAME(parent), parent);
+
   }
   
   return parent;
@@ -179,6 +179,8 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   result = gst_pad_push_orig (pad, buffer);
   
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, 1, gst_buffer_get_size (buffer)));
+  
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
 #if __APPLE__
@@ -188,6 +190,21 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
+}
+
+typedef struct ListInfo
+{
+  guint64 size;
+  guint buffers_count;
+} ListInfo;
+
+gboolean
+for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
+{
+  ListInfo *info = user_data;
+  info->buffers_count++;
+  info->size += gst_buffer_get_size(*buffer);
+  return TRUE;
 }
 
 GstFlowReturn
@@ -223,6 +240,10 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
 
   result = gst_pad_push_list_orig (pad, list);
+  
+  ListInfo list_info;
+  gst_buffer_list_foreach (list, for_each_buffer, &list_info);
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, list_info.buffers_count, list_info.size));
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
@@ -320,6 +341,8 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element, element_from, 1, gst_buffer_get_size (*buffer)));
+  
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
 #if __APPLE__
@@ -374,22 +397,22 @@ gst_element_set_state (GstElement *element, GstState state)
       gboolean done = FALSE;
       while (!done) {
         switch (gst_iterator_next (it, &item)) {
-          case GST_ITERATOR_OK:
-            {
-              GstElement *internal = g_value_get_object (&item);
-              trace_add_entry (element, g_strdup_printf ("element-discovered %p %s %s", internal, LGI_ELEMENT_NAME(internal), G_OBJECT_TYPE_NAME (internal)));
-              g_value_reset (&item);
-            }
-            break;
-          case GST_ITERATOR_RESYNC:
-            gst_iterator_resync (it);
-            break;
-          case GST_ITERATOR_ERROR:
-            done = TRUE;
-            break;
-          case GST_ITERATOR_DONE:
-            done = TRUE;
-            break;
+        case GST_ITERATOR_OK:
+          {
+            GstElement *internal = g_value_get_object (&item);
+            trace_add_entry (element, g_strdup_printf ("element-discovered %p %s %s", internal, LGI_ELEMENT_NAME(internal), G_OBJECT_TYPE_NAME (internal)));
+            g_value_reset (&item);
+          }
+          break;
+        case GST_ITERATOR_RESYNC:
+          gst_iterator_resync (it);
+          break;
+        case GST_ITERATOR_ERROR:
+          done = TRUE;
+          break;
+        case GST_ITERATOR_DONE:
+          done = TRUE;
+          break;
         }
       }
       g_value_unset (&item);
