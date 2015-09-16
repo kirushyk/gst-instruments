@@ -189,20 +189,16 @@ parse_output (const char *filename)
         if (fscanf (input, "%p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &element_to, &buffers_count, &size) == 4)
         {
           GstElementRecord *element = g_hash_table_lookup (elements, element_from);
-          if (!element)
+          if (element)
           {
-            g_printerr ("couldn't find element %p\n", element_from);
-            exit (2);
+            element->data_sent += size;
           }
-          element->data_sent += size;
           
           element = g_hash_table_lookup (elements, element_to);
-          if (!element)
+          if (element)
           {
-            g_printerr ("couldn't find element %p\n", element_to);
-            exit (2);
+            element->data_received += size;
           }
-          element->data_received += size;
         }
       }
       else if (g_ascii_strcasecmp (event_name, "element-exited") == 0)
@@ -273,7 +269,7 @@ parse_output (const char *filename)
   for (index = 0; index < elements_count; index++)
   {
     GstElementRecord *element = g_array_index (elements_sorted, GstElementRecord *, index);
-    g_print ("%s: %5.3f ms\n", element->name->str, element->total_time * 0.000001);
+    g_print ("%s: %5.3f ms %" G_GUINT64_FORMAT " b %" G_GUINT64_FORMAT " b\n", element->name->str, element->total_time * 0.000001, element->data_received, element->data_sent);
   }
   
   g_array_free (elements_sorted, TRUE);
