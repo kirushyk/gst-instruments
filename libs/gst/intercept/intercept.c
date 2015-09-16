@@ -177,9 +177,8 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   
-  result = gst_pad_push_orig (pad, buffer);
-  
   trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, 1, gst_buffer_get_size (buffer)));
+  result = gst_pad_push_orig (pad, buffer);
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
@@ -238,13 +237,13 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   guint64 start = get_cpu_time (thread);
   
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
-
-  result = gst_pad_push_list_orig (pad, list);
   
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
   trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, list_info.buffers_count, list_info.size));
   
+  result = gst_pad_push_list_orig (pad, list);
+    
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
 #if __APPLE__
@@ -341,7 +340,10 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element, element_from, 1, gst_buffer_get_size (*buffer)));
+  if (*buffer)
+  {
+    trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element, element_from, 1, gst_buffer_get_size (*buffer)));
+  }
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
