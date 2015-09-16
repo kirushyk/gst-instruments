@@ -38,6 +38,8 @@ GHashTable *tasks = NULL;
 
 typedef struct GstElementRecord
 {
+  guint64 data_sent;
+  guint64 data_received;
   gboolean is_subtop;
   gpointer identifier;
   guint64 total_time;
@@ -69,6 +71,8 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
     {
       upstack_element = g_new0 (GstElementRecord, 1);
       upstack_element->is_subtop = FALSE;
+      upstack_element->data_sent = 0;
+      upstack_element->data_received = 0;
       upstack_element->identifier = task->upstack_element_identifier;
       upstack_element->total_time = 0;
       upstack_element->name = g_string_new (task->name->str);
@@ -124,6 +128,8 @@ parse_output (const char *filename)
           if (!element)
           {
             element = g_new0 (GstElementRecord, 1);
+            element->data_sent = 0;
+            element->data_received = 0;
             element->is_subtop = FALSE;
             element->identifier = element_id;
             element->total_time = 0;
@@ -172,6 +178,31 @@ parse_output (const char *filename)
         {
           g_printerr ("couldn't parse event: %s\n", event_name);
           exit (2);
+        }
+      }
+      else if (g_ascii_strcasecmp (event_name, "data-sent") == 0)
+      {
+        gpointer element_from;
+        gpointer element_to;
+        gint buffers_count;
+        guint64 size;
+        if (fscanf (input, "%p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &element_to, &buffers_count, &size) == 4)
+        {
+          GstElementRecord *element = g_hash_table_lookup (elements, element_from);
+          if (!element)
+          {
+            g_printerr ("couldn't find element %p\n", element_from);
+            exit (2);
+          }
+          element->data_sent += size;
+          
+          element = g_hash_table_lookup (elements, element_to);
+          if (!element)
+          {
+            g_printerr ("couldn't find element %p\n", element_to);
+            exit (2);
+          }
+          element->data_received += size;
         }
       }
       else if (g_ascii_strcasecmp (event_name, "element-exited") == 0)
