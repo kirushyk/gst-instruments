@@ -1,3 +1,4 @@
+ui/gst-instruments
 *-1.0
 *.so
 *.dylib
