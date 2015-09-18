@@ -1,15 +1,40 @@
 #include "trace.h"
+#include <sys/time.h>
+#include <glib.h>
 #include <stdio.h>
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
+GstClockTime current_monotonic_time()
+{
+#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  return mts.tv_sec * GST_SECOND + mts.tv_nsec;
+#else
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
+#endif
+}
 
 GMutex trace_mutex;
 
 typedef struct TraceEntry
 {
+  GstClockTime timestamp;
   GstElement *pipeline;
   gchar *text;
 } TraceEntry;
 
 GList *trace_entries = NULL;
+GstClockTime startup_time = GST_CLOCK_TIME_NONE;
 
 void
 gst_element_dump_to_file (GstElement *pipeline, const gchar *filename)
@@ -26,7 +51,7 @@ gst_element_dump_to_file (GstElement *pipeline, const gchar *filename)
     {
       if ((pipeline == NULL) || (entry->pipeline == pipeline))
       {
-        fprintf(output, "%s\n", entry->text);
+        fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
         
         iterator->data = NULL;
         g_free(entry->text);
@@ -51,8 +76,16 @@ void trace_init (void)
 void
 trace_add_entry (GstElement *pipeline, gchar *text)
 {
+  GstClockTime current_time = current_monotonic_time ();
+  if (GST_CLOCK_TIME_NONE == startup_time)
+  {
+    startup_time = current_time;
+  }
+  current_time -= startup_time;
+  
   TraceEntry *entry = g_new0 (TraceEntry, 1);
   entry->pipeline = pipeline;
+  entry->timestamp = current_time;
   entry->text = text;
   
   g_mutex_lock (&trace_mutex);
