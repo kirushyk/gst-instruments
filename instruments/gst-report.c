@@ -103,7 +103,7 @@ parse_output (const char *filename)
   {
     GstClockTime event_timestamp;
     gchar event_name[1000];
-    if (fscanf (input, "%" G_GUINT64_FORMAT " %s", &event_timestamp, event_name) == 1)
+    if (fscanf (input, "%" G_GUINT64_FORMAT " %s", &event_timestamp, event_name) == 2)
     {
       if (g_ascii_strcasecmp (event_name, "element-discovered") == 0)
       {
