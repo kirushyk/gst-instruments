@@ -17,6 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "formatters.h"
 #include "gst-trace-parser.h"
 
 int
@@ -37,9 +38,17 @@ main (int argc, char *argv[])
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
-    g_print ("%s: %5.3f ms", element->name->str, element->total_time * 0.000001);
+    gchar *time_string = format_time (element->total_time);
+    g_print ("%s: %s", element->name->str, time_string);
+    g_free (time_string);
     if (FALSE)
-      g_print (" %" G_GUINT64_FORMAT " B %" G_GUINT64_FORMAT " B", element->data_received, element->data_sent);
+    {
+      gchar *memory_received_size_string = format_memory_size (element->data_received);
+      gchar *memory_sent_size_string = format_memory_size (element->data_sent);
+      g_print (" got %s sent %s", memory_received_size_string, memory_sent_size_string);
+      g_free (memory_sent_size_string);
+      g_free (memory_received_size_string);
+    }
     g_print ("\n");
   }
   gst_graveyard_free (graveyard);
