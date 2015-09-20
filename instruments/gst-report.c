@@ -4,22 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void parse_output(const char *filename);
-
-int
-main (int argc, char *argv[])
-{
-  g_set_prgname ("gst-report-1.0");
-  g_set_application_name ("GStreamer Report Tool");
-  
-  if (argc != 2)
-    return 1;
-  
-  parse_output(argv[1]);
-  
-  return 0;
-}
-
 typedef struct GstTaskRecord
 {
   gpointer identifier;
@@ -276,4 +260,18 @@ parse_output (const char *filename)
   g_array_free (elements_sorted, TRUE);
   g_hash_table_destroy (elements);
   g_hash_table_destroy (tasks);
+}
+
+int
+main (int argc, char *argv[])
+{
+  g_set_prgname ("gst-report-1.0");
+  g_set_application_name ("GStreamer Report Tool");
+  
+  if (argc != 2)
+    return 1;
+  
+  parse_output(argv[1]);
+  
+  return 0;
 }
