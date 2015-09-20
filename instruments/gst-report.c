@@ -47,7 +47,7 @@ main (gint argc, gchar *argv[])
   gsize space = max_length - 7; // sizeof "ELEMENT"
   for (j = 0; j < space; j++)
     g_print (" ");
-  g_print ("CPU   TIME\n");
+  g_print ("  CPU   TIME\n");
 
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
