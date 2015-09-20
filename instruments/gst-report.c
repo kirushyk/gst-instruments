@@ -47,7 +47,7 @@ main (gint argc, gchar *argv[])
   gsize space = max_length - 7; // sizeof "ELEMENT"
   for (j = 0; j < space; j++)
     g_print (" ");
-  g_print ("  CPU   TIME\n");
+  g_print (" %CPU   TIME\n");
 
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
@@ -58,7 +58,7 @@ main (gint argc, gchar *argv[])
     gsize space = max_length - element->name->len;
     for (j = 0; j < space; j++)
       g_print (" ");
-    g_print (" %5.1f%% %s", element->total_time * 100.f / graveyard->total_time, time_string);
+    g_print (" %5.1f  %s", element->total_time * 100.f / graveyard->total_time, time_string);
     g_free (time_string);
     
     if (FALSE)
