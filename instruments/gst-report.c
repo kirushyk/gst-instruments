@@ -63,8 +63,8 @@ main (gint argc, gchar *argv[])
     
     if (FALSE)
     {
-      gchar *memory_received_size_string = format_memory_size (element->data_received);
-      gchar *memory_sent_size_string = format_memory_size (element->data_sent);
+      gchar *memory_received_size_string = format_memory_size (element->bytes_received);
+      gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
       g_print (" got %s sent %s", memory_received_size_string, memory_sent_size_string);
       g_free (memory_sent_size_string);
       g_free (memory_received_size_string);

@@ -43,9 +43,9 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
     if (!upstack_element)
     {
       upstack_element = g_new0 (GstElementHeadstone, 1);
-      upstack_element->is_subtop = FALSE;
-      upstack_element->data_sent = 0;
-      upstack_element->data_received = 0;
+      upstack_element->is_subtopstack = FALSE;
+      upstack_element->bytes_sent = 0;
+      upstack_element->bytes_received = 0;
       upstack_element->identifier = task->upstack_element_identifier;
       upstack_element->total_time = 0;
       upstack_element->name = g_string_new (task->name->str);
@@ -107,9 +107,9 @@ gst_graveyard_new_from_trace (const char *filename)
           if (!element)
           {
             element = g_new0 (GstElementHeadstone, 1);
-            element->data_sent = 0;
-            element->data_received = 0;
-            element->is_subtop = FALSE;
+            element->bytes_sent = 0;
+            element->bytes_received = 0;
+            element->is_subtopstack = FALSE;
             element->identifier = element_id;
             element->total_time = 0;
             element->name = g_string_new (element_name);
@@ -124,8 +124,8 @@ gst_graveyard_new_from_trace (const char *filename)
             task = g_new0 (GstTaskHeadstone, 1);
             task->identifier = task_id;
             task->total_upstack_time = 0;
-            task->enter_upstack_time = 0;
-            task->in_upstack = TRUE;
+            task->upstack_enter_timestamp = 0;
+            task->currently_in_upstack_element = TRUE;
             task->name = NULL;
             task->upstack_element_identifier = NULL;
             g_hash_table_insert (graveyard->tasks, task_id, task);
@@ -133,13 +133,13 @@ gst_graveyard_new_from_trace (const char *filename)
           
           g_assert_true (task != NULL);
           
-          if (task->in_upstack)
+          if (task->currently_in_upstack_element)
           {
-            element->is_subtop = TRUE;
-            task->exit_upstack_time = thread_time;
-            if (task->enter_upstack_time > 0)
-              task->total_upstack_time += task->exit_upstack_time - task->enter_upstack_time;
-            task->in_upstack = FALSE;
+            element->is_subtopstack = TRUE;
+            task->upstack_exit_timestamp = thread_time;
+            if (task->upstack_enter_timestamp > 0)
+              task->total_upstack_time += task->upstack_exit_timestamp - task->upstack_enter_timestamp;
+            task->currently_in_upstack_element = FALSE;
             if (task->name == NULL)
             {
               task->upstack_element_identifier = from_element_id;
@@ -148,7 +148,7 @@ gst_graveyard_new_from_trace (const char *filename)
           }
           else
           {
-            element->is_subtop = FALSE;
+            element->is_subtopstack = FALSE;
           }
           task->total_downstack_time += task->current_downstack_time;
           task->current_downstack_time = 0;
@@ -170,13 +170,13 @@ gst_graveyard_new_from_trace (const char *filename)
           GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_from);
           if (element)
           {
-            element->data_sent += size;
+            element->bytes_sent += size;
           }
           
           element = g_hash_table_lookup (graveyard->elements, element_to);
           if (element)
           {
-            element->data_received += size;
+            element->bytes_received += size;
           }
         }
       }
@@ -203,14 +203,14 @@ gst_graveyard_new_from_trace (const char *filename)
           }
           element->total_time += duration - task->current_downstack_time;
           task->current_downstack_time = duration;
-          if (element->is_subtop)
+          if (element->is_subtopstack)
           {
-            task->enter_upstack_time = thread_time;
-            task->in_upstack = TRUE;
+            task->upstack_enter_timestamp = thread_time;
+            task->currently_in_upstack_element = TRUE;
           }
           else
           {
-            task->in_upstack = FALSE;
+            task->currently_in_upstack_element = FALSE;
           }
         }
         else

@@ -32,9 +32,9 @@ typedef struct GstTaskHeadstone
   
   guint64                               current_downstack_time;
   guint64                               total_downstack_time;
-  gboolean                              in_upstack;
-  guint64                               enter_upstack_time;
-  guint64                               exit_upstack_time;
+  gboolean                              currently_in_upstack_element;
+  guint64                               upstack_enter_timestamp;
+  guint64                               upstack_exit_timestamp;
   guint64                               total_upstack_time;
   
 } GstTaskHeadstone;
@@ -44,9 +44,9 @@ typedef struct GstElementHeadstone
   gpointer                              identifier;
   GString                              *name;
   
-  guint64                               data_sent;
-  guint64                               data_received;
-  gboolean                              is_subtop;
+  guint64                               bytes_sent;
+  guint64                               bytes_received;
+  gboolean                              is_subtopstack;
   guint64                               total_time;
   
 } GstElementHeadstone;
@@ -57,6 +57,7 @@ typedef struct GstGraveyard
   GHashTable                           *elements;
   GArray                               *elements_sorted;
   GstClockTime                          total_time;
+  
 } GstGraveyard;
 
 GstGraveyard *      gst_graveyard_new_from_trace           (const char         *filename);
