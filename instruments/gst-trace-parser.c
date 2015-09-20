@@ -158,7 +158,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         }
         else
         {
-          g_printerr ("couldn't parse event: %s\n", event_name);
+          g_print ("couldn't parse event: %s\n", event_name);
           goto error;
         }
       }
@@ -201,13 +201,13 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, task_id);
           if (!task)
           {
-            g_printerr ("couldn't find task %p\n", task_id);
+            g_print ("couldn't find task %p\n", task_id);
             goto error;
           }
           GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_id);
           if (!element)
           {
-            g_printerr ("couldn't find element %p: %s\n", element_id, element_name);
+            g_print ("couldn't find element %p: %s\n", element_id, element_name);
             goto error;
           }
           if (TIMESTAMP_FITS (event_timestamp, from, till))
@@ -225,7 +225,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         }
         else
         {
-          g_printerr ("couldn't parse event: %s\n", event_name);
+          g_print ("couldn't parse event: %s\n", event_name);
           goto error;
         }
       }
@@ -234,13 +234,13 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         gpointer task_id;
         if (fscanf (input, "%p\n", &task_id) != 1)
         {
-          g_printerr ("couldn't parse task\n");
+          g_print ("couldn't parse task\n");
           goto error;
         }
       }
       else
       {
-        g_printerr ("couldn't recognize event: %s\n", event_name);
+        g_print ("couldn't recognize event: %s\n", event_name);
         goto error;
       }
     }
