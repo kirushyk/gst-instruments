@@ -42,6 +42,12 @@ main (gint argc, gchar *argv[])
     if (element->name->len > max_length)
       max_length = element->name->len;
   }
+  
+  g_print ("ELEMENT");
+  gsize space = max_length - 7; // sizeof "ELEMENT"
+  for (j = 0; j < space; j++)
+    g_print (" ");
+  g_print ("CPU   TIME\n");
 
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
