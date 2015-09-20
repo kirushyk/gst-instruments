@@ -19,6 +19,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
+#include "configure-static.h"
 
 gint
 main (gint argc, gchar *argv[])
@@ -26,17 +27,17 @@ main (gint argc, gchar *argv[])
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
   
-#if defined(__APPLE__)
+#if defined(__MACH__)
   g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
-  g_setenv ("DYLD_INSERT_LIBRARIES", "/usr/local/lib/libgstintercept.dylib", TRUE);
+  g_setenv ("DYLD_INSERT_LIBRARIES", PREFIX "lib/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
-  g_setenv ("LD_PRELOAD", "/usr/local/lib/libgstintercept.so", TRUE);
+  g_setenv ("LD_PRELOAD", PREFIX "lib/libgstintercept.so", TRUE);
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif
   
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
-  g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", "gst-top", TRUE);
+  g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", GST_TOP_TRACE_FILENAME_BASE, TRUE);
   
   gint status = 0;
   GError *error = NULL;
@@ -48,7 +49,7 @@ main (gint argc, gchar *argv[])
   }
   else
   {
-    system ("/usr/local/bin/gst-report-1.0 gst-top.gsttrace");
+    system (PREFIX "bin/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   }
   
   return 0;

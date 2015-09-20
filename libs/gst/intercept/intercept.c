@@ -29,7 +29,7 @@
 #include <gst/gstpad.h>
 #include "trace.h"
 
-#if __APPLE__
+#if __MACH__
 # include <mach/mach_init.h>
 # include <mach/thread_act.h>
 # include <mach/mach_port.h>
@@ -44,7 +44,7 @@ THREAD mach_thread_self() { return 0; }
 #define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
 
 static guint64 get_cpu_time (THREAD thread) {
-#if __APPLE__
+#if __MACH__
   mach_msg_type_number_t count = THREAD_EXTENDED_INFO_COUNT;
   thread_extended_info_data_t info;
   
@@ -77,11 +77,7 @@ get_libgstreamer ()
 {
   if (libgstreamer == NULL)
   {
-#if __APPLE__
-    libgstreamer = dlopen ("libgstreamer-1.0.dylib", RTLD_NOW);
-#else
-    libgstreamer = dlopen ("/usr/local/lib/libgstreamer-1.0.so", RTLD_NOW);
-#endif
+    libgstreamer = dlopen (PREFIX "lib/" LIBGSTREAMER, RTLD_NOW);
   }
   
   trace_init();
@@ -153,7 +149,7 @@ gst_element_change_state (GstElement * element, GstStateChange transition)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
-#if __APPLE__
+#if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
@@ -199,7 +195,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
-#if __APPLE__
+#if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
@@ -263,7 +259,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
     
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
-#if __APPLE__
+#if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
@@ -311,7 +307,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
-#if __APPLE__
+#if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
@@ -364,7 +360,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
-#if __APPLE__
+#if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
