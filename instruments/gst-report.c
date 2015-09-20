@@ -20,10 +20,11 @@
 #include "formatters.h"
 #include "gst-trace-parser.h"
 
-int
-main (int argc, char *argv[])
+gint
+main (gint argc, gchar *argv[])
 {
-  int i;
+  gint i, j;
+  gsize max_length = 0;
   
   g_set_prgname ("gst-report-1.0");
   g_set_application_name ("GStreamer Report Tool");
@@ -34,13 +35,26 @@ main (int argc, char *argv[])
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[1]);
   if (graveyard == NULL)
     return 2;
+  
+  for (i = 0; i < graveyard->elements_sorted->len; i++)
+  {
+    GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
+    if (element->name->len > max_length)
+      max_length = element->name->len;
+  }
 
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
+    
     gchar *time_string = format_time (element->total_time);
-    g_print ("%s: %s", element->name->str, time_string);
+    g_print ("%s:", element->name->str);
+    gsize space = max_length - element->name->len;
+    for (j = 0; j < space; j++)
+      g_print (" ");
+    g_print (" %s", time_string);
     g_free (time_string);
+    
     if (FALSE)
     {
       gchar *memory_received_size_string = format_memory_size (element->data_received);
