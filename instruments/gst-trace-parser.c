@@ -30,7 +30,7 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
   GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_id);
   if (element)
   {
-    if (element->name == NULL)
+    if (element->name == NULL && element_name != NULL)
     {
       element->name = g_string_new (element_name);
     }
