@@ -31,6 +31,7 @@ public class MainWindow: Gtk.ApplicationWindow
 		var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 		
 		var menu = new MainMenu ();
+		menu.window = this;
 		menu.quit_item_activated.connect (() =>
 		{
 			this.destroy ();

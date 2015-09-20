@@ -19,7 +19,8 @@
 
 public class MainMenu: Gtk.MenuBar
 {
-	
+	public Gtk.ApplicationWindow window;
+
 	public signal void quit_item_activated ();
 
 	public signal void open_file_item_activated (string path); 
@@ -29,6 +30,7 @@ public class MainMenu: Gtk.MenuBar
 
 	public MainMenu()
 	{
+		window = null;
 		var file_item = new Gtk.MenuItem.with_label ("File");
 
 		var view_item = new Gtk.MenuItem.with_label ("View");
@@ -48,7 +50,7 @@ public class MainMenu: Gtk.MenuBar
 		help_menu.add (about_item);
 		about_item.activate.connect (() =>
 		{
-			var dialog = new Gtk.MessageDialog (null, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "GStreamer Instruments");
+			var dialog = new Gtk.MessageDialog (window, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "GStreamer Instruments\nCopyright (C) 2015 Kyrylo Polezhaiev <kirushyk@gmail.com>");
 			dialog.run ();
 			dialog.destroy ();
 		});
