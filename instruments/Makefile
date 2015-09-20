@@ -1,5 +1,5 @@
 DEPS = gstreamer-1.0
-CFLAGS = $(shell pkg-config --cflags $(DEPS))
+CFLAGS = $(shell pkg-config --cflags $(DEPS)) -I../
 LIBS = $(shell pkg-config --libs $(DEPS))
 
 all: gst-top-1.0 gst-report-1.0

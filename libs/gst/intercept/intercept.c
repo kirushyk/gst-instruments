@@ -28,6 +28,7 @@
 #include <gst/gst.h>
 #include <gst/gstpad.h>
 #include "trace.h"
+#include <configure-static.h>
 
 #if __MACH__
 # include <mach/mach_init.h>

@@ -19,7 +19,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
-#include "configure-static.h"
+#include <configure-static.h>
 
 gint
 main (gint argc, gchar *argv[])
