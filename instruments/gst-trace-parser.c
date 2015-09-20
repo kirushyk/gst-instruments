@@ -23,6 +23,33 @@
 #include "gst-trace-parser.h"
 #include <stdio.h>
 
+
+static GstElementHeadstone *
+gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *element_name)
+{
+  GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_id);
+  if (element)
+  {
+    if (element->name == NULL)
+    {
+      element->name = g_string_new (element_name);
+    }
+  }
+  else
+  {
+    element = g_new0 (GstElementHeadstone, 1);
+    element->bytes_sent = 0;
+    element->bytes_received = 0;
+    element->is_subtopstack = FALSE;
+    element->identifier = element_id;
+    element->total_time = 0;
+    if (element_name)
+      element->name = g_string_new (element_name);
+    g_hash_table_insert (graveyard->elements, element_id, element);
+  }
+  return element;
+}
+
 gint
 elements_compare_func (gconstpointer a, gconstpointer b)
 {
@@ -41,19 +68,7 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
   GstTaskHeadstone *task = value;
   if (task->upstack_element_identifier)
   {
-    GstElementHeadstone *upstack_element = g_hash_table_lookup (graveyard->elements, task->upstack_element_identifier);
-    
-    if (!upstack_element)
-    {
-      upstack_element = g_new0 (GstElementHeadstone, 1);
-      upstack_element->is_subtopstack = FALSE;
-      upstack_element->bytes_sent = 0;
-      upstack_element->bytes_received = 0;
-      upstack_element->identifier = task->upstack_element_identifier;
-      upstack_element->total_time = 0;
-      upstack_element->name = g_string_new (task->name->str);
-      g_hash_table_insert (graveyard->elements, task->upstack_element_identifier, upstack_element);
-    }
+    GstElementHeadstone *upstack_element = gst_graveyard_get_element (graveyard, task->upstack_element_identifier, task->name->str);
     
     upstack_element->total_time += task->total_upstack_time;
   }
@@ -106,18 +121,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         guint64 thread_time;
         if (fscanf (input, "%p %s %p %s %p %" G_GUINT64_FORMAT "\n", &task_id, from_element_name, &from_element_id, element_name, &element_id, &thread_time) == 6)
         {
-          GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_id);
-          if (!element)
-          {
-            element = g_new0 (GstElementHeadstone, 1);
-            element->bytes_sent = 0;
-            element->bytes_received = 0;
-            element->is_subtopstack = FALSE;
-            element->identifier = element_id;
-            element->total_time = 0;
-            element->name = g_string_new (element_name);
-            g_hash_table_insert (graveyard->elements, element_id, element);
-          }
+          GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
           
           g_assert_true (element != NULL);
           
@@ -170,22 +174,18 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         guint64 size;
         if (fscanf (input, "%p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &element_to, &buffers_count, &size) == 4)
         {
-          GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_from);
-          if (element)
+          GstElementHeadstone *element = gst_graveyard_get_element(graveyard, element_from, NULL);
+          
+          if (TIMESTAMP_FITS (event_timestamp, from, till))
           {
-            if (TIMESTAMP_FITS (event_timestamp, from, till))
-            {
-              element->bytes_sent += size;
-            }
+            element->bytes_sent += size;
           }
           
-          element = g_hash_table_lookup (graveyard->elements, element_to);
-          if (element)
+          element = gst_graveyard_get_element (graveyard, element_to, NULL);
+          
+          if (TIMESTAMP_FITS (event_timestamp, from, till))
           {
-            if (TIMESTAMP_FITS (event_timestamp, from, till))
-            {
-              element->bytes_received += size;
-            }
+            element->bytes_received += size;
           }
         }
       }
