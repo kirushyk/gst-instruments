@@ -77,9 +77,9 @@ public class MainMenu: Gtk.MenuBar
 		quit_item.activate.connect (() => { quit_item_activated(); });
 		file_menu.add (quit_item);
 
-		append(file_item);
-		append(view_item);
-		append(help_item);
+		append (file_item);
+		append (view_item);
+		append (help_item);
 	}
 
 }
