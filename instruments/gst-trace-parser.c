@@ -23,7 +23,6 @@
 #include "gst-trace-parser.h"
 #include <stdio.h>
 
-
 static GstElementHeadstone *
 gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *element_name)
 {
@@ -80,6 +79,8 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
   GstElementHeadstone *element = (GstElementHeadstone *)value;
   graveyard->total_time += element->total_time;
+  if (element->name == NULL)
+    element->name = g_string_new("?");
   g_array_append_val (graveyard->elements_sorted, value);
 }
 
