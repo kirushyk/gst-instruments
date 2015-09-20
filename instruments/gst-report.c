@@ -95,7 +95,7 @@ parse_output (const char *filename)
   tasks = g_hash_table_new (g_direct_hash, g_direct_equal);
   elements = g_hash_table_new (g_direct_hash, g_direct_equal);
   
-  FILE *input = fopen (filename, "rt");
+  FILE *input = fopen (filename,  "rt");
   if (input == NULL)
     return;
   
