@@ -17,6 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#define TIMESTAMP_FITS(ts, min, max) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
+  (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
+
 #include "gst-trace-parser.h"
 #include <stdio.h>
 
@@ -66,7 +69,7 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
 }
 
 GstGraveyard *
-gst_graveyard_new_from_trace (const char *filename)
+gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till)
 {
   FILE *input = fopen (filename,  "rt");
   if (input == NULL)
@@ -137,7 +140,7 @@ gst_graveyard_new_from_trace (const char *filename)
           {
             element->is_subtopstack = TRUE;
             task->upstack_exit_timestamp = thread_time;
-            if (task->upstack_enter_timestamp > 0)
+            if ((task->upstack_enter_timestamp > 0) && TIMESTAMP_FITS (event_timestamp, from, till))
               task->total_upstack_time += task->upstack_exit_timestamp - task->upstack_enter_timestamp;
             task->currently_in_upstack_element = FALSE;
             if (task->name == NULL)
@@ -170,13 +173,19 @@ gst_graveyard_new_from_trace (const char *filename)
           GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_from);
           if (element)
           {
-            element->bytes_sent += size;
+            if (TIMESTAMP_FITS (event_timestamp, from, till))
+            {
+              element->bytes_sent += size;
+            }
           }
           
           element = g_hash_table_lookup (graveyard->elements, element_to);
           if (element)
           {
-            element->bytes_received += size;
+            if (TIMESTAMP_FITS (event_timestamp, from, till))
+            {
+              element->bytes_received += size;
+            }
           }
         }
       }
@@ -201,7 +210,8 @@ gst_graveyard_new_from_trace (const char *filename)
             g_printerr ("couldn't find element %p: %s\n", element_id, element_name);
             goto error;
           }
-          element->total_time += duration - task->current_downstack_time;
+          if (TIMESTAMP_FITS (event_timestamp, from, till))
+            element->total_time += duration - task->current_downstack_time;
           task->current_downstack_time = duration;
           if (element->is_subtopstack)
           {

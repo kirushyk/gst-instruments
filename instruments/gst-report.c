@@ -20,21 +20,46 @@
 #include "formatters.h"
 #include "gst-trace-parser.h"
 
+gdouble from = 0, till = 0;
+GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
+
+static GOptionEntry entries[] =
+{
+  { "from", 0, 0, G_OPTION_ARG_DOUBLE, &from, "Do not take events before timestamp into account", NULL },
+  { "till", 0, 0, G_OPTION_ARG_DOUBLE, &till, "Do not take events after timestamp into account", NULL },
+  { NULL }
+};
+
 gint
 main (gint argc, gchar *argv[])
 {
   gint i, j;
   gsize max_length = 0;
+  GError *error = NULL;
+  GOptionContext *option_context;
   
   g_set_prgname ("gst-report-1.0");
   g_set_application_name ("GStreamer Report Tool");
   
-  if (argc != 2)
+  option_context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (option_context, entries, NULL);
+  g_option_context_set_summary (option_context, g_get_application_name ());
+  if (!g_option_context_parse (option_context, &argc, &argv, &error))
+  {
+    g_print ("could not parse arguments: %s\n", error->message);
+    g_print ("%s", g_option_context_get_help (option_context, TRUE, NULL));
     return 1;
+  }
+  g_option_context_free (option_context);
   
-  GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[1]);
+  if (from > 0)
+    from_ns = from * GST_SECOND;
+  if (till > 0)
+    till_ns = till * GST_SECOND;
+  
+  GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns);
   if (graveyard == NULL)
-    return 2;
+    return 3;
   
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {

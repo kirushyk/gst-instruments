@@ -60,7 +60,9 @@ typedef struct GstGraveyard
 
 } GstGraveyard;
 
-GstGraveyard *      gst_graveyard_new_from_trace           (const char         *filename);
+GstGraveyard *      gst_graveyard_new_from_trace           (const char         *filename,
+                                                            GstClockTime        from,
+                                                            GstClockTime        till);
 
 void                gst_graveyard_free                     (GstGraveyard       *graveyard);
 
