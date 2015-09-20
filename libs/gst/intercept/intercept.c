@@ -1,27 +1,44 @@
+/* GStreamer Instruments
+ * Copyright (C) 2015 Kyrylo Polezhaiev <kirushyk@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify i t under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
 #include "intercept.h"
+#include <glib.h>
+#include <time.h>
 #include <dlfcn.h>
 #include <stdio.h>
-#include <glib.h>
-#include <gst/gst.h>
-#include <gst/gstpad.h>
-#include <stdio.h>
 #include <unistd.h>
-#include <dlfcn.h> 
 #include <stdlib.h>
 #include <signal.h>
-#include <time.h>
+#include <gst/gst.h>
+#include <gst/gstpad.h>
 #include "trace.h"
 
 #if __APPLE__
-#include <mach/mach_init.h>
-#include <mach/thread_act.h>
-#include <mach/mach_port.h>
-#define THREAD thread_port_t
+# include <mach/mach_init.h>
+# include <mach/thread_act.h>
+# include <mach/mach_port.h>
+# define THREAD thread_port_t
 #else
-#include <signal.h>
-#include <time.h>
-#define THREAD int
-THREAD mach_thread_self() {return 0;}
+# include <signal.h>
+# include <time.h>
+# define THREAD int
+THREAD mach_thread_self() { return 0; }
 #endif
 
 #define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
