@@ -22,11 +22,13 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
+gboolean show_memory;
 
 static GOptionEntry entries[] =
 {
-  { "from", 0, 0, G_OPTION_ARG_DOUBLE, &from, "Do not take events before timestamp into account", NULL },
-  { "till", 0, 0, G_OPTION_ARG_DOUBLE, &till, "Do not take events after timestamp into account", NULL },
+  { "from",   0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
+  { "till",   0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account", NULL },
+  { "memory", 0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage", NULL },
   { NULL }
 };
 
@@ -72,8 +74,13 @@ main (gint argc, gchar *argv[])
   gsize space = max_length - 7; // sizeof "ELEMENT"
   for (j = 0; j < space; j++)
     g_print (" ");
-  g_print (" %%CPU   TIME\n");
-
+  g_print ("  %%CPU  TIME");
+  
+  if (show_memory)
+    g_print ("      INPUT     OUTPUT");
+  
+  g_print ("\n");
+  
   for (i = 0; i < graveyard->elements_sorted->len; i++)
   {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
@@ -83,14 +90,14 @@ main (gint argc, gchar *argv[])
     gsize space = max_length - element->name->len;
     for (j = 0; j < space; j++)
       g_print (" ");
-    g_print (" %5.1f  %s", element->total_time * 100.f / graveyard->total_time, time_string);
+    g_print (" %5.1f  %8s", element->total_time * 100.f / graveyard->total_time, time_string);
     g_free (time_string);
     
-    if (FALSE)
+    if (show_memory)
     {
       gchar *memory_received_size_string = format_memory_size (element->bytes_received);
       gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
-      g_print (" got %s sent %s", memory_received_size_string, memory_sent_size_string);
+      g_print (" %9s %9s", memory_received_size_string, memory_sent_size_string);
       g_free (memory_sent_size_string);
       g_free (memory_received_size_string);
     }
