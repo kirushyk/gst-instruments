@@ -56,6 +56,7 @@ typedef struct GstGraveyard
   GHashTable                           *tasks;
   GHashTable                           *elements;
   GArray                               *elements_sorted;
+  GstClockTime                          total_time;
 } GstGraveyard;
 
 GstGraveyard *      gst_graveyard_new_from_trace           (const char         *filename);

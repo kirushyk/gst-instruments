@@ -60,9 +60,10 @@ void
 for_each_element (gpointer key, gpointer value, gpointer user_data)
 {
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
+  GstElementHeadstone *element = (GstElementHeadstone *)value;
+  graveyard->total_time += element->total_time;
   g_array_append_val (graveyard->elements_sorted, value);
 }
-
 
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename)
