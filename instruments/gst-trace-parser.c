@@ -136,10 +136,12 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         gchar element_type_name[1000];
         if (fscanf (input, "%p %s %s %p\n", &element_id, element_name, element_type_name, &parent_element_id) == 4) {
           GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
-          GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, parent_element_id, NULL);
-          if (element->type_name == NULL)
-            element->type_name = g_string_new (element_type_name);
-          gst_element_headstone_add_child (parent, element);
+          if (parent_element_id) {
+            GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, parent_element_id, NULL);
+            if (element->type_name == NULL)
+              element->type_name = g_string_new (element_type_name);
+            gst_element_headstone_add_child (parent, element);
+          }
         }
       } else if (g_ascii_strcasecmp (event_name, "element-entered") == 0) {
         gpointer task_id;
