@@ -66,7 +66,7 @@ static guint64 get_cpu_time (THREAD thread) {
 
 gpointer libgstreamer = NULL;
 
-GstStateChangeReturn (*gst_element_change_state_orig) (GstElement * element, GstStateChange transition) = NULL;
+GstStateChangeReturn (*gst_element_change_state_orig) (GstElement *element, GstStateChange transition) = NULL;
 GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
 GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NULL;
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
@@ -117,11 +117,51 @@ gpointer get_downstack_element (gpointer pad)
   return element;
 }
 
+GHashTable *pipeline_by_element = NULL;
+
+void
+dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
+{
+  if (pipeline_by_element == NULL)
+    pipeline_by_element = g_hash_table_new (g_direct_hash, g_direct_equal);
+  else if (g_hash_table_lookup (pipeline_by_element, new_element))
+    return;
+  g_hash_table_insert (pipeline_by_element, new_element, pipeline);
+  
+  GstIterator *it = gst_bin_iterate_recurse (GST_BIN (pipeline));
+  GValue item = G_VALUE_INIT;
+  gboolean done = FALSE;
+  while (!done) {
+    switch (gst_iterator_next (it, &item)) {
+      case GST_ITERATOR_OK:
+        {
+          GstElement *internal = g_value_get_object (&item);
+          GstElement *parent = GST_ELEMENT_PARENT (internal);
+          
+          trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), G_OBJECT_TYPE_NAME (internal), parent));
+          g_value_reset (&item);
+        }
+        break;
+      case GST_ITERATOR_RESYNC:
+        gst_iterator_resync (it);
+        break;
+      case GST_ITERATOR_ERROR:
+        done = TRUE;
+        break;
+      case GST_ITERATOR_DONE:
+        done = TRUE;
+        break;
+    }
+  }
+  g_value_unset (&item);
+  gst_iterator_free (it);
+}
+
 GstStateChangeReturn
-gst_element_change_state (GstElement * element, GstStateChange transition)
+gst_element_change_state (GstElement *element, GstStateChange transition)
 {
   GstStateChangeReturn result;
-  GstElement *pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_element_change_state_orig == NULL)
   {
@@ -163,7 +203,7 @@ GstFlowReturn
 gst_pad_push (GstPad *pad, GstBuffer *buffer)
 {
   GstFlowReturn result;
-  GstElement *pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_orig == NULL)
   {
@@ -190,6 +230,8 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   guint64 start = get_cpu_time (thread);
   
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  
+  dump_hierarchy_info_if_needed (pipeline, element);
   
   trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, 1, gst_buffer_get_size (buffer)));
   result = gst_pad_push_orig (pad, buffer);
@@ -224,7 +266,7 @@ GstFlowReturn
 gst_pad_push_list (GstPad *pad, GstBufferList *list)
 {
   GstFlowReturn result;
-  GstElement *pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_list_orig == NULL)
   {
@@ -252,6 +294,8 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   
+  dump_hierarchy_info_if_needed (pipeline, element);
+  
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
   trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, list_info.buffers_count, list_info.size));
@@ -273,7 +317,7 @@ gboolean
 gst_pad_push_event (GstPad *pad, GstEvent *event)
 {
   gboolean result;
-  GstElement *pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_push_event_orig == NULL)
   {
@@ -324,7 +368,7 @@ GstFlowReturn
 gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 {
   GstFlowReturn result;
-  GstElement *pipeline = NULL;
+  GstPipeline *pipeline = NULL;
   
   if (gst_pad_pull_range_orig == NULL)
   {
@@ -351,7 +395,9 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   guint64 start = get_cpu_time (thread);
   
   trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
-
+  
+  dump_hierarchy_info_if_needed (pipeline, element);
+  
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
   if (*buffer)
@@ -402,37 +448,6 @@ gst_element_set_state (GstElement *element, GstState state)
       gchar *filename = g_strdup_printf ("%s/%s.gsttrace", path ? path : ".", name ? name : GST_OBJECT_NAME (element));
       gst_element_dump_to_file (element, filename);
       g_free (filename);
-    }
-    break;
-
-  case GST_STATE_PLAYING:
-    if (GST_IS_PIPELINE (element))
-    {
-      GstIterator *it = gst_bin_iterate_recurse (GST_BIN (element));
-      GValue item = G_VALUE_INIT;
-      gboolean done = FALSE;
-      while (!done) {
-        switch (gst_iterator_next (it, &item)) {
-        case GST_ITERATOR_OK:
-          {
-            GstElement *internal = g_value_get_object (&item);
-            trace_add_entry (element, g_strdup_printf ("element-discovered %p %s %s", internal, LGI_ELEMENT_NAME(internal), G_OBJECT_TYPE_NAME (internal)));
-            g_value_reset (&item);
-          }
-          break;
-        case GST_ITERATOR_RESYNC:
-          gst_iterator_resync (it);
-          break;
-        case GST_ITERATOR_ERROR:
-          done = TRUE;
-          break;
-        case GST_ITERATOR_DONE:
-          done = TRUE;
-          break;
-        }
-      }
-      g_value_unset (&item);
-      gst_iterator_free (it);
     }
     break;
 

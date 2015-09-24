@@ -30,7 +30,7 @@ void                gst_element_dump_to_file               (GstElement         *
 
 void                trace_init                             (void);
 
-void                trace_add_entry                        (GstElement         *pipeline,
+void                trace_add_entry                        (GstPipeline        *pipeline,
                                                             gchar              *text);
 
 G_END_DECLS
