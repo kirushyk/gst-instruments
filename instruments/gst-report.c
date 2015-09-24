@@ -22,16 +22,72 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
-gboolean show_memory = FALSE, show_types = FALSE;
+gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE;
 
-static GOptionEntry entries[] =
-{
-  { "from",   0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
-  { "till",   0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account", NULL },
-  { "memory", 0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage", NULL },
-  { "types",  0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements", NULL },
+static GOptionEntry entries[] = {
+  { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
+  { "till",      0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account", NULL },
+  { "memory",    0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage", NULL },
+  { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements", NULL },
+  { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements", NULL },
   { NULL }
 };
+
+void
+render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
+{
+  gint j;
+  
+  gchar *time_string = format_time (element->total_time);
+  gsize space = element->nesting;
+  
+  if (hierarchy) {
+    for (j = 0; j < space; j++) {
+      g_print (" ");
+    }
+  }
+  
+  g_print ("%s", element->name->str);
+  
+  space = max_length - element->name->len - (hierarchy ? element->nesting : 0);
+  for (j = 0; j < space; j++)
+    g_print (" ");
+  
+  if (show_types) {
+    if (element->type_name) {
+      g_print (" %s", element->type_name->str);
+      space = max_type_name_length - element->type_name->len;
+    } else {
+      g_print (" ?");
+      space = max_type_name_length - 1;
+    }
+    for (j = 0; j < space; j++) {
+      g_print (" ");
+    }
+  }
+  
+  g_print (" %5.1f  %8s", element->total_time * 100.f / graveyard->total_time, time_string);
+  g_free (time_string);
+  
+  if (show_memory) {
+    gchar *memory_received_size_string = format_memory_size (element->bytes_received);
+    gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
+    g_print (" %9s %9s", memory_received_size_string, memory_sent_size_string);
+    g_free (memory_sent_size_string);
+    g_free (memory_received_size_string);
+  }
+  g_print ("\n");
+}
+
+void
+render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
+{
+  GList *child;
+  render_headstone (graveyard, element, max_length, max_type_name_length);
+  for (child = element->children; child != NULL; child = child->next) {
+    render_container (graveyard, child->data, max_length, max_type_name_length);
+  }
+}
 
 gint
 main (gint argc, gchar *argv[])
@@ -65,10 +121,12 @@ main (gint argc, gchar *argv[])
   
   for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
-    if (element->name->len > max_length)
-      max_length = element->name->len;
-    if (element->type_name && element->type_name->len > max_type_name_length)
+    if (element->name->len + element->nesting > max_length) {
+      max_length = element->name->len + element->nesting;
+    }
+    if (element->type_name && element->type_name->len > max_type_name_length) {
       max_type_name_length = element->type_name->len;
+    }
   }
   
   g_print ("ELEMENT");
@@ -91,37 +149,15 @@ main (gint argc, gchar *argv[])
   
   for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
-    
-    gchar *time_string = format_time (element->total_time);
-    g_print ("%s", element->name->str);
-    gsize space = max_length - element->name->len;
-    for (j = 0; j < space; j++)
-      g_print (" ");
-    
-    if (show_types) {
-      if (element->type_name) {
-        g_print (" %s", element->type_name->str);
-        space = max_type_name_length - element->type_name->len;
-      } else {
-        g_print (" ?");
-        space = max_type_name_length - 1;
+    if (hierarchy) {
+      if (element->parent == NULL) {
+        render_container (graveyard, element, max_length, max_type_name_length);
       }
-      for (j = 0; j < space; j++)
-        g_print (" ");
+    } else {
+      render_headstone (graveyard, element, max_length, max_type_name_length);
     }
-    
-    g_print (" %5.1f  %8s", element->total_time * 100.f / graveyard->total_time, time_string);
-    g_free (time_string);
-    
-    if (show_memory) {
-      gchar *memory_received_size_string = format_memory_size (element->bytes_received);
-      gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
-      g_print (" %9s %9s", memory_received_size_string, memory_sent_size_string);
-      g_free (memory_sent_size_string);
-      g_free (memory_received_size_string);
-    }
-    g_print ("\n");
   }
+  
   gst_graveyard_free (graveyard);
   
   return 0;
