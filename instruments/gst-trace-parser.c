@@ -84,6 +84,14 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   g_array_append_val (graveyard->elements_sorted, value);
 }
 
+
+void
+gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadstone *child)
+{
+  child->parent = parent;
+  parent->children = g_list_prepend (parent->children, child);
+}
+
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till)
 {
@@ -110,7 +118,11 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         gchar element_type_name[1000];
         if (fscanf (input, "%p %s %s %p\n", &element_id, element_name, element_type_name, &parent_element_id) == 4)
         {
-          gst_graveyard_get_element (graveyard, element_id, element_name);
+          GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
+          GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, parent_element_id, NULL);
+          if (element->type_name == NULL)
+            element->type_name = g_string_new (element_type_name);
+          gst_element_headstone_add_child (parent, element);
         }
       }
       else if (g_ascii_strcasecmp (event_name, "element-entered") == 0)

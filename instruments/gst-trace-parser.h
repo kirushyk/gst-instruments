@@ -43,6 +43,7 @@ typedef struct GstElementHeadstone
 {
   gpointer                              identifier;
   GString                              *name;
+  GString                              *type_name;
   
   struct GstElementHeadstone           *parent;
   GList                                *children;
@@ -63,10 +64,13 @@ typedef struct GstGraveyard
 
 } GstGraveyard;
 
-GstGraveyard *      gst_graveyard_new_from_trace           (const char         *filename,
-                                                            GstClockTime        from,
-                                                            GstClockTime        till);
+GstGraveyard *      gst_graveyard_new_from_trace           (const char              *filename,
+                                                            GstClockTime             from,
+                                                            GstClockTime             till);
 
-void                gst_graveyard_free                     (GstGraveyard       *graveyard);
+void                gst_element_headstone_add_child        (GstElementHeadstone     *parent,
+                                                            GstElementHeadstone     *child);
+
+void                gst_graveyard_free                     (GstGraveyard            *graveyard);
 
 #endif
