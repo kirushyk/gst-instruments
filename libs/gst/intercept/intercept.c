@@ -128,6 +128,12 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
     return;
   g_hash_table_insert (pipeline_by_element, new_element, pipeline);
   
+  if (!g_hash_table_lookup (pipeline_by_element, pipeline))
+  {
+    trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", pipeline, LGI_ELEMENT_NAME (pipeline), G_OBJECT_TYPE_NAME (pipeline), 0));
+    g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
+  }
+  
   GstIterator *it = gst_bin_iterate_recurse (GST_BIN (pipeline));
   GValue item = G_VALUE_INIT;
   gboolean done = FALSE;
