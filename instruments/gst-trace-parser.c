@@ -108,9 +108,9 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         gpointer parent_element_id;
         gchar element_name[1000];
         gchar element_type_name[1000];
-        if (fscanf (input, "%p %s %s %p\n", &element_id, element_name, element_type_name, parent_element_id) == 4)
+        if (fscanf (input, "%p %s %s %p\n", &element_id, element_name, element_type_name, &parent_element_id) == 4)
         {
-          
+          gst_graveyard_get_element (graveyard, element_id, element_name);
         }
       }
       else if (g_ascii_strcasecmp (event_name, "element-entered") == 0)
