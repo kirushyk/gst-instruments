@@ -43,6 +43,9 @@ typedef struct GstElementHeadstone
 {
   gpointer                              identifier;
   GString                              *name;
+  
+  struct GstElementHeadstone           *parent;
+  GList                                *children;
 
   guint64                               bytes_sent;
   guint64                               bytes_received;

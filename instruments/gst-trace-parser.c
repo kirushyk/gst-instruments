@@ -50,7 +50,7 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
 }
 
 gint
-elements_compare_func (gconstpointer a, gconstpointer b)
+element_headstone_compare (gconstpointer a, gconstpointer b)
 {
   gint64 diff = (gint64)(*(GstElementHeadstone **)b)->total_time - (gint64)(*(GstElementHeadstone **)a)->total_time;
   if (diff > 0)
@@ -253,7 +253,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   gint elements_count = g_hash_table_size (graveyard->elements);
   graveyard->elements_sorted = g_array_sized_new (FALSE, FALSE, sizeof (gpointer), elements_count);
   g_hash_table_foreach (graveyard->elements, for_each_element, graveyard);
-  g_array_sort (graveyard->elements_sorted, elements_compare_func);
+  g_array_sort (graveyard->elements_sorted, element_headstone_compare);
   
   return graveyard;
   
