@@ -103,6 +103,16 @@ gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadston
   parent->children = g_list_prepend (parent->children, child);
 }
 
+guint64
+gst_element_headstone_get_nested_time (GstElementHeadstone *element)
+{
+  GList *child;
+  guint64 result = element->total_time;
+  for (child = element->children; child != NULL; child = child->next)
+    result += gst_element_headstone_get_nested_time (child->data);
+  return result;
+}
+
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till)
 {

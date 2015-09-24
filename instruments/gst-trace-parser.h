@@ -72,6 +72,8 @@ GstGraveyard *      gst_graveyard_new_from_trace           (const char          
 void                gst_element_headstone_add_child        (GstElementHeadstone     *parent,
                                                             GstElementHeadstone     *child);
 
+guint64             gst_element_headstone_get_nested_time  (GstElementHeadstone     *element);
+
 void                gst_graveyard_free                     (GstGraveyard            *graveyard);
 
 #endif
