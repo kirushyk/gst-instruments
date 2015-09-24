@@ -47,8 +47,7 @@ main (gint argc, gchar *argv[])
   option_context = g_option_context_new (NULL);
   g_option_context_add_main_entries (option_context, entries, NULL);
   g_option_context_set_summary (option_context, g_get_application_name ());
-  if (!g_option_context_parse (option_context, &argc, &argv, &error))
-  {
+  if (!g_option_context_parse (option_context, &argc, &argv, &error)) {
     g_print ("could not parse arguments: %s\n", error->message);
     g_print ("%s", g_option_context_get_help (option_context, TRUE, NULL));
     return 1;
@@ -64,8 +63,7 @@ main (gint argc, gchar *argv[])
   if (graveyard == NULL)
     return 3;
   
-  for (i = 0; i < graveyard->elements_sorted->len; i++)
-  {
+  for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
     if (element->name->len > max_length)
       max_length = element->name->len;
@@ -78,8 +76,7 @@ main (gint argc, gchar *argv[])
   for (j = 0; j < space; j++)
     g_print (" ");
   
-  if (show_types)
-  {
+  if (show_types) {
     g_print (" TYPE");
     space = max_type_name_length - 4; // sizeof "ELEMENT"
     for (j = 0; j < space; j++)
@@ -92,8 +89,7 @@ main (gint argc, gchar *argv[])
   
   g_print ("\n");
   
-  for (i = 0; i < graveyard->elements_sorted->len; i++)
-  {
+  for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
     
     gchar *time_string = format_time (element->total_time);
@@ -102,15 +98,11 @@ main (gint argc, gchar *argv[])
     for (j = 0; j < space; j++)
       g_print (" ");
     
-    if (show_types)
-    {
-      if (element->type_name)
-      {
+    if (show_types) {
+      if (element->type_name) {
         g_print (" %s", element->type_name->str);
         space = max_type_name_length - element->type_name->len;
-      }
-      else
-      {
+      } else {
         g_print (" ?");
         space = max_type_name_length - 1;
       }
@@ -121,8 +113,7 @@ main (gint argc, gchar *argv[])
     g_print (" %5.1f  %8s", element->total_time * 100.f / graveyard->total_time, time_string);
     g_free (time_string);
     
-    if (show_memory)
-    {
+    if (show_memory) {
       gchar *memory_received_size_string = format_memory_size (element->bytes_received);
       gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
       g_print (" %9s %9s", memory_received_size_string, memory_sent_size_string);

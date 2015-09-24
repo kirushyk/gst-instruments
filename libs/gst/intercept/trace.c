@@ -45,8 +45,7 @@ GstClockTime current_monotonic_time()
 
 GMutex trace_mutex;
 
-typedef struct TraceEntry
-{
+typedef struct TraceEntry {
   GstClockTime timestamp;
   GstPipeline *pipeline;
   gchar *text;
@@ -63,13 +62,10 @@ gst_element_dump_to_file (GstElement *element, const gchar *filename)
   
   FILE *output = fopen (filename, "wt");
   
-  for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev)
-  {
+  for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev) {
     TraceEntry *entry = (TraceEntry *)iterator->data;
-    if (entry)
-    {
-      if ((element == NULL) || (GST_ELEMENT (entry->pipeline) == element))
-      {
+    if (entry) {
+      if ((element == NULL) || (GST_ELEMENT (entry->pipeline) == element)) {
         fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
         
         iterator->data = NULL;
@@ -96,8 +92,7 @@ void
 trace_add_entry (GstPipeline *pipeline, gchar *text)
 {
   GstClockTime current_time = current_monotonic_time ();
-  if (GST_CLOCK_TIME_NONE == startup_time)
-  {
+  if (GST_CLOCK_TIME_NONE == startup_time) {
     startup_time = current_time;
   }
   current_time -= startup_time;

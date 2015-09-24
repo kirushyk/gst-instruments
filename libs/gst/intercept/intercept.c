@@ -128,8 +128,7 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
     return;
   g_hash_table_insert (pipeline_by_element, new_element, pipeline);
   
-  if (!g_hash_table_lookup (pipeline_by_element, pipeline))
-  {
+  if (!g_hash_table_lookup (pipeline_by_element, pipeline)) {
     trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", pipeline, LGI_ELEMENT_NAME (pipeline), G_OBJECT_TYPE_NAME (pipeline), 0));
     g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
   }
@@ -278,13 +277,10 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   {
     gst_pad_push_list_orig = dlsym (get_libgstreamer (), "gst_pad_push_list");
     
-    if (gst_pad_push_list_orig == NULL)
-    {
+    if (gst_pad_push_list_orig == NULL) {
       GST_ERROR ("can not link to gst_pad_push_list\n");
       return GST_FLOW_CUSTOM_ERROR;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
     }
   }
@@ -329,13 +325,10 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   {
     gst_pad_push_event_orig = dlsym (get_libgstreamer (), "gst_pad_push_event");
     
-    if (gst_pad_push_event_orig == NULL)
-    {
+    if (gst_pad_push_event_orig == NULL) {
       GST_ERROR ("can not link to gst_pad_push_event\n");
       return FALSE;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
     }
   }
@@ -349,8 +342,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   guint64 start = get_cpu_time (thread);
   
-  if (element_from && element)
-  {
+  if (element_from && element) {
     trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   }
   
@@ -362,8 +354,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  if (element_from && element)
-  {
+  if (element_from && element) {
     trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   }
   
@@ -376,17 +367,13 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   GstFlowReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_pull_range_orig == NULL)
-  {
+  if (gst_pad_pull_range_orig == NULL) {
     gst_pad_pull_range_orig = dlsym (get_libgstreamer (), "gst_pad_pull_range");
 
-    if (gst_pad_pull_range_orig == NULL)
-    {
+    if (gst_pad_pull_range_orig == NULL) {
       GST_ERROR ("can not link to gst_pad_pull_range\n");
       return GST_FLOW_CUSTOM_ERROR;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
     }
   }
@@ -406,8 +393,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
-  if (*buffer)
-  {
+  if (*buffer) {
     trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element, element_from, 1, gst_buffer_get_size (*buffer)));
   }
   
@@ -431,13 +417,10 @@ gst_element_set_state (GstElement *element, GstState state)
   {
     gst_element_set_state_orig = dlsym (get_libgstreamer (), "gst_element_set_state");
     
-    if (gst_element_set_state_orig == NULL)
-    {
+    if (gst_element_set_state_orig == NULL) {
       GST_ERROR ("can not link to gst_element_set_state\n");
       return GST_FLOW_CUSTOM_ERROR;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
     }
   }
@@ -447,8 +430,7 @@ gst_element_set_state (GstElement *element, GstState state)
   switch (state)
   {
   case GST_STATE_NULL:
-    if (GST_IS_PIPELINE (element))
-    {
+    if (GST_IS_PIPELINE (element)) {
       const gchar *path = g_getenv ("GST_DEBUG_DUMP_TRACE_DIR");
       const gchar *name = g_getenv ("GST_DEBUG_DUMP_TRACE_FILENAME");
       gchar *filename = g_strdup_printf ("%s/%s.gsttrace", path ? path : ".", name ? name : GST_OBJECT_NAME (element));

@@ -22,8 +22,7 @@
 #include <configure-static.h>
 
 gint
-main (gint argc, gchar *argv[])
-{
+main (gint argc, gchar *argv[]) {
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
   
@@ -44,13 +43,9 @@ main (gint argc, gchar *argv[])
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
   
   if (error)
-  {
     g_print ("%s\n", error->message);
-  }
   else
-  {
     system (PREFIX "bin/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
-  }
   
   return 0;
 }
