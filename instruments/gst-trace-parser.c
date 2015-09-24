@@ -37,6 +37,11 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
     element->bytes_received = 0;
     element->is_subtopstack = FALSE;
     element->identifier = element_id;
+    element->parent = NULL;
+    element->children = NULL;
+    element->nesting = 0;
+    element->name = NULL;
+    element->type_name = NULL;
     element->total_time = 0;
     if (element_name)
       element->name = g_string_new (element_name);
@@ -74,17 +79,27 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
 {
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
   GstElementHeadstone *element = (GstElementHeadstone *)value;
+  GstElementHeadstone *parent;
   graveyard->total_time += element->total_time;
   if (element->name == NULL)
     element->name = g_string_new("?");
+  if (element->type_name == NULL)
+    element->type_name = g_string_new("?");
+  element->nesting = 0;
+  for (parent = element->parent; parent != NULL; parent = parent->parent) {
+    element->nesting++;
+  }
   g_array_append_val (graveyard->elements_sorted, value);
 }
-
 
 void
 gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadstone *child)
 {
+  GList *iterator;
   child->parent = parent;
+  for (iterator = parent->children; iterator != NULL; iterator = iterator->next)
+    if (iterator->data == child)
+      return;
   parent->children = g_list_prepend (parent->children, child);
 }
 
