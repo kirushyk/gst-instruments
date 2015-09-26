@@ -22,7 +22,7 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
-gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE;
+gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE;
 
 static GOptionEntry entries[] = {
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
@@ -31,6 +31,7 @@ static GOptionEntry entries[] = {
   { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements", NULL },
   { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements", NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements", NULL },
+  { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format", NULL },
   { NULL }
 };
 
@@ -116,6 +117,9 @@ main (gint argc, gchar *argv[])
     from_ns = from * GST_SECOND;
   if (till > 0)
     till_ns = till * GST_SECOND;
+  
+  if (dot)
+    hierarchy = TRUE;
   
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns);
   if (graveyard == NULL)
