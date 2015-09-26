@@ -26,12 +26,12 @@ gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time
 
 static GOptionEntry entries[] = {
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
-  { "till",      0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account", NULL },
-  { "memory",    0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage", NULL },
-  { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements", NULL },
-  { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements", NULL },
-  { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements", NULL },
-  { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format", NULL },
+  { "till",      0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account",  NULL },
+  { "memory",    0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage",                                NULL },
+  { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements",                           NULL },
+  { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements",                       NULL },
+  { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements",            NULL },
+  { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
   { NULL }
 };
 
