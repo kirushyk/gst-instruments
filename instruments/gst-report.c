@@ -70,7 +70,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     render_space (space);
     g_print ("nodesep=.1;\n");
     render_space (space);
-    g_print ("ranksep=.2;\n");
+    g_print ("ranksep=.1;\n");
     render_space (space);
     g_print ("fontname=\"Avenir Next\";\n");
     render_space (space);
@@ -82,7 +82,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     render_space (space);
     g_print ("label=\"pipeline0\";\n");
     render_space (space);
-    g_print ("node [style=\"filled,rounded\", shape=box, fontsize=\"14\", fontname=\"Avenir Next\", margin=\"0.2,0.2\"];\n");
+    g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", fontname=\"Avenir Next\", margin=\"0.1,0.1\"];\n");
     render_space (space);
     g_print ("edge [labelfontsize=\"14\", fontsize=\"14\", fontname=\"Avenir Next\"];\n");
   }
@@ -124,10 +124,33 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
       g_print ("en%p_sink -> en%p_src [style=\"invis\"];\n", element->identifier, element->identifier);
     }
     render_space (space);
+    guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
+    gchar *time_string = format_time (total_time);
+    
+    g_print ("label=<<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">"
+             "<TR>"
+             "<TD COLSPAN=\"2\" ALIGN=\"RIGHT\">%s</TD>"
+             "</TR>"
+             "<TR>"
+             "<TD COLSPAN=\"2\" ALIGN=\"RIGHT\">%s</TD>"
+             "</TR>"
+             "<TR>"
+             "<TD ALIGN=\"RIGHT\">Time:</TD>"
+             "<TD ALIGN=\"RIGHT\">%s</TD>"
+             "</TR>"
+             "<TR>"
+             "<TD ALIGN=\"RIGHT\"></TD>"
+             "<TD ALIGN=\"RIGHT\">(%.1f%%)</TD>"
+             "</TR>"
+             "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_time * 100.f / graveyard->total_time);
+  
+    g_free (time_string);
+  }
+  else
+  {
+    g_print ("%s", element->name->str);
   }
 
-  g_print (dot ? "label=\"%s\";" : "%s", element->name->str);
-  
   space = max_length - element->name->len - ((hierarchy && !dot) ? element->nesting : 0);
   for (j = 0; j < space; j++)
     g_print (" ");
@@ -172,7 +195,9 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     if (dot) {
       GList *to;
       for (to = child_element->to; to; to = to->next) {
-        g_print ("en%p_src -> en%p_sink;\n", child_element->identifier, to->data);
+        gchar *memory_sent_size_string = format_memory_size (child_element->bytes_sent);
+        g_print ("en%p_src -> en%p_sink [label=\"%s\"];\n", child_element->identifier, to->data, memory_sent_size_string);
+        g_free (memory_sent_size_string);
       }
     }
   }
