@@ -36,27 +36,104 @@ static GOptionEntry entries[] = {
 };
 
 void
+render_space (gint space)
+{
+  int j;
+  for (j = 0; j < space; j++) {
+    g_print (" ");
+  }
+}
+
+void
 render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
 {
   gint j;
    
   guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
-  gchar *time_string = format_time (total_time);
-  gsize space = element->nesting;
+  gsize space = element->nesting * 2;
   
   if (hierarchy) {
-    for (j = 0; j < space; j++) {
-      g_print (" ");
-    }
+    g_print ("\n");
+    render_space (space);
   }
   
-  g_print ("%s", element->name->str);
+  if (dot) {
+    g_print ("%sgraph cluster_eg%p {\n", element->parent == NULL ? "di" : "sub", element->identifier);
+  }
   
-  space = max_length - element->name->len - (hierarchy ? element->nesting : 0);
+  if (dot && (element->parent == NULL)) {
+    space = 2 * (element->nesting + 1);
+    render_space (space);
+    g_print ("rankdir=LR;\n");
+    render_space (space);
+    g_print ("labelloc=t;\n");
+    render_space (space);
+    g_print ("nodesep=.1;\n");
+    render_space (space);
+    g_print ("ranksep=.2;\n");
+    render_space (space);
+    g_print ("fontname=\"Avenir Next\";\n");
+    render_space (space);
+    g_print ("fontsize=\"14\";\n");
+    render_space (space);
+    g_print ("style=\"filled,rounded\";\n");
+    render_space (space);
+    g_print ("color=black;\n");
+    render_space (space);
+    g_print ("label=\"pipeline0\";\n");
+    render_space (space);
+    g_print ("node [style=\"filled,rounded\", shape=box, fontsize=\"14\", fontname=\"Avenir Next\", margin=\"0.2,0.2\"];\n");
+    render_space (space);
+    g_print ("edge [labelfontsize=\"14\", fontsize=\"14\", fontname=\"Avenir Next\"];\n");
+  }
+  
+  if (dot) {
+    space = 2 * (element->nesting + 1);
+    render_space (space);
+    g_print ("fillcolor=\"#ffffff\";\n");
+    if (element->bytes_received) {
+      render_space (space);
+      g_print ("subgraph cluster_eg%p_sink {\n", element->identifier);
+      space++;
+      render_space (space);
+      g_print ("style=\"invis\";");
+      render_space (space);
+      g_print ("label=\"\";");
+      render_space (space);
+      g_print ("en%p_sink [label=\"sink\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
+      space--;
+      render_space (space);
+      g_print ("}\n");
+    }
+    if (element->bytes_sent) {
+      render_space (space);
+      g_print ("subgraph cluster_eg%p_src {\n", element->identifier);
+      space++;
+      render_space (space);
+      g_print ("style=\"invis\";");
+      render_space (space);
+      g_print ("label=\"\";");
+      render_space (space);
+      g_print ("en%p_src [label=\"src\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
+      render_space (space);
+      g_print ("en%p_src [label=\"src\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
+      space--;
+      render_space (space);
+      g_print ("}\n");
+    }
+    if (element->bytes_sent && element->bytes_received) {
+      g_print ("en%p_sink -> en%p_src [style=\"invis\"];\n", element->identifier, element->identifier);
+    }
+    render_space (space);
+  }
+
+  g_print (dot ? "label=\"%s\";" : "%s", element->name->str);
+  
+  space = max_length - element->name->len - ((hierarchy && !dot) ? element->nesting : 0);
   for (j = 0; j < space; j++)
     g_print (" ");
   
-  if (show_types) {
+  if (!dot && show_types) {
     if (element->type_name) {
       g_print (" %s", element->type_name->str);
       space = max_type_name_length - element->type_name->len;
@@ -69,10 +146,13 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     }
   }
   
-  g_print (" %5.1f  %8s", total_time * 100.f / graveyard->total_time, time_string);
-  g_free (time_string);
+  if (!dot) {
+    gchar *time_string = format_time (total_time);
+    g_print (" %5.1f  %8s", total_time * 100.f / graveyard->total_time, time_string);
+    g_free (time_string);
+  }
   
-  if (show_memory) {
+  if (!dot && show_memory) {
     gchar *memory_received_size_string = format_memory_size (element->bytes_received);
     gchar *memory_sent_size_string = format_memory_size (element->bytes_sent);
     g_print (" %9s %9s", memory_received_size_string, memory_sent_size_string);
@@ -89,6 +169,10 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   render_headstone (graveyard, element, max_length, max_type_name_length);
   for (child = element->children; child != NULL; child = child->next) {
     render_container (graveyard, child->data, max_length, max_type_name_length);
+  }
+  if (dot) {
+    render_space (element->nesting * 2);
+    g_print ("}\n");
   }
 }
 
@@ -118,8 +202,11 @@ main (gint argc, gchar *argv[])
   if (till > 0)
     till_ns = till * GST_SECOND;
   
-  if (dot)
+  if (dot) {
     hierarchy = TRUE;
+    show_types = TRUE;
+    show_memory = TRUE;
+  }
   
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns);
   if (graveyard == NULL)
@@ -135,23 +222,25 @@ main (gint argc, gchar *argv[])
     }
   }
   
-  g_print ("ELEMENT");
-  gsize space = max_length - 7; // sizeof "ELEMENT"
-  for (j = 0; j < space; j++)
-    g_print (" ");
-  
-  if (show_types) {
-    g_print (" TYPE");
-    space = max_type_name_length - 4; // sizeof "ELEMENT"
+  if (!dot) {
+    g_print ("ELEMENT");
+    gsize space = max_length - 7; // sizeof "ELEMENT"
     for (j = 0; j < space; j++)
       g_print (" ");
+    
+    if (show_types) {
+      g_print (" TYPE");
+      space = max_type_name_length - 4; // sizeof "ELEMENT"
+      for (j = 0; j < space; j++)
+        g_print (" ");
+    }
+    g_print ("  %%CPU   TIME");
+    
+    if (show_memory)
+      g_print ("     INPUT     OUTPUT");
+    
+    g_print ("\n");
   }
-  g_print ("  %%CPU   TIME");
-  
-  if (show_memory)
-    g_print ("     INPUT     OUTPUT");
-  
-  g_print ("\n");
   
   for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
