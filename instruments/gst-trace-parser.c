@@ -200,12 +200,18 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           
           if (TIMESTAMP_FITS (event_timestamp, from, till)) {
             element->bytes_sent += size;
+            if (!g_list_find (element->to, element_to)) {
+              element->to = g_list_prepend(element->to, element_to);
+            }
           }
           
           element = gst_graveyard_get_element (graveyard, element_to, NULL);
           
           if (TIMESTAMP_FITS (event_timestamp, from, till)) {
             element->bytes_received += size;
+            if (!g_list_find (element->from, element_from)) {
+              element->from = g_list_prepend(element->from, element_from);
+            }
           }
         }
       } else if (g_ascii_strcasecmp (event_name, "element-exited") == 0) {

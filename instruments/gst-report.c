@@ -96,9 +96,9 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
       g_print ("subgraph cluster_eg%p_sink {\n", element->identifier);
       space++;
       render_space (space);
-      g_print ("style=\"invis\";");
+      g_print ("style=\"invis\";\n");
       render_space (space);
-      g_print ("label=\"\";");
+      g_print ("label=\"\";\n");
       render_space (space);
       g_print ("en%p_sink [label=\"sink\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
       space--;
@@ -110,11 +110,9 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
       g_print ("subgraph cluster_eg%p_src {\n", element->identifier);
       space++;
       render_space (space);
-      g_print ("style=\"invis\";");
+      g_print ("style=\"invis\";\n");
       render_space (space);
-      g_print ("label=\"\";");
-      render_space (space);
-      g_print ("en%p_src [label=\"src\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
+      g_print ("label=\"\";\n");
       render_space (space);
       g_print ("en%p_src [label=\"src\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
       space--;
@@ -122,6 +120,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
       g_print ("}\n");
     }
     if (element->bytes_sent && element->bytes_received) {
+      render_space (space);
       g_print ("en%p_sink -> en%p_src [style=\"invis\"];\n", element->identifier, element->identifier);
     }
     render_space (space);
@@ -168,7 +167,14 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   GList *child;
   render_headstone (graveyard, element, max_length, max_type_name_length);
   for (child = element->children; child != NULL; child = child->next) {
-    render_container (graveyard, child->data, max_length, max_type_name_length);
+    GstElementHeadstone *child_element = child->data;
+    render_container (graveyard, child_element, max_length, max_type_name_length);
+    if (dot) {
+      GList *to;
+      for (to = child_element->to; to; to = to->next) {
+        g_print ("en%p_src -> en%p_sink;\n", child_element->identifier, to->data);
+      }
+    }
   }
   if (dot) {
     render_space (element->nesting * 2);

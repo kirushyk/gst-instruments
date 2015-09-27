@@ -48,9 +48,11 @@ typedef struct GstElementHeadstone
   struct GstElementHeadstone           *parent;
   GList                                *children;
   gint                                  nesting;
-
+  
   guint64                               bytes_sent;
   guint64                               bytes_received;
+  GList                                *from;
+  GList                                *to;
   gboolean                              is_subtopstack;
   guint64                               total_time;
 
