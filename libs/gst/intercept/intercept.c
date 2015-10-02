@@ -227,7 +227,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = gst_pad_get_parent_element (pad);
+  gpointer element_from = GST_PAD_PARENT (pad);
   gpointer element = get_downstack_element (pad);
   
   pipeline = trace_heir (element);
@@ -238,7 +238,9 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, 1, gst_buffer_get_size (buffer)));
+  GstPad *peer = GST_PAD_PEER (pad);
+  
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, 1, gst_buffer_get_size (buffer)));
   result = gst_pad_push_orig (pad, buffer);
   
   guint64 end = get_cpu_time (thread);
@@ -287,7 +289,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = gst_pad_get_parent_element (pad);
+  gpointer element_from = GST_PAD_PARENT (pad);
   gpointer element = get_downstack_element (pad);
   
   pipeline = trace_heir (element);
@@ -300,7 +302,9 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element_from, element, list_info.buffers_count, list_info.size));
+  GstPad *peer = GST_PAD_PEER (pad);
+  
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, list_info.buffers_count, list_info.size));
   
   result = gst_pad_push_list_orig (pad, list);
     
@@ -335,7 +339,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = gst_pad_get_parent_element (pad);
+  gpointer element_from = GST_PAD_PARENT (pad);
   gpointer element = get_downstack_element (pad);
   
   pipeline = trace_heir (element);
@@ -380,7 +384,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   THREAD thread = mach_thread_self();
   
-  gpointer element_from = gst_pad_get_parent_element (pad);
+  gpointer element_from = GST_PAD_PARENT (pad);
   gpointer element = get_downstack_element (pad);
   
   pipeline = trace_heir (element);
@@ -394,7 +398,8 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
   if (*buffer) {
-    trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %d %" G_GUINT64_FORMAT, element, element_from, 1, gst_buffer_get_size (*buffer)));
+    GstPad *peer = GST_PAD_PEER (pad);
+    trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element, peer, element_from, pad, 1, gst_buffer_get_size (*buffer)));
   }
   
   guint64 end = get_cpu_time (thread);

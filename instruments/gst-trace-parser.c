@@ -193,9 +193,11 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
       {
         gpointer element_from;
         gpointer element_to;
+        gpointer pad_from;
+        gpointer pad_to;
         gint buffers_count;
         guint64 size;
-        if (fscanf (input, "%p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &element_to, &buffers_count, &size) == 4) {
+        if (fscanf (input, "%p %p %p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &pad_from, &element_to, &pad_to, &buffers_count, &size) == 6) {
           GstElementHeadstone *element = gst_graveyard_get_element(graveyard, element_from, NULL);
           
           if (TIMESTAMP_FITS (event_timestamp, from, till)) {
