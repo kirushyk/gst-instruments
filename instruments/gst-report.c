@@ -45,6 +45,26 @@ render_space (gint space)
 }
 
 void
+render_pad (gpointer key, gpointer value, gpointer user_data)
+{
+  GstPadHeadstone *pad = (GstPadHeadstone *)value;
+  GstElementHeadstone *element = (GstElementHeadstone *)user_data;
+  gint space = 2 * (element->nesting + 1);
+  render_space (space);
+  g_print ("subgraph cluster_eg%p_pad_%p {\n", element->identifier, pad->identifier);
+  space++;
+  render_space (space);
+  g_print ("style=\"invis\";\n");
+  render_space (space);
+  g_print ("label=\"\";\n");
+  render_space (space);
+  g_print ("en%p_pad_%p [label=\"%s\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->direction == GST_PAD_SRC ? "src" : "sink");
+  space--;
+  render_space (space);
+  g_print ("}\n");
+}
+
+void
 render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
 {
   gint j;
@@ -91,38 +111,13 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     space = 2 * (element->nesting + 1);
     render_space (space);
     g_print ("fillcolor=\"#ffffff\";\n");
-    if (element->bytes_received) {
-      render_space (space);
-      g_print ("subgraph cluster_eg%p_sink {\n", element->identifier);
-      space++;
-      render_space (space);
-      g_print ("style=\"invis\";\n");
-      render_space (space);
-      g_print ("label=\"\";\n");
-      render_space (space);
-      g_print ("en%p_sink [label=\"sink\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
-      space--;
-      render_space (space);
-      g_print ("}\n");
-    }
-    if (element->bytes_sent) {
-      render_space (space);
-      g_print ("subgraph cluster_eg%p_src {\n", element->identifier);
-      space++;
-      render_space (space);
-      g_print ("style=\"invis\";\n");
-      render_space (space);
-      g_print ("label=\"\";\n");
-      render_space (space);
-      g_print ("en%p_src [label=\"src\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier);
-      space--;
-      render_space (space);
-      g_print ("}\n");
-    }
+    g_hash_table_foreach (element->pads, render_pad, element);
+    /*
     if (element->bytes_sent && element->bytes_received) {
       render_space (space);
       g_print ("en%p_sink -> en%p_src [style=\"invis\"];\n", element->identifier, element->identifier);
     }
+     */
     render_space (space);
     guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
     gchar *time_string = format_time (total_time);
@@ -185,6 +180,20 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
 }
 
 void
+render_connection (gpointer key, gpointer value, gpointer user_data)
+{
+  GstPadHeadstone *pad = (GstPadHeadstone *)value;
+  if (pad->direction == GST_PAD_SRC) {
+    GstElementHeadstone *element = (GstElementHeadstone *)user_data;
+    gint space = 2 * (element->nesting + 1);
+    render_space (space);
+    gchar *memory_sent_size_string = format_memory_size (pad->bytes);
+    g_print ("en%p_pad_%p -> en%p_pad_%p [label=\"%s\"];\n", element->identifier, pad->identifier, pad->peer_element, pad->peer, memory_sent_size_string);
+    g_free (memory_sent_size_string);
+  }
+}
+
+void
 render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
 {
   GList *child;
@@ -193,12 +202,7 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     GstElementHeadstone *child_element = child->data;
     render_container (graveyard, child_element, max_length, max_type_name_length);
     if (dot) {
-      GList *to;
-      for (to = child_element->to; to; to = to->next) {
-        gchar *memory_sent_size_string = format_memory_size (child_element->bytes_sent);
-        g_print ("en%p_src -> en%p_sink [label=\"%s\"];\n", child_element->identifier, to->data, memory_sent_size_string);
-        g_free (memory_sent_size_string);
-      }
+      g_hash_table_foreach (child_element->pads, render_connection, child_element);
     }
   }
   if (dot) {

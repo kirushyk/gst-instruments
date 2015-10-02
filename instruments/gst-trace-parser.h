@@ -45,6 +45,7 @@ typedef struct GstPadHeadstone
   /// @note: We do not care about pad's names
   
   gpointer                              peer;
+  gpointer                              peer_element;
   
   guint64                               bytes;
   GstPadMode                            mode;
