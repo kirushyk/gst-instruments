@@ -214,6 +214,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             {
               pad = g_new0 (GstPadHeadstone, 1);
               pad->identifier = pad_from;
+              pad->parent_element = element_from;
               pad->peer = pad_to;
               pad->peer_element = element_to;
               pad->bytes = 0;
@@ -236,6 +237,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             {
               pad = g_new0 (GstPadHeadstone, 1);
               pad->identifier = pad_to;
+              pad->parent_element = element_to;
               pad->peer = pad_from;
               pad->peer_element = element_from;
               pad->bytes = 0;

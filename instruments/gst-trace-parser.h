@@ -43,6 +43,7 @@ typedef struct GstPadHeadstone
 {
   gpointer                              identifier;
   /// @note: We do not care about pad's names
+  gpointer                              parent_element;
   
   gpointer                              peer;
   gpointer                              peer_element;

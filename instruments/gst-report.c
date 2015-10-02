@@ -65,6 +65,24 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
 }
 
 void
+bind_src_pad (gpointer key, gpointer value, gpointer user_data) {
+  GstPadHeadstone *pad = (GstPadHeadstone *)value;
+  if (pad->direction == GST_PAD_SRC) {
+    GstPadHeadstone *sink_pad = (GstPadHeadstone *)user_data;
+    g_print ("en%p_pad_%p -> en%p_pad_%p [style=\"invis\"];\n", sink_pad->parent_element, sink_pad->identifier, pad->parent_element, pad->identifier);
+  }
+}
+
+void
+bind_sink_pad (gpointer key, gpointer value, gpointer user_data) {
+  GstPadHeadstone *pad = (GstPadHeadstone *)value;
+  if (pad->direction == GST_PAD_SINK) {
+    GstElementHeadstone *element = (GstElementHeadstone *)user_data;
+    g_hash_table_foreach (element->pads, bind_src_pad, pad);
+  }
+}
+
+void
 render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
 {
   gint j;
@@ -112,12 +130,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     render_space (space);
     g_print ("fillcolor=\"#ffffff\";\n");
     g_hash_table_foreach (element->pads, render_pad, element);
-    /*
-    if (element->bytes_sent && element->bytes_received) {
-      render_space (space);
-      g_print ("en%p_sink -> en%p_src [style=\"invis\"];\n", element->identifier, element->identifier);
-    }
-     */
+    g_hash_table_foreach (element->pads, bind_sink_pad, element);
     render_space (space);
     guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
     gchar *time_string = format_time (total_time);
