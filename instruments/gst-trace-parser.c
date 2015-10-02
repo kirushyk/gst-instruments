@@ -35,6 +35,9 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
     element = g_new0 (GstElementHeadstone, 1);
     element->bytes_sent = 0;
     element->bytes_received = 0;
+    element->from = NULL;
+    element->to = NULL;
+    element->pads = g_hash_table_new (g_direct_hash, g_direct_equal);
     element->is_subtopstack = FALSE;
     element->identifier = element_id;
     element->parent = NULL;
@@ -205,6 +208,17 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             if (!g_list_find (element->to, element_to)) {
               element->to = g_list_prepend(element->to, element_to);
             }
+            
+            GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_from);
+            if (!pad)
+            {
+              pad = g_new0 (GstPadHeadstone, 1);
+              pad->peer = pad_to;
+              pad->bytes = 0;
+              pad->direction = GST_PAD_SRC;
+              g_hash_table_insert (element->pads, pad_from, pad);
+            }
+            pad->bytes += size;
           }
           
           element = gst_graveyard_get_element (graveyard, element_to, NULL);
@@ -214,6 +228,17 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             if (!g_list_find (element->from, element_from)) {
               element->from = g_list_prepend(element->from, element_from);
             }
+            
+            GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_to);
+            if (!pad)
+            {
+              pad = g_new0 (GstPadHeadstone, 1);
+              pad->peer = pad_from;
+              pad->bytes = 0;
+              pad->direction = GST_PAD_SINK;
+              g_hash_table_insert (element->pads, pad_to, pad);
+            }
+            pad->bytes += size;
           }
         }
       } else if (g_ascii_strcasecmp (event_name, "element-exited") == 0) {

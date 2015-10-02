@@ -39,6 +39,19 @@ typedef struct GstTaskHeadstone
 
 } GstTaskHeadstone;
 
+typedef struct GstPadHeadstone
+{
+  gpointer                              identifier;
+  /// @note: We do not care about pad's names
+  
+  gpointer                              peer;
+  
+  guint64                               bytes;
+  GstPadMode                            mode;
+  GstPadDirection                       direction;
+  
+} GstPadHeadstone;
+
 typedef struct GstElementHeadstone
 {
   gpointer                              identifier;
@@ -53,6 +66,8 @@ typedef struct GstElementHeadstone
   guint64                               bytes_received;
   GList                                *from;
   GList                                *to;
+  GHashTable                           *pads;
+  
   gboolean                              is_subtopstack;
   guint64                               total_time;
 
