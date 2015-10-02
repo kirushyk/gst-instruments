@@ -18,6 +18,7 @@
  */
 
 #include "formatters.h"
+#include "../configure-static.h"
 #include "gst-trace-parser.h"
 
 gdouble from = 0, till = 0;
@@ -58,7 +59,7 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
   render_space (space);
   g_print ("label=\"\";\n");
   render_space (space);
-  g_print ("en%p_pad_%p [label=\"%s\", color=black, fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->direction == GST_PAD_SRC ? "src" : "sink");
+  g_print ("en%p_pad_%p [shape=\"none\", label=\"\", image=\"" PREFIX "share/" PACKAGE "/%s.svg\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "pull" : "push");
   space--;
   render_space (space);
   g_print ("}\n");
