@@ -45,16 +45,17 @@ public class MainWindow: Gtk.ApplicationWindow
 
 		menu.open_file_item_activated.connect ((path) => 
 		{
+			
 		});
 		box.pack_start (monitor, true, true, 0);
 
 		scrollbar.value_changed.connect (() =>
 		{
-        	});
+        });
+		
 		box.pack_start (scrollbar, false, true, 0);
 		this.key_press_event.connect ((source, key) => 
 		{
-
 			switch (key.keyval)
 			{
 			case Gdk.Key.Left:
@@ -68,7 +69,7 @@ public class MainWindow: Gtk.ApplicationWindow
 			default:
 				break;
 			}
-			
+
 			return true;
 		});
 
