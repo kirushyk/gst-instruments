@@ -38,16 +38,20 @@ public class MainWindow: Gtk.ApplicationWindow
 		});
 		// application.set_menubar (menu);
 		box.pack_start (menu, false, true, 0);
-
+		
+		var scrolled_window = new Gtk.ScrolledWindow (null, null);
+		scrolled_window.add_with_viewport (new Gtk.Image.from_file ("/Users/cyril/1.svg"));
+		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+				
 		var monitor = new Graph ();
-
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
 		menu.open_file_item_activated.connect ((path) => 
 		{
 			
 		});
-		box.pack_start (monitor, true, true, 0);
+		box.pack_start (scrolled_window, true, true, 0);
+		box.pack_start (monitor, false, true, 0);
 
 		scrollbar.value_changed.connect (() =>
 		{

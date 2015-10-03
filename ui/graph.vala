@@ -30,7 +30,7 @@ public class Graph: Gtk.DrawingArea
 		            Gdk.EventMask.BUTTON_RELEASE_MASK |
 		            Gdk.EventMask.POINTER_MOTION_MASK);
 					
-		set_size_request (200, 225);
+		set_size_request (200, 80);
 	}
 
 	public override bool draw (Cairo.Context c)
