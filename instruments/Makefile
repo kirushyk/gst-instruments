@@ -16,7 +16,11 @@ install: all
 	cp gst-top-1.0 $(PREFIX)/bin/
 	cp gst-report-1.0 $(PREFIX)/bin/
 
+uninstall:
+	rm -f $(PREFIX)/bin/gst-top-1.0
+	rm -f $(PREFIX)/bin/gst-report-1.0
+
 clean:
-	rm gst-top-1.0
-	rm gst-report-1.0
+	rm -f gst-top-1.0
+	rm -f gst-report-1.0
 

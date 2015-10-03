@@ -5,3 +5,5 @@ ui/gst-instruments
 *.dylib
 *.dSYM/
 osx/
+*~
+
