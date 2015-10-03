@@ -194,14 +194,17 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
       }
       else if (g_ascii_strcasecmp (event_name, "data-sent") == 0)
       {
+        gchar mode[2];
+        GstPadMode pad_mode;
         gpointer element_from;
         gpointer element_to;
         gpointer pad_from;
         gpointer pad_to;
         gint buffers_count;
         guint64 size;
-        if (fscanf (input, "%p %p %p %p %d %" G_GUINT64_FORMAT "\n", &element_from, &pad_from, &element_to, &pad_to, &buffers_count, &size) == 6) {
+        if (fscanf (input, "%1s %p %p %p %p %d %" G_GUINT64_FORMAT "\n", mode, &element_from, &pad_from, &element_to, &pad_to, &buffers_count, &size) == 7) {
           GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_from, NULL);
+          pad_mode = mode[0] == 'l' ? GST_PAD_MODE_PULL : GST_PAD_MODE_PUSH;
           
           if (TIMESTAMP_FITS (event_timestamp, from, till)) {
             element->bytes_sent += size;
@@ -217,6 +220,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
               pad->parent_element = element_from;
               pad->peer = pad_to;
               pad->peer_element = element_to;
+              pad->mode = pad_mode;
               pad->bytes = 0;
               pad->direction = GST_PAD_SRC;
               g_hash_table_insert (element->pads, pad_from, pad);
@@ -240,6 +244,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
               pad->parent_element = element_to;
               pad->peer = pad_from;
               pad->peer_element = element_from;
+              pad->mode = pad_mode;
               pad->bytes = 0;
               pad->direction = GST_PAD_SINK;
               g_hash_table_insert (element->pads, pad_to, pad);

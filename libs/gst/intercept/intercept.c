@@ -240,7 +240,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   GstPad *peer = GST_PAD_PEER (pad);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, 1, gst_buffer_get_size (buffer)));
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, 1, gst_buffer_get_size (buffer)));
   result = gst_pad_push_orig (pad, buffer);
   
   guint64 end = get_cpu_time (thread);
@@ -304,7 +304,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
   GstPad *peer = GST_PAD_PEER (pad);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, list_info.buffers_count, list_info.size));
+  trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, list_info.buffers_count, list_info.size));
   
   result = gst_pad_push_list_orig (pad, list);
     
@@ -399,7 +399,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   if (*buffer) {
     GstPad *peer = GST_PAD_PEER (pad);
-    trace_add_entry (pipeline, g_strdup_printf ("data-sent %p %p %p %p %d %" G_GUINT64_FORMAT, element, peer, element_from, pad, 1, gst_buffer_get_size (*buffer)));
+    trace_add_entry (pipeline, g_strdup_printf ("data-sent l %p %p %p %p %d %" G_GUINT64_FORMAT, element, peer, element_from, pad, 1, gst_buffer_get_size (*buffer)));
   }
   
   guint64 end = get_cpu_time (thread);
