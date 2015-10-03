@@ -19,6 +19,7 @@
 
 public class MainWindow: Gtk.ApplicationWindow
 {
+	public Gtk.Image graph;
 
 	public MainWindow (Gtk.Application application)
 	{
@@ -40,22 +41,58 @@ public class MainWindow: Gtk.ApplicationWindow
 		box.pack_start (menu, false, true, 0);
 		
 		var scrolled_window = new Gtk.ScrolledWindow (null, null);
-		scrolled_window.add_with_viewport (new Gtk.Image.from_file ("/Users/cyril/1.svg"));
 		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 				
 		var monitor = new Graph ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
+		graph = null;
+
 		menu.open_file_item_activated.connect ((path) => 
 		{
-			
+			if (graph != null)
+			{
+				scrolled_window.remove (graph);
+				graph = null;
+			}
+
+			string[] spawn_args = {"/usr/local/bin/gst-report-1.0", "--nested", "--dot", path};
+			string[] spawn_env = Environ.get ();
+
+			string report_stdout;
+			string report_stderr;
+			int report_status;
+
+			Process.spawn_sync (null,
+				spawn_args,
+				spawn_env,
+				SpawnFlags.SEARCH_PATH,
+				null,
+				out report_stdout,
+				out report_stderr,
+				out report_status);
+
+			spawn_args = {"dot", "-Tsvg", "-o", "gst-instruments-temp.svg", path};
+
+			Process.spawn_sync (null,
+				spawn_args,
+				spawn_env,
+				SpawnFlags.SEARCH_PATH,
+				null,
+				out report_stdout,
+				out report_stderr,
+				out report_status);
+
+			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
+			scrolled_window.add_with_viewport (graph);
 		});
 		box.pack_start (scrolled_window, true, true, 0);
 		box.pack_start (monitor, false, true, 0);
 
 		scrollbar.value_changed.connect (() =>
 		{
-        });
+			
+        	});
 		
 		box.pack_start (scrollbar, false, true, 0);
 		this.key_press_event.connect ((source, key) => 
