@@ -39,11 +39,11 @@ public class Graph: Gtk.DrawingArea
 		int width = get_allocated_width ();
 		int height = get_allocated_height ();
 
-        c.set_source_rgb (1.0, 1.0, 1.0);
+        	c.set_source_rgb (1.0, 1.0, 1.0);
 		c.rectangle (0, 0, width, height);
 		c.fill ();
 
-        c.set_source_rgb (0.0, 0.0, 0.0);
+        	c.set_source_rgb (0.0, 0.0, 0.0);
 
 		double magnitude_scale = 50.0f;
 		{

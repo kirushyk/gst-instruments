@@ -62,16 +62,16 @@ public class MainMenu: Gtk.MenuBar
 		file_menu.add (open_item);
 		open_item.activate.connect (() =>
 		{
-        	var file_chooser = new Gtk.FileChooserDialog ("Open File", null, Gtk.FileChooserAction.OPEN, Gtk.Stock.CANCEL, Gtk.ResponseType.CANCEL, Gtk.Stock.OPEN, Gtk.ResponseType.ACCEPT);
+        		var file_chooser = new Gtk.FileChooserDialog ("Open File", null, Gtk.FileChooserAction.OPEN, Gtk.Stock.CANCEL, Gtk.ResponseType.CANCEL, Gtk.Stock.OPEN, Gtk.ResponseType.ACCEPT);
 			var filter = new Gtk.FileFilter ();
 			filter.set_filter_name ("GStreamer Trace (*.gsttrace)");
 			filter.add_pattern ("*.gsttrace");
 			file_chooser.add_filter (filter);
-        	if (file_chooser.run () == Gtk.ResponseType.ACCEPT)
+			if (file_chooser.run () == Gtk.ResponseType.ACCEPT)
 			{
-            	this.open_file_item_activated (file_chooser.get_filename ());
-        	}
-        	file_chooser.destroy ();
+		    		this.open_file_item_activated (file_chooser.get_filename ());
+			}
+			file_chooser.destroy ();
 		});
 		
 		var quit_item = new Gtk.MenuItem.with_label ("Quit");
