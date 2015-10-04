@@ -46,11 +46,6 @@ public class MainWindow: Gtk.ApplicationWindow
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
 		graph = null;
-/*
-		graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
-		scrolled_window.add_with_viewport (graph);
-		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
-*/
 
 		menu.open_file_item_activated.connect ((path) => 
 		{
@@ -61,11 +56,6 @@ public class MainWindow: Gtk.ApplicationWindow
 
 			string command = @"/usr/local/bin/gst-report-1.0 --nested --dot $path | dot -Tsvg > gst-instruments-temp.svg";
 			Posix.system (command);
-
-/*
-			command = @"convert ~/gst-instruments-temp.svg ~/gst-instruments-temp.png";
-			Posix.system (command);
-*/
 
 			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
 			scrolled_window.add_with_viewport (graph);
