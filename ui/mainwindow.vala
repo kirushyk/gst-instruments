@@ -41,50 +41,36 @@ public class MainWindow: Gtk.ApplicationWindow
 		box.pack_start (menu, false, true, 0);
 		
 		var scrolled_window = new Gtk.ScrolledWindow (null, null);
-		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 				
 		var monitor = new Graph ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
 		graph = null;
+/*
+		graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
+		scrolled_window.add_with_viewport (graph);
+		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+*/
 
 		menu.open_file_item_activated.connect ((path) => 
 		{
-			if (graph != null)
-			{
+			if (graph != null) {
 				scrolled_window.remove (graph);
 				graph = null;
 			}
 
-			string[] spawn_args = {"/usr/local/bin/gst-report-1.0", "--nested", "--dot", path};
-			string[] spawn_env = Environ.get ();
+			string command = @"/usr/local/bin/gst-report-1.0 --nested --dot $path | dot -Tsvg > ~/gst-instruments-temp.svg";
+			Posix.system (command);
 
-			string report_stdout;
-			string report_stderr;
-			int report_status;
-
-			Process.spawn_sync (null,
-				spawn_args,
-				spawn_env,
-				SpawnFlags.SEARCH_PATH,
-				null,
-				out report_stdout,
-				out report_stderr,
-				out report_status);
-
-			spawn_args = {"dot", "-Tsvg", "-o", "gst-instruments-temp.svg", path};
-
-			Process.spawn_sync (null,
-				spawn_args,
-				spawn_env,
-				SpawnFlags.SEARCH_PATH,
-				null,
-				out report_stdout,
-				out report_stderr,
-				out report_status);
+/*
+			command = @"convert ~/gst-instruments-temp.svg ~/gst-instruments-temp.png";
+			Posix.system (command);
+*/
 
 			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
 			scrolled_window.add_with_viewport (graph);
+			scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+			scrolled_window.show_all ();
 		});
 		box.pack_start (scrolled_window, true, true, 0);
 		box.pack_start (monitor, false, true, 0);

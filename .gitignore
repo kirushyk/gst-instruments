@@ -6,4 +6,4 @@ ui/gst-instruments
 *.dSYM/
 osx/
 *~
-
+*.svg
