@@ -43,6 +43,7 @@ THREAD mach_thread_self() { return 0; }
 #endif
 
 #define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
+#define LGI_OBJECT_TYPE_NAME(element) ((element) != NULL) ? G_OBJECT_TYPE_NAME (element) : "0"
 
 static guint64 get_cpu_time (THREAD thread) {
 #if __MACH__
@@ -126,12 +127,16 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
     pipeline_by_element = g_hash_table_new (g_direct_hash, g_direct_equal);
   else if (g_hash_table_lookup (pipeline_by_element, new_element))
     return;
-  g_hash_table_insert (pipeline_by_element, new_element, pipeline);
+  if (new_element)
+    g_hash_table_insert (pipeline_by_element, new_element, pipeline);
   
   if (!g_hash_table_lookup (pipeline_by_element, pipeline)) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), G_OBJECT_TYPE_NAME (pipeline)));
+    trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), LGI_OBJECT_TYPE_NAME (pipeline)));
     g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
   }
+  
+  if (pipeline == NULL)
+    return;
   
   GstIterator *it = gst_bin_iterate_recurse (GST_BIN (pipeline));
   GValue item = G_VALUE_INIT;
@@ -143,7 +148,7 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
           GstElement *internal = g_value_get_object (&item);
           GstElement *parent = GST_ELEMENT_PARENT (internal);
           
-          trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), G_OBJECT_TYPE_NAME (internal), parent));
+          trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
           g_value_reset (&item);
         }
         break;
