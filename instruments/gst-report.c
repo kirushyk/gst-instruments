@@ -110,8 +110,10 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     g_print ("nodesep=.1;\n");
     render_space (space);
     g_print ("ranksep=.1;\n");
+/*
     render_space (space);
     g_print ("fontname=\"Avenir Next\";\n");
+*/
     render_space (space);
     g_print ("fontsize=\"14\";\n");
     render_space (space);
@@ -121,9 +123,9 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     render_space (space);
     g_print ("label=\"pipeline0\";\n");
     render_space (space);
-    g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", fontname=\"Avenir Next\", margin=\"0.1,0.1\"];\n");
+    g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", margin=\"0.1,0.1\"];\n");
     render_space (space);
-    g_print ("edge [labelfontsize=\"14\", fontsize=\"14\", fontname=\"Avenir Next\"];\n");
+    g_print ("edge [labelfontsize=\"14\", fontsize=\"14\"];\n"); // , fontname=\"Avenir Next\"
   }
   
   if (dot) {
