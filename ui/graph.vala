@@ -19,6 +19,11 @@
 
 public class Graph: Gtk.DrawingArea
 {
+	private bool dragging;
+	private double x_begin;
+	private double x_initial;
+	private double x_end;
+
 	public void load (string path)
 	{
 		update ();
@@ -29,7 +34,10 @@ public class Graph: Gtk.DrawingArea
 		add_events (Gdk.EventMask.BUTTON_PRESS_MASK |
 		            Gdk.EventMask.BUTTON_RELEASE_MASK |
 		            Gdk.EventMask.POINTER_MOTION_MASK);
-					
+		
+		dragging = false;
+		x_begin = x_initial = 0;
+		x_end = 200;
 		set_size_request (200, 80);
 	}
 
@@ -59,23 +67,49 @@ public class Graph: Gtk.DrawingArea
 				c.show_text (@"$(i * 0.1) s");
 			}
 		}
+
+		c.move_to (x_begin, 0);
+		c.line_to (x_begin, height);
+		c.move_to (x_end, 0);
+		c.line_to (x_end, height);
+
 		c.stroke ();
+        	c.set_source_rgba (0.0, 0.0, 0.0, 0.25);
+		c.rectangle (x_begin, 0, x_end - x_begin, height);
+		c.fill ();
 
 		return true;
 	}
 
 	public override bool button_press_event (Gdk.EventButton event)
 	{
+		if (!this.dragging) {
+			this.dragging = true;
+			x_initial = event.x;
+		}
 		return false;
 	}
 
-	public override bool button_release_event (Gdk.EventButton event)
-	{
+	public override bool button_release_event (Gdk.EventButton event) {
+		if (this.dragging) {
+			this.dragging = false;
+			update ();
+		}
 		return false;
-	}
+        }
 
 	public override bool motion_notify_event (Gdk.EventMotion event)
 	{
+		if (this.dragging) {
+			if (event.x < x_initial) {
+				x_begin = event.x;
+				x_end = x_initial;
+			} else {
+				x_begin = x_initial;
+				x_end = event.x;
+			}
+			update ();
+		}
 		return false;
 	}
 
@@ -83,9 +117,7 @@ public class Graph: Gtk.DrawingArea
 	{
 		var window = get_window ();
 		if (window == null)
-		{
 			return;
-		}
 
 		var region = window.get_clip_region ();
 		window.invalidate_region (region, true);

@@ -62,15 +62,15 @@ public class MainWindow: Gtk.ApplicationWindow
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
 		});
-		box.pack_start (scrolled_window, true, true, 0);
-		box.pack_start (monitor, false, true, 0);
+		box.pack_start (scrolled_window, true, true, 1);
+		box.pack_start (monitor, false, true, 1);
 
 		scrollbar.value_changed.connect (() =>
 		{
 			
         	});
 		
-		box.pack_start (scrollbar, false, true, 0);
+		box.pack_start (scrollbar, false, true, 1);
 		this.key_press_event.connect ((source, key) => 
 		{
 			switch (key.keyval)
