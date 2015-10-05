@@ -19,7 +19,7 @@
 
 public class MainWindow: Gtk.ApplicationWindow
 {
-	public Gtk.Image graph;
+	public string working_trace_path;
 
 	public MainWindow (Gtk.Application application)
 	{
@@ -46,23 +46,39 @@ public class MainWindow: Gtk.ApplicationWindow
 		var monitor = new Graph ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
-		graph = null;
+		working_trace_path = null;
 
-		menu.open_file_item_activated.connect ((path) => 
-		{
-			if (graph != null) {
-				scrolled_window.remove (graph);
-				graph = null;
-			}
+		menu.open_file_item_activated.connect ((path) =>  {
+			var child = scrolled_window.get_child ();
+			if (child != null)
+				child.destroy ();
+
+			working_trace_path = path;
 
 			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tsvg > gst-instruments-temp.svg";
 			Posix.system (command);
 
-			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
+			var graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
 		});
-		box.pack_start (scrolled_window, true, true, 1);
+		box.pack_start (scrolled_window, true, true, 1);		
+
+		monitor.interval_selected.connect ((begin, end) => {
+			if (working_trace_path == null)
+				return;
+
+			var child = scrolled_window.get_child ();
+			if (child != null)
+				child.destroy ();
+
+			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot --from=$begin --till=$end $working_trace_path | dot -Tsvg > gst-instruments-temp.svg";
+			Posix.system (command);
+
+			var graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
+			scrolled_window.add (graph);
+			scrolled_window.show_all ();
+		});
 		box.pack_start (monitor, false, true, 1);
 
 		scrollbar.value_changed.connect (() =>

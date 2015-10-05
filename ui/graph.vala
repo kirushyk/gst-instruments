@@ -24,6 +24,8 @@ public class Graph: Gtk.DrawingArea
 	private double x_initial;
 	private double x_end;
 
+	public signal void interval_selected (double begin, double end); 
+
 	public void load (string path)
 	{
 		update ();
@@ -37,7 +39,7 @@ public class Graph: Gtk.DrawingArea
 		
 		dragging = false;
 		x_begin = x_initial = 0;
-		x_end = 200;
+		x_end = 20000;
 		set_size_request (200, 80);
 	}
 
@@ -93,7 +95,7 @@ public class Graph: Gtk.DrawingArea
 	public override bool button_release_event (Gdk.EventButton event) {
 		if (this.dragging) {
 			this.dragging = false;
-			update ();
+			this.interval_selected (x_begin / 20.0f, x_end / 20.0f); 
 		}
 		return false;
         }
