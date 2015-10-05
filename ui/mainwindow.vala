@@ -55,7 +55,7 @@ public class MainWindow: Gtk.ApplicationWindow
 				graph = null;
 			}
 
-			string command = @"/usr/local/bin/gst-report-1.0 --nested --dot $path | dot -Tsvg > gst-instruments-temp.svg";
+			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tsvg > gst-instruments-temp.svg";
 			Posix.system (command);
 
 			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");

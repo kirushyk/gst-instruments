@@ -23,7 +23,7 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
-gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE;
+gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE;
 
 static GOptionEntry entries[] = {
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
@@ -31,6 +31,7 @@ static GOptionEntry entries[] = {
   { "memory",    0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage",                                NULL },
   { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements",                           NULL },
   { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements",                       NULL },
+  { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads, "Show simple pad nodes (without SVG inclusion)",    NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements",            NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
   { NULL }
@@ -59,7 +60,10 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
   render_space (space);
   g_print ("label=\"\";\n");
   render_space (space);
-  g_print ("en%p_pad_%p [shape=\"none\", label=\"\", image=\"" PREFIX "share/" PACKAGE "/%s.svg\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "pull" : "push");
+  if (simple_pads)
+    g_print ("en%p_pad_%p [shape=\"box\" label=\"%s\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "[]=>" : "=>[]");
+  else
+    g_print ("en%p_pad_%p [shape=\"none\", label=\"\", image=\"" PREFIX "share/" PACKAGE "/%s.svg\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "pull" : "push");
   space--;
   render_space (space);
   g_print ("}\n");
