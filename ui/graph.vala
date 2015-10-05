@@ -35,6 +35,7 @@ public class Graph: Gtk.DrawingArea
 
 	public override bool draw (Cairo.Context c)
 	{
+		int i = 0;
 		float scale = 1.0f;
 		int width = get_allocated_width ();
 		int height = get_allocated_height ();
@@ -45,17 +46,18 @@ public class Graph: Gtk.DrawingArea
 
         	c.set_source_rgb (0.0, 0.0, 0.0);
 
-		double magnitude_scale = 50.0f;
+		c.set_line_width (1.0);
+		c.move_to (0, height / 2 + 0.5);
+		c.line_to (width, height / 2 + 0.5);	
+		for (double x = 0.5; x < width; x += 20.0, i++)
 		{
-			c.move_to (40.0, 40.0);
-			// c.show_text("0.5 mV ✕ 100 ms");
-		}
-
-		c.set_line_width (0.25);
-		for (double x = 0.5; x < width; x += 20.0)
-		{
-			c.move_to (x, 0);
-			c.line_to (x, height);			
+			bool separator = (i % 10 == 0);
+			c.move_to (x, separator ? 10 : 30);
+			c.line_to (x, height - (separator ? 20 : 30));
+			if (separator) {
+				c.move_to (x + 5, 20);
+				c.show_text (@"$(i * 0.1) s");
+			}
 		}
 		c.stroke ();
 

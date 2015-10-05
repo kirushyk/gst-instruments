@@ -41,6 +41,7 @@ public class MainWindow: Gtk.ApplicationWindow
 		box.pack_start (menu, false, true, 0);
 		
 		var scrolled_window = new Gtk.ScrolledWindow (null, null);
+		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 				
 		var monitor = new Graph ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
@@ -58,8 +59,7 @@ public class MainWindow: Gtk.ApplicationWindow
 			Posix.system (command);
 
 			graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
-			scrolled_window.add_with_viewport (graph);
-			scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+			scrolled_window.add (graph);
 			scrolled_window.show_all ();
 		});
 		box.pack_start (scrolled_window, true, true, 0);
