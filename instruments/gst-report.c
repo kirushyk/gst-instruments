@@ -37,7 +37,7 @@ static GOptionEntry entries[] = {
 };
 
 void
-render_space (gint space)
+render_space (gsize space)
 {
   int j;
   for (j = 0; j < space; j++) {
@@ -50,7 +50,7 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
 {
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   GstElementHeadstone *element = (GstElementHeadstone *)user_data;
-  gint space = 2 * (element->nesting + 1);
+  gint space = (element->nesting + 1);
   render_space (space);
   g_print ("subgraph cluster_eg%p_pad_%p {\n", element->identifier, pad->identifier);
   space++;
@@ -89,10 +89,9 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   gint j;
    
   guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
-  gsize space = element->nesting * 2;
+  gsize space = element->nesting;
   
   if (hierarchy) {
-    g_print ("\n");
     render_space (space);
   }
   
@@ -101,7 +100,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (dot && (element->parent == NULL)) {
-    space = 2 * (element->nesting + 1);
+    space = (element->nesting + 1);
     render_space (space);
     g_print ("rankdir=LR;\n");
     render_space (space);
@@ -129,7 +128,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (dot) {
-    space = 2 * (element->nesting + 1);
+    space = (element->nesting + 1);
     render_space (space);
     g_print ("fillcolor=\"#ffffff\";\n");
     g_hash_table_foreach (element->pads, render_pad, element);
@@ -201,7 +200,7 @@ render_connection (gpointer key, gpointer value, gpointer user_data)
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   if (pad->direction == GST_PAD_SRC) {
     GstElementHeadstone *element = (GstElementHeadstone *)user_data;
-    gint space = 2 * (element->nesting + 1);
+    gint space = (element->nesting + 1);
     render_space (space);
     gchar *memory_sent_size_string = format_memory_size (pad->bytes);
     g_print ("en%p_pad_%p -> en%p_pad_%p [label=\"%s\"];\n", element->identifier, pad->identifier, pad->peer_element, pad->peer, memory_sent_size_string);
@@ -222,7 +221,7 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     }
   }
   if (dot) {
-    render_space (element->nesting * 2);
+    render_space (element->nesting);
     g_print ("}\n");
   }
 }
