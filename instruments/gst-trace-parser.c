@@ -69,10 +69,8 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
 {
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
   GstTaskHeadstone *task = value;
-  if (task->upstack_element_identifier)
-  {
+  if (task->upstack_element_identifier) {
     GstElementHeadstone *upstack_element = gst_graveyard_get_element (graveyard, task->upstack_element_identifier, task->name->str);
-    
     upstack_element->total_time += task->total_upstack_time;
   }
 }
@@ -89,9 +87,8 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   if (element->type_name == NULL)
     element->type_name = g_string_new("?");
   element->nesting = 0;
-  for (parent = element->parent; parent != NULL; parent = parent->parent) {
+  for (parent = element->parent; parent != NULL; parent = parent->parent)
     element->nesting++;
-  }
   g_array_append_val (graveyard->elements_sorted, value);
 }
 
@@ -185,7 +182,8 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           } else {
             element->is_subtopstack = FALSE;
           }
-          task->total_downstack_time += task->current_downstack_time;
+          if (TIMESTAMP_FITS (event_timestamp, from, till))
+            task->total_downstack_time += task->current_downstack_time;
           task->current_downstack_time = 0;
         } else {
           g_print ("couldn't parse event: %s\n", event_name);
