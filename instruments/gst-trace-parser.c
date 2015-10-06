@@ -89,6 +89,7 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   element->nesting = 0;
   for (parent = element->parent; parent != NULL; parent = parent->parent)
     element->nesting++;
+  element->cpu_load = (float)element->total_time / (float)(graveyard->till - graveyard->from);
   g_array_append_val (graveyard->elements_sorted, value);
 }
 
@@ -316,6 +317,8 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   
   gint elements_count = g_hash_table_size (graveyard->elements);
   graveyard->elements_sorted = g_array_sized_new (FALSE, FALSE, sizeof (gpointer), elements_count);
+  graveyard->from = (from == GST_CLOCK_TIME_NONE) ? 0 : from;
+  graveyard->till = (till == GST_CLOCK_TIME_NONE) ? graveyard->duration : till;
   g_hash_table_foreach (graveyard->elements, for_each_element, graveyard);
   g_array_sort (graveyard->elements_sorted, element_headstone_compare);
   

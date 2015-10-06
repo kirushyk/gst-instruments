@@ -72,6 +72,7 @@ typedef struct GstElementHeadstone
   
   gboolean                              is_subtopstack;
   guint64                               total_time;
+  float                                 cpu_load;
 
 } GstElementHeadstone;
 
@@ -81,6 +82,9 @@ typedef struct GstGraveyard
   GHashTable                           *elements;
   GArray                               *elements_sorted;
   GstClockTime                          total_time;
+  
+  GstClockTime                          from;
+  GstClockTime                          till;
 
   GstClockTime                          duration;
 } GstGraveyard;

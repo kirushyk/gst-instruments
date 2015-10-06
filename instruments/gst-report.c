@@ -34,7 +34,7 @@ static GOptionEntry entries[] = {
   { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads, "Show simple pad nodes (without SVG inclusion)",    NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements",            NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
-  { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,    "Only show duration",                             NULL },
+  { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,    "Only show duration",                               NULL },
   { NULL }
 };
 
@@ -185,7 +185,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   
   if (!dot) {
     gchar *time_string = format_time (total_time);
-    g_print (" %5.1f  %8s", total_time * 100.f / graveyard->total_time, time_string);
+    g_print (" %5.1f  %8s", element->cpu_load * 100.f, time_string);
     g_free (time_string);
   }
   
@@ -291,8 +291,9 @@ main (gint argc, gchar *argv[])
     if (show_types) {
       g_print (" TYPE");
       space = max_type_name_length - 4; // sizeof "ELEMENT"
-      for (j = 0; j < space; j++)
+      for (j = 0; j < space; j++) {
         g_print (" ");
+      }
     }
     g_print ("  %%CPU   TIME");
     
