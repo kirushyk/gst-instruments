@@ -52,6 +52,21 @@ public class MainWindow: Gtk.ApplicationWindow
 			var child = scrolled_window.get_child ();
 			if (child != null)
 				child.destroy ();
+                
+			string ls_stdout;
+			string ls_stderr;
+			int ls_status;
+
+			Process.spawn_sync (null,
+						{"/usr/local/bin/gst-report-1.0", "--duration", path},
+						null,
+						SpawnFlags.SEARCH_PATH,
+						null,
+						out ls_stdout,
+						out ls_stderr,
+						out ls_status);
+                        
+            monitor.x_duration = int64.parse (ls_stdout) * 0.00000002;
 
 			working_trace_path = path;
 
@@ -61,6 +76,8 @@ public class MainWindow: Gtk.ApplicationWindow
 			var graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
+            
+            monitor.update ();
 		});
 		box.pack_start (scrolled_window, true, true, 1);		
 

@@ -23,6 +23,7 @@ public class Graph: Gtk.DrawingArea
 	private double x_begin;
 	private double x_initial;
 	private double x_end;
+	public double x_duration;
 
 	public signal void interval_selected (double begin, double end); 
 
@@ -38,7 +39,7 @@ public class Graph: Gtk.DrawingArea
 		            Gdk.EventMask.POINTER_MOTION_MASK);
 		
 		dragging = false;
-		x_begin = x_initial = 0;
+		x_begin = x_initial = x_duration = 0;
 		x_end = 20000;
 		set_size_request (200, 80);
 	}
@@ -50,11 +51,11 @@ public class Graph: Gtk.DrawingArea
 		int width = get_allocated_width ();
 		int height = get_allocated_height ();
 
-        	c.set_source_rgb (1.0, 1.0, 1.0);
+        c.set_source_rgb (1.0, 1.0, 1.0);
 		c.rectangle (0, 0, width, height);
 		c.fill ();
 
-        	c.set_source_rgb (0.0, 0.0, 0.0);
+        c.set_source_rgb (0.0, 0.0, 0.0);
 
 		c.set_line_width (1.0);
 		c.move_to (0, height / 2 + 0.5);
@@ -76,8 +77,11 @@ public class Graph: Gtk.DrawingArea
 		c.line_to (x_end, height);
 
 		c.stroke ();
-        	c.set_source_rgba (0.0, 0.0, 0.0, 0.25);
+        c.set_source_rgba (0.0, 0.0, 0.0, 0.25);
 		c.rectangle (x_begin, 0, x_end - x_begin, height);
+		c.fill ();
+        c.set_source_rgba (1.0, 1.0, 1.0, 0.75);
+		c.rectangle (x_duration, 0, width - x_duration, height);
 		c.fill ();
 
 		return true;
@@ -110,6 +114,10 @@ public class Graph: Gtk.DrawingArea
 				x_begin = x_initial;
 				x_end = event.x;
 			}
+            if (x_begin > x_duration)
+				x_begin = x_duration;
+            if (x_end > x_duration)
+				x_end = x_duration;
 			update ();
 		}
 		return false;
@@ -126,7 +134,7 @@ public class Graph: Gtk.DrawingArea
 		window.process_updates (true);
 	}
 
-	private bool update ()
+	public bool update ()
 	{
 		redraw_canvas ();
 		return true;
