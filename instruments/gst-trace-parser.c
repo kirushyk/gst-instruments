@@ -114,7 +114,7 @@ gst_element_headstone_get_nested_time (GstElementHeadstone *element)
 }
 
 GstGraveyard *
-gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till)
+gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till, gboolean query_duration_only)
 {
   FILE *input = fopen (filename,  "rt");
   if (input == NULL)
@@ -130,6 +130,16 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
     gchar event_name[1000];
     if (fscanf (input, "%" G_GUINT64_FORMAT " %s", &event_timestamp, event_name) != 2) {
       break;
+    }
+    
+    if (event_timestamp > graveyard->duration)
+      graveyard->duration = event_timestamp;
+    
+    if (query_duration_only)
+    {
+      gchar buffer[1024];
+      fgets (buffer, sizeof (buffer), input);
+      continue;
     }
     
     if (g_ascii_strcasecmp (event_name, "element-discovered") == 0) {

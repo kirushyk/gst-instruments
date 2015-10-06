@@ -23,7 +23,7 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
-gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE;
+gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE, dur_only = FALSE;
 
 static GOptionEntry entries[] = {
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
@@ -34,6 +34,7 @@ static GOptionEntry entries[] = {
   { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads, "Show simple pad nodes (without SVG inclusion)",    NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements",            NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
+  { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,    "Only show duration",                             NULL },
   { NULL }
 };
 
@@ -262,9 +263,14 @@ main (gint argc, gchar *argv[])
     show_memory = TRUE;
   }
   
-  GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns);
+  GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns, dur_only);
   if (graveyard == NULL)
     return 3;
+  
+  if (dur_only) {
+    g_print ("%" G_GUINT64_FORMAT, graveyard->duration);
+    return 0;
+  }
   
   for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);

@@ -82,11 +82,13 @@ typedef struct GstGraveyard
   GArray                               *elements_sorted;
   GstClockTime                          total_time;
 
+  GstClockTime                          duration;
 } GstGraveyard;
 
 GstGraveyard *      gst_graveyard_new_from_trace           (const char              *filename,
                                                             GstClockTime             from,
-                                                            GstClockTime             till);
+                                                            GstClockTime             till,
+                                                            gboolean                 query_duration_only);
 
 void                gst_element_headstone_add_child        (GstElementHeadstone     *parent,
                                                             GstElementHeadstone     *child);
