@@ -99,6 +99,8 @@ void                gst_element_headstone_add_child        (GstElementHeadstone 
 
 guint64             gst_element_headstone_get_nested_time  (GstElementHeadstone     *element);
 
+gfloat              gst_element_headstone_get_nested_load  (GstElementHeadstone     *element);
+
 void                gst_graveyard_free                     (GstGraveyard            *graveyard);
 
 #endif

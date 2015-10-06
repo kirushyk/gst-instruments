@@ -32,7 +32,7 @@ static GOptionEntry entries[] = {
   { "types",     0, 0, G_OPTION_ARG_NONE,   &show_types,  "Show types of elements",                           NULL },
   { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,   "Show hierarchy of elements",                       NULL },
   { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads, "Show simple pad nodes (without SVG inclusion)",    NULL },
-  { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include time spent by nested elements",            NULL },
+  { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include CPU time spent by nested elements",        NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
   { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,    "Only show duration",                               NULL },
   { NULL }
@@ -92,7 +92,7 @@ void
 render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize max_length, gsize max_type_name_length)
 {
   gint j;
-   
+  
   guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
   gsize space = element->nesting;
   
@@ -185,7 +185,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   
   if (!dot) {
     gchar *time_string = format_time (total_time);
-    g_print (" %5.1f  %8s", element->cpu_load * 100.f, time_string);
+    g_print (" %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, time_string);
     g_free (time_string);
   }
   

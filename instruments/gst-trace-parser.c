@@ -114,6 +114,16 @@ gst_element_headstone_get_nested_time (GstElementHeadstone *element)
   return result;
 }
 
+gfloat
+gst_element_headstone_get_nested_load (GstElementHeadstone *element)
+{
+  GList *child;
+  gfloat result = element->cpu_load;
+  for (child = element->children; child != NULL; child = child->next)
+    result += gst_element_headstone_get_nested_load (child->data);
+  return result;
+}
+
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till, gboolean query_duration_only)
 {
