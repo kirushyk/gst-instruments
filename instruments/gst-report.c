@@ -155,9 +155,13 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
              "</TR>"
              "<TR>"
              "<TD ALIGN=\"RIGHT\"></TD>"
-             "<TD ALIGN=\"RIGHT\">(%.1f%%)</TD>"
+             "<TD ALIGN=\"RIGHT\">(%5.1f%%)</TD>"
              "</TR>"
-             "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_time * 100.f / graveyard->total_time);
+             "<TR>"
+             "<TD ALIGN=\"RIGHT\">CPU:</TD>"
+             "<TD ALIGN=\"RIGHT\">%5.1f%%</TD>"
+             "</TR>"
+             "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_time * 100.f / graveyard->total_time, (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.0f);
   
     g_free (time_string);
   }
@@ -185,7 +189,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   
   if (!dot) {
     gchar *time_string = format_time (total_time);
-    g_print (" %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, time_string);
+    g_print (" %5.1f  %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, total_time * 100.0f / graveyard->total_time, time_string);
     g_free (time_string);
   }
   
@@ -295,7 +299,7 @@ main (gint argc, gchar *argv[])
         g_print (" ");
       }
     }
-    g_print ("  %%CPU   TIME");
+    g_print (" %%CPU   %%TIME   TIME");
     
     if (show_memory)
       g_print ("     INPUT     OUTPUT");
