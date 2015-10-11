@@ -1,4 +1,4 @@
-SRC=main.vala mainwindow.vala graph.vala mainmenu.vala
+SRC=main.vala mainwindow.vala timeline.vala mainmenu.vala
 TARGET=gst-instruments
 
 VALADEPS=--pkg gtk+-3.0 --pkg posix

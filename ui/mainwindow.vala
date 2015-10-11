@@ -43,7 +43,7 @@ public class MainWindow: Gtk.ApplicationWindow
 		var scrolled_window = new Gtk.ScrolledWindow (null, null);
 		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 				
-		var monitor = new Graph ();
+		var timeline = new Timeline ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
 		working_trace_path = null;
@@ -66,7 +66,7 @@ public class MainWindow: Gtk.ApplicationWindow
 						out ls_stderr,
 						out ls_status);
                         
-            monitor.x_duration = int64.parse (ls_stdout) * 0.00000002;
+            timeline.x_duration = int64.parse (ls_stdout) * 0.00000002;
 
 			working_trace_path = path;
 
@@ -77,11 +77,11 @@ public class MainWindow: Gtk.ApplicationWindow
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
             
-            monitor.update ();
+            timeline.update ();
 		});
 		box.pack_start (scrolled_window, true, true, 1);		
 
-		monitor.interval_selected.connect ((begin, end) => {
+		timeline.interval_selected.connect ((begin, end) => {
 			if (working_trace_path == null)
 				return;
 
@@ -96,7 +96,7 @@ public class MainWindow: Gtk.ApplicationWindow
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
 		});
-		box.pack_start (monitor, false, true, 1);
+		box.pack_start (timeline, false, true, 1);
 
 		scrollbar.value_changed.connect (() =>
 		{

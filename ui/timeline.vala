@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-public class Graph: Gtk.DrawingArea
+public class Timeline: Gtk.DrawingArea
 {
 	private bool dragging;
 	private double x_begin;
@@ -32,7 +32,7 @@ public class Graph: Gtk.DrawingArea
 		update ();
 	}
 
-	public Graph ()
+	public Timeline ()
 	{
 		add_events (Gdk.EventMask.BUTTON_PRESS_MASK |
 		            Gdk.EventMask.BUTTON_RELEASE_MASK |
