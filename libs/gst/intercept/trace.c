@@ -65,7 +65,7 @@ gst_element_dump_to_file (GstElement *element, const gchar *filename)
   for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev) {
     TraceEntry *entry = (TraceEntry *)iterator->data;
     if (entry) {
-      if ((element == NULL) || (entry->pipeline == element)) {
+      if ((element == NULL) || ((gpointer)entry->pipeline == (gpointer)element)) {
         fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
         
         iterator->data = NULL;
