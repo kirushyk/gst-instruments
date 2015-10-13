@@ -58,10 +58,12 @@ void
 gst_element_dump_to_file (GstElement *element, const gchar *filename)
 {
   GList *iterator;
-  g_mutex_lock (&trace_mutex);
   
   FILE *output = fopen (filename, "wt");
-  
+  if (output == NULL)
+    return;
+      
+  g_mutex_lock (&trace_mutex);
   for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev) {
     TraceEntry *entry = (TraceEntry *)iterator->data;
     if (entry) {
@@ -77,10 +79,9 @@ gst_element_dump_to_file (GstElement *element, const gchar *filename)
   
   /// @todo: Optimize removal
   trace_entries = g_list_remove_all(trace_entries, NULL);
+  g_mutex_unlock (&trace_mutex);
   
   fclose (output);
-  
-  g_mutex_unlock (&trace_mutex);
 }
 
 void trace_init (void)

@@ -12,11 +12,12 @@ ifeq ($(UNAME_S),Linux)
 	SHARED = -shared
 	TARGET = libgstintercept.so
 endif
+DEBUG_OPTION = -g
 
 PREFIX = /usr/local/
 
 $(TARGET): $(SRC)
-	gcc $(SHARED) -o $(TARGET) -fPIC -ldl -pthread $(LIBS) $(CFLAGS) $(SRC)
+	gcc $(DEBUG_OPTION) $(SHARED) -o $(TARGET) -fPIC -ldl -pthread $(LIBS) $(CFLAGS) $(SRC)
 
 install: $(TARGET)
 	cp $(TARGET) $(PREFIX)/lib/
