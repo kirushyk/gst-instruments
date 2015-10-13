@@ -435,8 +435,6 @@ gst_element_set_state (GstElement *element, GstState state)
     }
   }
   
-  result = gst_element_set_state_orig (element, state);
-  
   switch (state)
   {
   case GST_STATE_NULL:
@@ -453,6 +451,8 @@ gst_element_set_state (GstElement *element, GstState state)
     break;
 
   }
+  
+  result = gst_element_set_state_orig (element, state);
   
   return result;
 }
