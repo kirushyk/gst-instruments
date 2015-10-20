@@ -4,6 +4,7 @@ ui/gst-instruments
 *.so
 *.dylib
 *.dSYM/
-osx/
 *~
+xcuserdata/
+project.xcworkspace/
 *.svg
