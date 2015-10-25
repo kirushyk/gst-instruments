@@ -23,7 +23,8 @@
 #include <glib.h>
 #include <gst/gst.h>
 
-gchar *             format_time                           (GstClockTime        nanoseconds);
+gchar *             format_time                           (GstClockTime        nanoseconds,
+                                                           gboolean            use_mu);
 
 gchar *             format_memory_size                    (gsize               bytes);
 

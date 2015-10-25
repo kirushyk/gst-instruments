@@ -23,7 +23,7 @@
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
-gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE, dur_only = FALSE;
+gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE, dur_only = FALSE, mu = FALSE;
 
 static GOptionEntry entries[] = {
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
@@ -34,6 +34,7 @@ static GOptionEntry entries[] = {
   { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads, "Show simple pad nodes (without SVG inclusion)",    NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time, "Include CPU time spent by nested elements",        NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,         "Output in DOT format",                             NULL },
+  { "mu",        0, 0, G_OPTION_ARG_NONE,   &mu,          "Use μ (mu) symbol instead of u as micro prefix",   NULL },
   { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,    "Only show duration",                               NULL },
   { NULL }
 };
@@ -148,7 +149,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     g_hash_table_foreach (element->pads, bind_sink_pad, element);
     render_space (space);
     guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
-    gchar *time_string = format_time (total_time);
+    gchar *time_string = format_time (total_time, mu);
     
     g_print ("label=<<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">"
              "<TR>"
@@ -196,7 +197,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (!dot) {
-    gchar *time_string = format_time (total_time);
+    gchar *time_string = format_time (total_time, mu);
     g_print (" %5.1f  %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, total_time * 100.0f / graveyard->total_time, time_string);
     g_free (time_string);
   }
