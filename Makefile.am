@@ -1,1 +1,1 @@
-SUBDIRS =  instruments libs/gst/intercept ui
+SUBDIRS =  instruments libs/gst/intercept $(UI_DIR)
