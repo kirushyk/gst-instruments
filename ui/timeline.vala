@@ -51,11 +51,11 @@ public class Timeline: Gtk.DrawingArea
 		int width = get_allocated_width ();
 		int height = get_allocated_height ();
 
-        c.set_source_rgb (1.0, 1.0, 1.0);
+		c.set_source_rgb (1.0, 1.0, 1.0);
 		c.rectangle (0, 0, width, height);
 		c.fill ();
 
-        c.set_source_rgb (0.0, 0.0, 0.0);
+		c.set_source_rgb (0.0, 0.0, 0.0);
 
 		c.set_line_width (1.0);
 		c.move_to (0, height / 2 + 0.5);
@@ -77,10 +77,10 @@ public class Timeline: Gtk.DrawingArea
 		c.line_to (x_end, height);
 
 		c.stroke ();
-        c.set_source_rgba (0.0, 0.0, 0.0, 0.25);
+		c.set_source_rgba (0.0, 0.0, 0.0, 0.25);
 		c.rectangle (x_begin, 0, x_end - x_begin, height);
 		c.fill ();
-        c.set_source_rgba (1.0, 1.0, 1.0, 0.75);
+		c.set_source_rgba (1.0, 1.0, 1.0, 0.75);
 		c.rectangle (x_duration, 0, width - x_duration, height);
 		c.fill ();
 
@@ -114,9 +114,9 @@ public class Timeline: Gtk.DrawingArea
 				x_begin = x_initial;
 				x_end = event.x;
 			}
-            if (x_begin > x_duration)
+			if (x_begin > x_duration)
 				x_begin = x_duration;
-            if (x_end > x_duration)
+			if (x_end > x_duration)
 				x_end = x_duration;
 			update ();
 		}
