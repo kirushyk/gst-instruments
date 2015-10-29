@@ -28,7 +28,7 @@
 #include <gst/gst.h>
 #include <gst/gstpad.h>
 #include "trace.h"
-#include <configure-static.h>
+#include <config.h>
 
 #if __MACH__
 # include <mach/mach_init.h>
@@ -79,7 +79,13 @@ get_libgstreamer ()
 {
   if (libgstreamer == NULL)
   {
-    libgstreamer = dlopen (PREFIX "lib/" LIBGSTREAMER, RTLD_NOW);
+    libgstreamer = dlopen (
+#if __MACH__
+			"libgstreamer-1.0.dylib",
+#else
+			"libgstreamer-1.0.so",
+#endif
+			RTLD_NOW);
   }
   
   trace_init();

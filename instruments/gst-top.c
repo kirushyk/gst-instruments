@@ -19,7 +19,7 @@
 
 #include <glib.h>
 #include <stdlib.h>
-#include <configure-static.h>
+#include <config.h>
 
 gint
 main (gint argc, gchar *argv[]) {
@@ -28,9 +28,9 @@ main (gint argc, gchar *argv[]) {
   
 #if defined(__MACH__)
   g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
-  g_setenv ("DYLD_INSERT_LIBRARIES", PREFIX "lib/libgstintercept.dylib", TRUE);
+  g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
-  g_setenv ("LD_PRELOAD", PREFIX "lib/libgstintercept.so", TRUE);
+  g_setenv ("LD_PRELOAD", LIBDIR "/libgstintercept.so.0", TRUE);
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif
@@ -45,7 +45,7 @@ main (gint argc, gchar *argv[]) {
   if (error)
     g_print ("%s\n", error->message);
   else
-    system (PREFIX "bin/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
+    system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   
   return 0;
 }
