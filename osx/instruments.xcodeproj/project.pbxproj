@@ -12,8 +12,9 @@
 		F18B29A21B93D76300F69A20 /* trace.c in Sources */ = {isa = PBXBuildFile; fileRef = F116F1BC1B931248007F31CD /* trace.c */; };
 		F1BEF8271BE3F10C00A3B084 /* gsttaskheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF8251BE3F10C00A3B084 /* gsttaskheadstone.c */; };
 		F1BEF82B1BE3F46600A3B084 /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF8291BE3F46600A3B084 /* gstpadheadstone.c */; };
+		F1BEF82E1BE3F63000A3B084 /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF82C1BE3F63000A3B084 /* gstelementheadstone.c */; };
 		F1D46F811B94BBD0002591EE /* gst-report.c in Sources */ = {isa = PBXBuildFile; fileRef = F1D46F7F1B94B948002591EE /* gst-report.c */; };
-		F1F5A6961BAED50E00743D04 /* gst-trace-parser.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6941BAED50E00743D04 /* gst-trace-parser.c */; };
+		F1F5A6961BAED50E00743D04 /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6941BAED50E00743D04 /* gstgraveyard.c */; };
 		F1F5A6991BAEF42300743D04 /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6971BAEF42300743D04 /* formatters.c */; };
 /* End PBXBuildFile section */
 
@@ -60,10 +61,12 @@
 		F1BEF8261BE3F10C00A3B084 /* gsttaskheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttaskheadstone.h; path = ../instruments/gsttaskheadstone.h; sourceTree = "<group>"; };
 		F1BEF8291BE3F46600A3B084 /* gstpadheadstone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstpadheadstone.c; path = ../instruments/gstpadheadstone.c; sourceTree = "<group>"; };
 		F1BEF82A1BE3F46600A3B084 /* gstpadheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstpadheadstone.h; path = ../instruments/gstpadheadstone.h; sourceTree = "<group>"; };
+		F1BEF82C1BE3F63000A3B084 /* gstelementheadstone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstelementheadstone.c; path = ../instruments/gstelementheadstone.c; sourceTree = "<group>"; };
+		F1BEF82D1BE3F63000A3B084 /* gstelementheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstelementheadstone.h; path = ../instruments/gstelementheadstone.h; sourceTree = "<group>"; };
 		F1D46F7E1B94B923002591EE /* gst-report */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "gst-report"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1D46F7F1B94B948002591EE /* gst-report.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-report.c"; path = "../instruments/gst-report.c"; sourceTree = "<group>"; };
-		F1F5A6941BAED50E00743D04 /* gst-trace-parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-trace-parser.c"; path = "../instruments/gst-trace-parser.c"; sourceTree = "<group>"; };
-		F1F5A6951BAED50E00743D04 /* gst-trace-parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gst-trace-parser.h"; path = "../instruments/gst-trace-parser.h"; sourceTree = "<group>"; };
+		F1F5A6941BAED50E00743D04 /* gstgraveyard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstgraveyard.c; path = ../instruments/gstgraveyard.c; sourceTree = "<group>"; };
+		F1F5A6951BAED50E00743D04 /* gstgraveyard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstgraveyard.h; path = ../instruments/gstgraveyard.h; sourceTree = "<group>"; };
 		F1F5A6971BAEF42300743D04 /* formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = formatters.c; path = ../instruments/formatters.c; sourceTree = "<group>"; };
 		F1F5A6981BAEF42300743D04 /* formatters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../instruments/formatters.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -98,14 +101,16 @@
 			children = (
 				F1D46F7F1B94B948002591EE /* gst-report.c */,
 				F13483FB1B7CAB0C007BBFD5 /* gst-top.c */,
-				F1F5A6941BAED50E00743D04 /* gst-trace-parser.c */,
-				F1F5A6951BAED50E00743D04 /* gst-trace-parser.h */,
+				F1F5A6941BAED50E00743D04 /* gstgraveyard.c */,
+				F1F5A6951BAED50E00743D04 /* gstgraveyard.h */,
 				F1F5A6971BAEF42300743D04 /* formatters.c */,
 				F1F5A6981BAEF42300743D04 /* formatters.h */,
 				F1BEF8251BE3F10C00A3B084 /* gsttaskheadstone.c */,
 				F1BEF8261BE3F10C00A3B084 /* gsttaskheadstone.h */,
 				F1BEF8291BE3F46600A3B084 /* gstpadheadstone.c */,
 				F1BEF82A1BE3F46600A3B084 /* gstpadheadstone.h */,
+				F1BEF82C1BE3F63000A3B084 /* gstelementheadstone.c */,
+				F1BEF82D1BE3F63000A3B084 /* gstelementheadstone.h */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -245,7 +250,7 @@
 			files = (
 				F1F5A6991BAEF42300743D04 /* formatters.c in Sources */,
 				F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */,
-				F1F5A6961BAED50E00743D04 /* gst-trace-parser.c in Sources */,
+				F1F5A6961BAED50E00743D04 /* gstgraveyard.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1D46F811B94BBD0002591EE /* gst-report.c in Sources */,
+				F1BEF82E1BE3F63000A3B084 /* gstelementheadstone.c in Sources */,
 				F1BEF8271BE3F10C00A3B084 /* gsttaskheadstone.c in Sources */,
 				F1BEF82B1BE3F46600A3B084 /* gstpadheadstone.c in Sources */,
 			);

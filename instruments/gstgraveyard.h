@@ -23,28 +23,6 @@
 #include <glib.h>
 #include <gst/gst.h>
 
-typedef struct GstElementHeadstone
-{
-  gpointer                              identifier;
-  GString                              *name;
-  GString                              *type_name;
-  
-  struct GstElementHeadstone           *parent;
-  GList                                *children;
-  gint                                  nesting;
-  
-  guint64                               bytes_sent;
-  guint64                               bytes_received;
-  GList                                *from;
-  GList                                *to;
-  GHashTable                           *pads;
-  
-  gboolean                              is_subtopstack;
-  guint64                               total_time;
-  float                                 cpu_load;
-
-} GstElementHeadstone;
-
 typedef struct GstGraveyard
 {
   GHashTable                           *tasks;
@@ -62,13 +40,6 @@ GstGraveyard *      gst_graveyard_new_from_trace           (const char          
                                                             GstClockTime             from,
                                                             GstClockTime             till,
                                                             gboolean                 query_duration_only);
-
-void                gst_element_headstone_add_child        (GstElementHeadstone     *parent,
-                                                            GstElementHeadstone     *child);
-
-guint64             gst_element_headstone_get_nested_time  (GstElementHeadstone     *element);
-
-gfloat              gst_element_headstone_get_nested_load  (GstElementHeadstone     *element);
 
 void                gst_graveyard_free                     (GstGraveyard            *graveyard);
 

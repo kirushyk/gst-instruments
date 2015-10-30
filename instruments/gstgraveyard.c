@@ -20,9 +20,10 @@
 #define TIMESTAMP_FITS(ts, min, max) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
   (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
 
+#include "gstgraveyard.h"
 #include "gstpadheadstone.h"
 #include "gsttaskheadstone.h"
-#include "gst-trace-parser.h"
+#include "gstelementheadstone.h"
 #include <stdio.h>
 
 static GstElementHeadstone *
@@ -93,37 +94,6 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
     element->nesting++;
   element->cpu_load = (float)element->total_time / (float)(graveyard->till - graveyard->from);
   g_array_append_val (graveyard->elements_sorted, value);
-}
-
-void
-gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadstone *child)
-{
-  GList *iterator;
-  child->parent = parent;
-  for (iterator = parent->children; iterator != NULL; iterator = iterator->next)
-    if (iterator->data == child)
-      return;
-  parent->children = g_list_prepend (parent->children, child);
-}
-
-guint64
-gst_element_headstone_get_nested_time (GstElementHeadstone *element)
-{
-  GList *child;
-  guint64 result = element->total_time;
-  for (child = element->children; child != NULL; child = child->next)
-    result += gst_element_headstone_get_nested_time (child->data);
-  return result;
-}
-
-gfloat
-gst_element_headstone_get_nested_load (GstElementHeadstone *element)
-{
-  GList *child;
-  gfloat result = element->cpu_load;
-  for (child = element->children; child != NULL; child = child->next)
-    result += gst_element_headstone_get_nested_load (child->data);
-  return result;
 }
 
 GstGraveyard *
