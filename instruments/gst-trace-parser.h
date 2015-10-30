@@ -23,22 +23,6 @@
 #include <glib.h>
 #include <gst/gst.h>
 
-typedef struct GstTaskHeadstone
-{
-  gpointer                              identifier;
-  GString                              *name;
-
-  gpointer                              upstack_element_identifier;
-
-  guint64                               current_downstack_time;
-  guint64                               total_downstack_time;
-  gboolean                              currently_in_upstack_element;
-  guint64                               upstack_enter_timestamp;
-  guint64                               upstack_exit_timestamp;
-  guint64                               total_upstack_time;
-
-} GstTaskHeadstone;
-
 typedef struct GstPadHeadstone
 {
   gpointer                              identifier;

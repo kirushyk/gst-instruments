@@ -21,6 +21,7 @@
   (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
 
 #include "gst-trace-parser.h"
+#include "gsttaskheadstone.h"
 #include <stdio.h>
 
 static GstElementHeadstone *
