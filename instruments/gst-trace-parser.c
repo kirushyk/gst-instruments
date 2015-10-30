@@ -20,8 +20,9 @@
 #define TIMESTAMP_FITS(ts, min, max) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
   (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
 
-#include "gst-trace-parser.h"
+#include "gstpadheadstone.h"
 #include "gsttaskheadstone.h"
+#include "gst-trace-parser.h"
 #include <stdio.h>
 
 static GstElementHeadstone *

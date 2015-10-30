@@ -20,6 +20,7 @@
 #include "formatters.h"
 #include <config.h>
 #include "gst-trace-parser.h"
+#include "gstpadheadstone.h"
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
