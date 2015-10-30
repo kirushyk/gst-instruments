@@ -63,7 +63,6 @@
 		F1F5A6951BAED50E00743D04 /* gst-trace-parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gst-trace-parser.h"; path = "../instruments/gst-trace-parser.h"; sourceTree = "<group>"; };
 		F1F5A6971BAEF42300743D04 /* formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = formatters.c; path = ../instruments/formatters.c; sourceTree = "<group>"; };
 		F1F5A6981BAEF42300743D04 /* formatters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../instruments/formatters.h; sourceTree = "<group>"; };
-		F1F5A69B1BAF13BA00743D04 /* configure-static.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "configure-static.h"; path = "../configure-static.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +120,6 @@
 		F1B7C95E1B766B4E00636C88 = {
 			isa = PBXGroup;
 			children = (
-				F1F5A69B1BAF13BA00743D04 /* configure-static.h */,
 				F13483FF1B7CC9F9007BBFD5 /* libgstintercept */,
 				F13483FE1B7CC9F1007BBFD5 /* tools */,
 				F1B7C9681B766B4E00636C88 /* Products */,
