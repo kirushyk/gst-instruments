@@ -32,6 +32,16 @@ libgstintercept
 
 Intercepts GStreamer ABI calls and records communication between the App and GStreamer into the trace file. 
 
+	$ DYLD_FORCE_FLAT_NAMESPACE= DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib GST_DEBUG_DUMP_TRACE_DIR=. gst-play-1.0 ~/Music/Snowman.mp3 --audiosink=fakesink
+	Press 'k' to see a list of keyboard shortcuts.
+	Now playing /Users/cyril/Music/Snowman.mp3
+	0:04:29.5 / 0:04:29.5       
+	Reached end of play list.
+	
+	$ ls *.gsttrace
+	playbin.gsttrace
+	$ 
+
 gst-report
 ----------
 
