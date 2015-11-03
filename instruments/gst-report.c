@@ -55,7 +55,7 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
 {
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   GstElementHeadstone *element = (GstElementHeadstone *)user_data;
-  gint space = (element->nesting + 1);
+  gint space = (element->nesting_level + 1);
   render_space (space);
   g_print ("subgraph cluster_eg%p_pad_%p {\n", element->identifier, pad->identifier);
   space++;
@@ -97,7 +97,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   gint j;
   
   guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
-  gsize space = element->nesting;
+  gsize space = element->nesting_level;
   
   if (hierarchy) {
     render_space (space);
@@ -108,7 +108,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (dot && (element->parent == NULL)) {
-    space = (element->nesting + 1);
+    space = (element->nesting_level + 1);
     render_space (space);
     g_print ("rankdir=LR;\n");
     render_space (space);
@@ -144,7 +144,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (dot) {
-    space = (element->nesting + 1);
+    space = (element->nesting_level + 1);
     render_space (space);
     g_print ("fillcolor=\"#ffffff\";\n");
     g_hash_table_foreach (element->pads, render_pad, element);
@@ -181,7 +181,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     g_print ("%s", element->name->str);
   }
 
-  space = max_length - element->name->len - ((hierarchy && !dot) ? element->nesting : 0);
+  space = max_length - element->name->len - ((hierarchy && !dot) ? element->nesting_level : 0);
   for (j = 0; j < space; j++)
     g_print (" ");
   
@@ -220,7 +220,7 @@ render_connection (gpointer key, gpointer value, gpointer user_data)
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   if (pad->direction == GST_PAD_SRC) {
     GstElementHeadstone *element = (GstElementHeadstone *)user_data;
-    gint space = (element->nesting + 1);
+    gint space = (element->nesting_level + 1);
     render_space (space);
     gchar *memory_sent_size_string = format_memory_size (pad->bytes);
     g_print ("en%p_pad_%p -> en%p_pad_%p [label=\"%s\"];\n", element->identifier, pad->identifier, pad->peer_element, pad->peer, memory_sent_size_string);
@@ -241,7 +241,7 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     }
   }
   if (dot) {
-    render_space (element->nesting);
+    render_space (element->nesting_level);
     g_print ("}\n");
   }
 }
@@ -289,8 +289,8 @@ main (gint argc, gchar *argv[])
   
   for (i = 0; i < graveyard->elements_sorted->len; i++) {
     GstElementHeadstone *element = g_array_index (graveyard->elements_sorted, GstElementHeadstone *, i);
-    if (element->name->len + element->nesting > max_length) {
-      max_length = element->name->len + element->nesting;
+    if (element->name->len + element->nesting_level > max_length) {
+      max_length = element->name->len + element->nesting_level;
     }
     if (element->type_name && element->type_name->len > max_type_name_length) {
       max_type_name_length = element->type_name->len;

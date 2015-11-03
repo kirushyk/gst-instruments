@@ -31,7 +31,7 @@ typedef struct GstElementHeadstone
   
   struct GstElementHeadstone           *parent;
   GList                                *children;
-  gint                                  nesting;
+  gint                                  nesting_level;
   
   guint64                               bytes_sent;
   guint64                               bytes_received;

@@ -45,7 +45,7 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
     element->identifier = element_id;
     element->parent = NULL;
     element->children = NULL;
-    element->nesting = 0;
+    element->nesting_level = 0;
     element->name = NULL;
     element->type_name = NULL;
     element->total_time = 0;
@@ -89,9 +89,9 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
     element->name = g_string_new("?");
   if (element->type_name == NULL)
     element->type_name = g_string_new("?");
-  element->nesting = 0;
+  element->nesting_level = 0;
   for (parent = element->parent; parent != NULL; parent = parent->parent)
-    element->nesting++;
+    element->nesting_level++;
   element->cpu_load = (float)element->total_time / (float)(graveyard->till - graveyard->from);
   g_array_append_val (graveyard->elements_sorted, value);
 }
