@@ -14,6 +14,7 @@
 		F1BEF82B1BE3F46600A3B084 /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF8291BE3F46600A3B084 /* gstpadheadstone.c */; };
 		F1BEF82E1BE3F63000A3B084 /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF82C1BE3F63000A3B084 /* gstelementheadstone.c */; };
 		F1D46F811B94BBD0002591EE /* gst-report.c in Sources */ = {isa = PBXBuildFile; fileRef = F1D46F7F1B94B948002591EE /* gst-report.c */; };
+		F1DEDFB61BE938EE0098360E /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F1BEF82C1BE3F63000A3B084 /* gstelementheadstone.c */; };
 		F1F5A6961BAED50E00743D04 /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6941BAED50E00743D04 /* gstgraveyard.c */; };
 		F1F5A6991BAEF42300743D04 /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6971BAEF42300743D04 /* formatters.c */; };
 /* End PBXBuildFile section */
@@ -249,6 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1F5A6991BAEF42300743D04 /* formatters.c in Sources */,
+				F1DEDFB61BE938EE0098360E /* gstelementheadstone.c in Sources */,
 				F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */,
 				F1F5A6961BAED50E00743D04 /* gstgraveyard.c in Sources */,
 			);
@@ -337,7 +339,6 @@
 					../,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/libsoup/2.52.0/lib,
 					"/usr/local/Cellar/gst-plugins-base/1.6.0/lib",
 					/usr/local/Cellar/gstreamer/1.6.0/lib,
 					"/usr/local/Cellar/json-glib/1.0.4/lib",
@@ -411,7 +412,6 @@
 					../,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/usr/local/Cellar/libsoup/2.52.0/lib,
 					"/usr/local/Cellar/gst-plugins-base/1.6.0/lib",
 					/usr/local/Cellar/gstreamer/1.6.0/lib,
 					"/usr/local/Cellar/json-glib/1.0.4/lib",
