@@ -96,7 +96,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
 {
   gint j;
   
-  guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
+  guint64 total_cpu_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_cpu_time;
   gsize space = element->nesting_level;
   
   if (hierarchy) {
@@ -150,8 +150,8 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
     g_hash_table_foreach (element->pads, render_pad, element);
     g_hash_table_foreach (element->pads, bind_sink_pad, element);
     render_space (space);
-    guint64 total_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_time;
-    gchar *time_string = format_time (total_time, mu);
+    guint64 total_cpu_time = nested_time ? gst_element_headstone_get_nested_time (element) : element->total_cpu_time;
+    gchar *time_string = format_time (total_cpu_time, mu);
     
     g_print ("label=<<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">"
              "<TR>"
@@ -172,7 +172,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
              "<TD ALIGN=\"RIGHT\">CPU:</TD>"
              "<TD ALIGN=\"RIGHT\">%5.1f%%</TD>"
              "</TR>"
-             "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_time * 100.f / graveyard->total_time, (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.0f);
+             "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_cpu_time * 100.f / graveyard->total_cpu_time, (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.0f);
   
     g_free (time_string);
   }
@@ -199,8 +199,8 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
   }
   
   if (!dot) {
-    gchar *time_string = format_time (total_time, mu);
-    g_print (" %5.1f  %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, total_time * 100.0f / graveyard->total_time, time_string);
+    gchar *time_string = format_time (total_cpu_time, mu);
+    g_print (" %5.1f  %5.1f  %8s", (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.f, total_cpu_time * 100.0f / graveyard->total_cpu_time, time_string);
     g_free (time_string);
   }
   

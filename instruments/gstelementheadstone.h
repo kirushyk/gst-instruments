@@ -38,7 +38,7 @@ typedef struct GstElementHeadstone
   GHashTable                           *pads;
   
   gboolean                              is_subtopstack;
-  guint64                               total_time;
+  guint64                               total_cpu_time;
   float                                 cpu_load;
   
 } GstElementHeadstone;

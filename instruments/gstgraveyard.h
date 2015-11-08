@@ -28,7 +28,7 @@ typedef struct GstGraveyard
   GHashTable                           *tasks;
   GHashTable                           *elements;
   GArray                               *elements_sorted;
-  GstClockTime                          total_time;
+  GstClockTime                          total_cpu_time;
   
   GstClockTime                          from;
   GstClockTime                          till;
