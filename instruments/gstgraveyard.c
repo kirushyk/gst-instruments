@@ -38,8 +38,6 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
     element = g_new0 (GstElementHeadstone, 1);
     element->bytes_sent = 0;
     element->bytes_received = 0;
-    element->from = NULL;
-    element->to = NULL;
     element->pads = g_hash_table_new (g_direct_hash, g_direct_equal);
     element->is_subtopstack = FALSE;
     element->identifier = element_id;
@@ -205,9 +203,6 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         
         if (TIMESTAMP_FITS (event_timestamp, from, till)) {
           element->bytes_sent += size;
-          if (!g_list_find (element->to, element_to)) {
-            element->to = g_list_prepend (element->to, element_to);
-          }
           
           GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_from);
           if (!pad)
@@ -229,9 +224,6 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         
         if (TIMESTAMP_FITS (event_timestamp, from, till)) {
           element->bytes_received += size;
-          if (!g_list_find (element->from, element_from)) {
-            element->from = g_list_prepend (element->from, element_from);
-          }
           
           GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_to);
           if (!pad)

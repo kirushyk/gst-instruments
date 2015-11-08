@@ -35,8 +35,6 @@ typedef struct GstElementHeadstone
   
   guint64                               bytes_sent;
   guint64                               bytes_received;
-  GList                                *from;
-  GList                                *to;
   GHashTable                           *pads;
   
   gboolean                              is_subtopstack;
