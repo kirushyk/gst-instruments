@@ -100,10 +100,7 @@ gpointer trace_heir (GstElement *element)
   if (element == NULL)
     return NULL;
   
-  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent))
-  {
-
-  }
+  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent));
   
   return parent;
 }
