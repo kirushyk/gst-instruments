@@ -22,7 +22,8 @@
 #include <config.h>
 
 gint
-main (gint argc, gchar *argv[]) {
+main (gint argc, gchar *argv[])
+{
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
   

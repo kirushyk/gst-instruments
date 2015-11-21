@@ -27,7 +27,8 @@ gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
 gboolean show_memory = FALSE, show_types = FALSE, hierarchy = FALSE, nested_time = FALSE, dot = FALSE, simple_pads = FALSE, dur_only = FALSE, mu = FALSE;
 
-static GOptionEntry entries[] = {
+static GOptionEntry entries[] =
+{
   { "from",      0, 0, G_OPTION_ARG_DOUBLE, &from,        "Do not take events before timestamp into account", NULL },
   { "till",      0, 0, G_OPTION_ARG_DOUBLE, &till,        "Do not take events after timestamp into account",  NULL },
   { "memory",    0, 0, G_OPTION_ARG_NONE,   &show_memory, "Show memory usage",                                NULL },
@@ -74,7 +75,8 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
 }
 
 void
-bind_src_pad (gpointer key, gpointer value, gpointer user_data) {
+bind_src_pad (gpointer key, gpointer value, gpointer user_data)
+{
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   if (pad->direction == GST_PAD_SRC) {
     GstPadHeadstone *sink_pad = (GstPadHeadstone *)user_data;
@@ -83,7 +85,8 @@ bind_src_pad (gpointer key, gpointer value, gpointer user_data) {
 }
 
 void
-bind_sink_pad (gpointer key, gpointer value, gpointer user_data) {
+bind_sink_pad (gpointer key, gpointer value, gpointer user_data)
+{
   GstPadHeadstone *pad = (GstPadHeadstone *)value;
   if (pad->direction == GST_PAD_SINK) {
     GstElementHeadstone *element = (GstElementHeadstone *)user_data;
