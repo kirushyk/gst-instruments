@@ -70,10 +70,10 @@ public class MainWindow: Gtk.ApplicationWindow
 
 			working_trace_path = path;
 
-			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tsvg > ./gst-instruments-temp.svg";
+			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tpng > gst-instruments-temp.bmp";
 			Posix.system (command);
 
-			var graph = new Gtk.Image.from_file ("./gst-instruments-temp.svg");
+			var graph = new Gtk.Image.from_file ("gst-instruments-temp.bmp");
 			scrolled_window.add (graph);
 			scrolled_window.show_all ();
             
