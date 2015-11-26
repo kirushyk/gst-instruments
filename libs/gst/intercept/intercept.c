@@ -83,7 +83,7 @@ get_libgstreamer ()
 #if __MACH__
 			"libgstreamer-1.0.dylib",
 #else
-			"libgstreamer-1.0.so",
+			"libgstreamer-1.0.so.0",
 #endif
 			RTLD_NOW);
   }
