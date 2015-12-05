@@ -28,4 +28,9 @@ typedef enum GstTraceEntryType
   GST_TRACE_ENTRY_TYPE_DATA_SENT
 } GstTraceEntryType;
 
+typedef struct GstTraceEntry
+{
+  GstTraceEntryType type;
+} GstTraceEntry;
+
 #endif
