@@ -21,6 +21,7 @@
 #include <sys/time.h>
 #include <glib.h>
 #include <stdio.h>
+#include "../trace/entry.h"
 
 #ifdef __MACH__
 #include <mach/clock.h>

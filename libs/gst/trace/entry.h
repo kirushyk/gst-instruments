@@ -20,6 +20,8 @@
 #ifndef __GST_TRACE_ENTRY_H__
 #define __GST_TRACE_ENTRY_H__
 
+#include <glib.h>
+
 typedef enum GstTraceEntryType
 {
   GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED,
@@ -31,6 +33,8 @@ typedef enum GstTraceEntryType
 typedef struct GstTraceEntry
 {
   GstTraceEntryType type;
+  GstClockTime timestamp;
+  GstPipeline *pipeline;
 } GstTraceEntry;
 
 #endif
