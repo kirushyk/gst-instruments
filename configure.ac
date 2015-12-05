@@ -45,6 +45,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile instruments/Makefile data/Makefile ui/Makefile])
 
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Base trace filename])
+AC_DEFINE([GST_ELEMENT_TYPE_NAME_LENGTH_MAX], [128], [Max length of type name of GstElement])
 
 AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable feature ui]))
 
