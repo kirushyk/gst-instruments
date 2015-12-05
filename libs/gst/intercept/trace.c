@@ -46,12 +46,6 @@ GstClockTime current_monotonic_time()
 
 GMutex trace_mutex;
 
-typedef struct TraceEntry {
-  GstClockTime timestamp;
-  GstPipeline *pipeline;
-  gchar *text;
-} TraceEntry;
-
 GList *trace_entries = NULL;
 GstClockTime startup_time = GST_CLOCK_TIME_NONE;
 
@@ -99,10 +93,9 @@ trace_add_entry (GstPipeline *pipeline, gchar *text)
   }
   current_time -= startup_time;
   
-  TraceEntry *entry = g_new0 (TraceEntry, 1);
-  entry->pipeline = pipeline;
-  entry->timestamp = current_time;
-  entry->text = text;
+  GstTraceEntry *trace_entry = g_new0 (GstTraceEntry, 1);
+  trace_entry->pipeline = pipeline;
+  trace_entry->timestamp = current_time;
   
   g_mutex_lock (&trace_mutex);
   trace_entries = g_list_prepend (trace_entries, entry);
