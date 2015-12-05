@@ -20,16 +20,16 @@
 #include "formatters.h"
 
 gchar *
-format_time (GstClockTime nanoseconds, gboolean use_mu)
+format_time (GstClockTime nanoseconds, gboolean use_mu_symbol)
 {
   if (nanoseconds < 1000)
     return g_strdup_printf ("%" G_GUINT64_FORMAT " ns", nanoseconds);
   else if (nanoseconds < 10000)
-    return g_strdup_printf ("%.2f %ss", 0.001 * nanoseconds, use_mu ? "μ" : "u");
+    return g_strdup_printf ("%.2f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
   else if (nanoseconds < 100000)
-    return g_strdup_printf ("%.1f %ss", 0.001 * nanoseconds, use_mu ? "μ" : "u");
+    return g_strdup_printf ("%.1f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
   else if (nanoseconds < 1000000)
-    return g_strdup_printf ("%.0f %ss", 0.001 * nanoseconds, use_mu ? "μ" : "u");
+    return g_strdup_printf ("%.0f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
   else if (nanoseconds < 10000000)
     return g_strdup_printf ("%.2f ms", 0.000001 * nanoseconds);
   else if (nanoseconds < 100000000)
