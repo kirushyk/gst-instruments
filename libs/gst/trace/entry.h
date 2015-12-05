@@ -21,6 +21,7 @@
 #define __GST_TRACE_ENTRY_H__
 
 #include <glib.h>
+#include "../../../config.h"
 
 typedef enum GstTraceEntryType
 {
@@ -34,7 +35,16 @@ typedef struct GstTraceEntry
 {
   GstTraceEntryType type;
   GstClockTime timestamp;
-  GstPipeline *pipeline;
+  gpointer pipeline;
 } GstTraceEntry;
+
+typedef struct GstTraceElementDiscoveredEntry
+{
+  GstTraceEntry entry;
+  gpointer element_id;
+  gpointer element_name;
+  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gpointer parent_element_id;
+} GstTraceElementDiscoveredEntry;
 
 #endif
