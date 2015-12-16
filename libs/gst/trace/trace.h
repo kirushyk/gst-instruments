@@ -30,7 +30,8 @@ typedef struct GstTrace GstTrace;
 
 GstTrace *          gst_trace_new                          (void);
 
-void                gst_trace_add_entry                    (GstPipeline        *pipeline,
+void                gst_trace_add_entry                    (GstTrace           *trace,
+                                                            GstPipeline        *pipeline,
                                                             GstTraceEntry      *entry);
 
 
