@@ -21,6 +21,7 @@
 #include <sys/time.h>
 #include <glib.h>
 #include <stdio.h>
+#include "trace.h"
 #include "../trace/entry.h"
 
 #ifdef __MACH__
@@ -81,9 +82,23 @@ gst_element_dump_to_file (GstElement *element, const gchar *filename)
   fclose (output);
 }
 
-void trace_init (void)
+GstTrace *
+gst_trace_new (void)
 {
-  g_mutex_init (&trace_mutex);
+  GstTrace *trace = g_new0 (GstTrace, 1);
+  trace->startup_time = GST_CLOCK_TIME_NONE;
+  trace->trace_entries = NULL;
+  g_mutex_init (&trace->trace_mutex);
+}
+
+void
+gst_trace_free (GstTrace *trace)
+{
+  g_mutex_lock (&trace->trace_mutex);
+  trace->trace_entries = g_list_remove_all(trace->trace_entries, NULL);
+  g_mutex_unlock (&trace->trace_mutex);
+  g_mutex_clear (&trace->trace_mutex);
+  g_free(trace);
 }
 
 void
