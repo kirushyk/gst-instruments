@@ -57,4 +57,6 @@ typedef struct GstTraceElementEnteredEntry
   gchar downstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
 } GstTraceElementEnteredEntry;
 
+void            gst_trace_entry_init (GstTraceEntry *);
+
 #endif

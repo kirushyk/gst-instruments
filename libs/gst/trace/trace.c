@@ -24,26 +24,6 @@
 #include "trace.h"
 #include "../trace/entry.h"
 
-#ifdef __MACH__
-#include <mach/clock.h>
-#include <mach/mach.h>
-#endif
-
-GstClockTime current_monotonic_time()
-{
-#ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-  host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
-  return mts.tv_sec * GST_SECOND + mts.tv_nsec;
-#else
-  struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
-#endif
-}
 
 struct GstTrace
 {
@@ -102,19 +82,10 @@ gst_trace_free (GstTrace *trace)
 }
 
 void
-trace_add_entry (GstPipeline *pipeline, gchar *text)
+trace_add_entry (GstTrace *trace, GstElement *pipeline, GstTraceEntry  *entry)
 {
-  GstClockTime current_time = current_monotonic_time ();
-  if (GST_CLOCK_TIME_NONE == startup_time) {
-    startup_time = current_time;
-  }
-  current_time -= startup_time;
   
-  GstTraceEntry *trace_entry = g_new0 (GstTraceEntry, 1);
-  trace_entry->pipeline = pipeline;
-  trace_entry->timestamp = current_time;
-  
-  g_mutex_lock (&trace_mutex);
-  trace_entries = g_list_prepend (trace_entries, entry);
-  g_mutex_unlock (&trace_mutex);
+  g_mutex_lock (&trace->trace_mutex);
+  trace_entries = g_list_prepend (trace->trace_entries, entry);
+  g_mutex_unlock (&trace->trace_mutex);
 }

@@ -34,6 +34,8 @@
 # include <mach/mach_init.h>
 # include <mach/thread_act.h>
 # include <mach/mach_port.h>
+# include <mach/clock.h>
+# include <mach/mach.h>
 # define THREAD thread_port_t
 #else
 # include <signal.h>
@@ -73,6 +75,31 @@ GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NUL
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
 gboolean (*gst_pad_push_event_orig) (GstPad *pad, GstEvent *event) = NULL;
 GstStateChangeReturn (*gst_element_set_state_orig) (GstElement *element, GstState state) = NULL;
+
+GstClockTime current_monotonic_time()
+{
+#ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  return mts.tv_sec * GST_SECOND + mts.tv_nsec;
+#else
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
+#endif
+}
+
+void add_entry ()
+{
+  GstClockTime current_time = current_monotonic_time ();
+  if (trace->startup_time == GST_CLOCK_TIME_NONE) {
+    trace->startup_time = current_time;
+  }
+  current_time -= trace->startup_time;
+}
 
 void *
 get_libgstreamer ()
