@@ -52,3 +52,10 @@ gst_trace_entry_init (GstTraceEntry *entry)
   entry->timestamp = GST_CLOCK_TIME_NONE;
   entry->pipeline = NULL;
 }
+
+void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
+{
+  gst_trace_entry_init ((GstTraceEntry *)entry);
+  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
+}
+
