@@ -19,8 +19,36 @@
 
 #include "entry.h"
 
+typedef struct GstTraceEntry
+{
+  GstTraceEntryType type;
+  GstClockTime timestamp;
+  gpointer pipeline;
+} GstTraceEntry;
+
+typedef struct GstTraceElementDiscoveredEntry
+{
+  GstTraceEntry entry;
+  gpointer element_id;
+  gchar element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gpointer parent_element_id;
+} GstTraceElementDiscoveredEntry;
+
+typedef struct GstTraceElementEnteredEntry
+{
+  GstTraceEntry entry;
+  gpointer thread_id;
+  gpointer upperstack_element_id;
+  gpointer downstack_element_id;
+  gchar upperstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gchar downstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+} GstTraceElementEnteredEntry;
 
 void
 gst_trace_entry_init (GstTraceEntry *entry)
 {
+  entry->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
+  entry->timestamp = GST_CLOCK_TIME_NONE;
+  entry->pipeline = NULL;
 }

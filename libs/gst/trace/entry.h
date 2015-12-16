@@ -21,41 +21,23 @@
 #define __GST_TRACE_ENTRY_H__
 
 #include <glib.h>
+#include <gst/gst.h>
 #include "../../../config.h"
 
 typedef enum GstTraceEntryType
 {
+  GST_TRACE_ENTRY_TYPE_UNKNOWN,
   GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED,
   GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED,
   GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED,
   GST_TRACE_ENTRY_TYPE_DATA_SENT
 } GstTraceEntryType;
 
-typedef struct GstTraceEntry
-{
-  GstTraceEntryType type;
-  GstClockTime timestamp;
-  gpointer pipeline;
-} GstTraceEntry;
+typedef struct GstTraceEntry GstTraceEntry;
 
-typedef struct GstTraceElementDiscoveredEntry
-{
-  GstTraceEntry entry;
-  gpointer element_id;
-  gchar element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gpointer parent_element_id;
-} GstTraceElementDiscoveredEntry;
+typedef struct GstTraceElementDiscoveredEntry GstTraceElementDiscoveredEntry;
 
-typedef struct GstTraceElementEnteredEntry
-{
-  GstTraceEntry entry;
-  gpointer thread_id;
-  gpointer upperstack_element_id;
-  gpointer downstack_element_id;
-  gchar upperstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gchar downstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-} GstTraceElementEnteredEntry;
+typedef struct GstTraceElementEnteredEntry GstTraceElementEnteredEntry;
 
 void            gst_trace_entry_init (GstTraceEntry *);
 
