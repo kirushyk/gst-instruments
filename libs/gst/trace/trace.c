@@ -44,10 +44,12 @@ GstClockTime current_monotonic_time()
 #endif
 }
 
-GMutex trace_mutex;
-
-GList *trace_entries = NULL;
-GstClockTime startup_time = GST_CLOCK_TIME_NONE;
+struct GstTrace
+{
+  GMutex        trace_mutex;
+  GList        *trace_entries;
+  GstClockTime  startup_time;
+}
 
 void
 gst_element_dump_to_file (GstElement *element, const gchar *filename)
