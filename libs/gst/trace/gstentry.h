@@ -39,6 +39,10 @@ typedef struct GstTraceElementDiscoveredEntry GstTraceElementDiscoveredEntry;
 
 typedef struct GstTraceElementEnteredEntry GstTraceElementEnteredEntry;
 
+typedef struct GstTraceElementExitedEntry GstTraceElementExitedEntry;
+
+typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
+
 void gst_trace_entry_init (GstTraceEntry *);
 
 void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *);
