@@ -24,7 +24,6 @@
 #include "trace.h"
 #include "../trace/entry.h"
 
-
 struct GstTrace
 {
   GMutex        trace_mutex;

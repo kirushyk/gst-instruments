@@ -13,12 +13,16 @@
 		F134840D1B7CCD99007BBFD5 /* gstintercept.c in Sources */ = {isa = PBXBuildFile; fileRef = F13484001B7CCA09007BBFD5 /* gstintercept.c */; };
 		F14B26331C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
 		F14B26341C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
+		F16CD3031C343A4900FBDAEB /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55801C2F39CB006261FB /* gstelementheadstone.c */; };
+		F16CD3041C343A4900FBDAEB /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55821C2F39CB006261FB /* gstgraveyard.c */; };
+		F16CD3051C343A4900FBDAEB /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55841C2F39CB006261FB /* gstpadheadstone.c */; };
+		F16CD3061C343A4900FBDAEB /* gsttaskheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55861C2F39CB006261FB /* gsttaskheadstone.c */; };
+		F16CD3071C343A6000FBDAEB /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6971BAEF42300743D04 /* formatters.c */; };
 		F18C55881C2F39CB006261FB /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55801C2F39CB006261FB /* gstelementheadstone.c */; };
 		F18C55891C2F39CB006261FB /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55821C2F39CB006261FB /* gstgraveyard.c */; };
 		F18C558A1C2F39CB006261FB /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55841C2F39CB006261FB /* gstpadheadstone.c */; };
 		F18C558B1C2F39CB006261FB /* gsttaskheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55861C2F39CB006261FB /* gsttaskheadstone.c */; };
 		F1D46F811B94BBD0002591EE /* gst-report.c in Sources */ = {isa = PBXBuildFile; fileRef = F1D46F7F1B94B948002591EE /* gst-report.c */; };
-		F1F5A6991BAEF42300743D04 /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6971BAEF42300743D04 /* formatters.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -255,8 +259,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1320D961C21C3BC002BD63A /* gstentry.c in Sources */,
+				F16CD3061C343A4900FBDAEB /* gsttaskheadstone.c in Sources */,
+				F16CD3031C343A4900FBDAEB /* gstelementheadstone.c in Sources */,
+				F16CD3051C343A4900FBDAEB /* gstpadheadstone.c in Sources */,
 				F134840D1B7CCD99007BBFD5 /* gstintercept.c in Sources */,
 				F14B26331C138BDE00852101 /* gsttrace.c in Sources */,
+				F16CD3041C343A4900FBDAEB /* gstgraveyard.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,7 +272,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1F5A6991BAEF42300743D04 /* formatters.c in Sources */,
 				F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,6 +284,7 @@
 				F1320D971C21C3C8002BD63A /* gstentry.c in Sources */,
 				F18C55891C2F39CB006261FB /* gstgraveyard.c in Sources */,
 				F18C558B1C2F39CB006261FB /* gsttaskheadstone.c in Sources */,
+				F16CD3071C343A6000FBDAEB /* formatters.c in Sources */,
 				F1D46F811B94BBD0002591EE /* gst-report.c in Sources */,
 				F14B26341C138BDE00852101 /* gsttrace.c in Sources */,
 				F18C558A1C2F39CB006261FB /* gstpadheadstone.c in Sources */,
