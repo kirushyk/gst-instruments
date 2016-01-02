@@ -484,7 +484,10 @@
 		F1D46F7C1B94B923002591EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBGUG=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBGUG=1",
+					"DATADIR=\"/usr/local/share/\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
