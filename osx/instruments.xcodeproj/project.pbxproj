@@ -495,7 +495,7 @@
 		F1D46F7D1B94B923002591EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "DATADIR=\"/usr/local/share/\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
