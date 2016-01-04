@@ -24,6 +24,12 @@
 gint
 main (gint argc, gchar *argv[])
 {
+
+  if (argc < 2){
+    g_print("Usage: %s PROG [ARGS]\n", argv[0]);
+    return -1;
+  }
+
   g_set_prgname ("gst-top-1.0");
   g_set_application_name ("GStreamer Top Tool");
   
