@@ -60,7 +60,6 @@
 		F13483FB1B7CAB0C007BBFD5 /* gst-top.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-top.c"; path = "../instruments/gst-top.c"; sourceTree = "<group>"; };
 		F13484001B7CCA09007BBFD5 /* gstintercept.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gstintercept.c; path = ../libs/gst/intercept/gstintercept.c; sourceTree = "<group>"; };
 		F13484011B7CCA09007BBFD5 /* gstintercept.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gstintercept.h; path = ../libs/gst/intercept/gstintercept.h; sourceTree = "<group>"; };
-		F13484021B7CCA09007BBFD5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = ../libs/gst/intercept/Makefile; sourceTree = "<group>"; };
 		F134840C1B7CCD8F007BBFD5 /* libgstintercept */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libgstintercept; sourceTree = BUILT_PRODUCTS_DIR; };
 		F145A79F1C0B771C005EBF9F /* gstentry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gstentry.h; path = ../libs/gst/trace/gstentry.h; sourceTree = "<group>"; };
 		F14B26311C138BDE00852101 /* gsttrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gsttrace.c; path = ../libs/gst/trace/gsttrace.c; sourceTree = "<group>"; };
@@ -121,7 +120,6 @@
 			children = (
 				F13484001B7CCA09007BBFD5 /* gstintercept.c */,
 				F13484011B7CCA09007BBFD5 /* gstintercept.h */,
-				F13484021B7CCA09007BBFD5 /* Makefile */,
 			);
 			name = libgstintercept;
 			sourceTree = "<group>";
