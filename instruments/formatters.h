@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <gst/gst.h>
 
+/* Use g_free to release memory taken by return value */
 gchar *             format_time                           (GstClockTime        nanoseconds,
                                                            gboolean            use_mu_symbol);
 
