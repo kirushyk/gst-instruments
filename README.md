@@ -1,7 +1,9 @@
 GStreamer Instruments
 =====================
 
-GStreamer Instruments is a performance analyzing set of tools for time profiling and data flow inspection of GStreamer pipelines.
+GStreamer Instruments is a set of performance analyzing tools for time profiling of GStreamer pipelines and data flow inspection.
+
+![GStreamer Instruments UI](https://pp.vk.me/c631316/v631316037/c00e/OV9WH6sGE6s.jpg)
 
 gst-top
 -------
