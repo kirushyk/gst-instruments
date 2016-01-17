@@ -21,7 +21,6 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AM_PROG_VALAC
 AC_PROG_MAKE_SET
 AC_PREREQ
 
@@ -49,6 +48,7 @@ AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Base trace filename])
 AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable feature ui]))
 
 AS_IF([test "x$enable_ui" != "xno"], [
+	AM_PROG_VALAC
 	PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 	AC_SUBST([UI_DIR], [ui])],
 	[ AC_SUBST([UI_DIR], [""]) ]
