@@ -49,6 +49,7 @@ AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable feature ui]))
 
 AS_IF([test "x$enable_ui" != "xno"], [
 	AM_PROG_VALAC
+	AC_CHECK_PROG(DOT, dot, yes)
 	PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 	AC_SUBST([UI_DIR], [ui])],
 	[ AC_SUBST([UI_DIR], [""]) ]
