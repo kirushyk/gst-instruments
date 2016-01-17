@@ -1,5 +1,7 @@
 .README.md.swp
 ui/gst-instruments
+*.bmp
+*.svg
 *.gsttrace
 *-1.0
 *.so
@@ -8,7 +10,6 @@ ui/gst-instruments
 *~
 xcuserdata/
 project.xcworkspace/
-*.svg
 autom4te.cache/
 autoscan.log
 INSTALL
