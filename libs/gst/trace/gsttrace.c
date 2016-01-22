@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "trace.h"
+#include "gsttrace.h"
 #include <sys/time.h>
 #include <glib.h>
 #include <stdio.h>
