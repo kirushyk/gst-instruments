@@ -19,6 +19,7 @@
 
 public class MainWindow: Gtk.ApplicationWindow
 {
+	
 	public string working_trace_path;
 
 	public MainWindow (Gtk.Application application)
@@ -48,10 +49,13 @@ public class MainWindow: Gtk.ApplicationWindow
 
 		working_trace_path = null;
 
-		menu.open_file_item_activated.connect ((path) =>  {
+		menu.open_file_item_activated.connect ((path) =>
+		{
 			var child = scrolled_window.get_child ();
 			if (child != null)
+			{
 				child.destroy ();
+			}
                 
 			string ls_stdout;
 			string ls_stderr;
@@ -81,13 +85,18 @@ public class MainWindow: Gtk.ApplicationWindow
 		});
 		box.pack_start (scrolled_window, true, true, 1);		
 
-		timeline.interval_selected.connect ((begin, end) => {
+		timeline.interval_selected.connect ((begin, end) =>
+		{
 			if (working_trace_path == null)
+			{
 				return;
+			}
 
 			var child = scrolled_window.get_child ();
 			if (child != null)
+			{
 				child.destroy ();
+			}
 
 			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot --from=$begin --till=$end $working_trace_path | dot -Tsvg > gst-instruments-temp.svg";
 			Posix.system (command);
@@ -127,4 +136,3 @@ public class MainWindow: Gtk.ApplicationWindow
 	}
 
 }
-

@@ -19,6 +19,7 @@
 
 public class MainMenu: Gtk.MenuBar
 {
+	
 	public Gtk.ApplicationWindow window;
 
 	public signal void quit_item_activated ();
@@ -84,4 +85,3 @@ public class MainMenu: Gtk.MenuBar
 	}
 
 }
-

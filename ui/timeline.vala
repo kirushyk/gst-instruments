@@ -19,6 +19,7 @@
 
 public class Timeline: Gtk.DrawingArea
 {
+	
 	private bool dragging;
 	private double x_begin;
 	private double x_initial;
@@ -65,7 +66,8 @@ public class Timeline: Gtk.DrawingArea
 			bool separator = (i % 10 == 0);
 			c.move_to (x, separator ? 10 : 30);
 			c.line_to (x, height - (separator ? 20 : 30));
-			if (separator) {
+			if (separator)
+			{
 				c.move_to (x + 5, 20);
 				c.show_text (@"$(i * 0.1) s");
 			}
@@ -89,7 +91,8 @@ public class Timeline: Gtk.DrawingArea
 
 	public override bool button_press_event (Gdk.EventButton event)
 	{
-		if (!this.dragging) {
+		if (!this.dragging)
+		{
 			this.dragging = true;
 			x_initial = event.x;
 		}
@@ -97,27 +100,38 @@ public class Timeline: Gtk.DrawingArea
 	}
 
 	public override bool button_release_event (Gdk.EventButton event) {
-		if (this.dragging) {
+		if (this.dragging)
+		{
 			this.dragging = false;
 			this.interval_selected (x_begin / 20.0f, x_end / 20.0f); 
 		}
 		return false;
-        }
+	}
 
 	public override bool motion_notify_event (Gdk.EventMotion event)
 	{
-		if (this.dragging) {
-			if (event.x < x_initial) {
+		if (this.dragging)
+		{
+			if (event.x < x_initial)
+			{
 				x_begin = event.x;
 				x_end = x_initial;
-			} else {
+			}
+			else
+			{
 				x_begin = x_initial;
 				x_end = event.x;
 			}
+			
 			if (x_begin > x_duration)
+			{
 				x_begin = x_duration;
+			}
 			if (x_end > x_duration)
+			{
 				x_end = x_duration;
+			}
+			
 			update ();
 		}
 		return false;
@@ -127,7 +141,9 @@ public class Timeline: Gtk.DrawingArea
 	{
 		var window = get_window ();
 		if (window == null)
+		{
 			return;
+		}
 
 		var region = window.get_clip_region ();
 		window.invalidate_region (region, true);
@@ -139,5 +155,5 @@ public class Timeline: Gtk.DrawingArea
 		redraw_canvas ();
 		return true;
 	}
+	
 }
-
