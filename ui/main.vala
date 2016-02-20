@@ -19,10 +19,13 @@
 
 public class App: Gtk.Application
 {
+	
+	public string? trace_path;
 
 	public App ()
 	{
 		Object (application_id: "net.freedesktop.gstreamer.instruments", flags: ApplicationFlags.FLAGS_NONE);
+		trace_path = null;
 	}
 
 	protected override void activate ()
@@ -35,6 +38,10 @@ public class App: Gtk.Application
 	public static int main (string[] args)
 	{
 		App app = new App ();
+		if (args.length == 2)
+		{
+			app.trace_path = args[1];
+		}
 		return app.run (args);
 	}
 

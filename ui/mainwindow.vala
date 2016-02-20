@@ -21,6 +21,9 @@ public class MainWindow: Gtk.ApplicationWindow
 {
 	
 	public string working_trace_path;
+	
+	private Gtk.ScrolledWindow scrolled_window;
+	private Timeline timeline;
 
 	public MainWindow (Gtk.Application application)
 	{
@@ -41,48 +44,15 @@ public class MainWindow: Gtk.ApplicationWindow
 		// application.set_menubar (menu);
 		box.pack_start (menu, false, true, 0);
 		
-		var scrolled_window = new Gtk.ScrolledWindow (null, null);
+		scrolled_window = new Gtk.ScrolledWindow (null, null);
 		scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 				
-		var timeline = new Timeline ();
+		timeline = new Timeline ();
 		var scrollbar = new Gtk.Scrollbar (Gtk.Orientation.HORIZONTAL, null);
 
 		working_trace_path = null;
 
-		menu.open_file_item_activated.connect ((path) =>
-		{
-			var child = scrolled_window.get_child ();
-			if (child != null)
-			{
-				child.destroy ();
-			}
-                
-			string ls_stdout;
-			string ls_stderr;
-			int ls_status;
-
-			Process.spawn_sync (null,
-						{"/usr/local/bin/gst-report-1.0", "--duration", path},
-						null,
-						SpawnFlags.SEARCH_PATH,
-						null,
-						out ls_stdout,
-						out ls_stderr,
-						out ls_status);
-                        
-			timeline.x_duration = int64.parse (ls_stdout) * 0.00000002;
-
-			working_trace_path = path;
-
-			string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tpng > gst-instruments-temp.bmp";
-			Posix.system (command);
-
-			var graph = new Gtk.Image.from_file ("gst-instruments-temp.bmp");
-			scrolled_window.add (graph);
-			scrolled_window.show_all ();
-            
-			timeline.update ();
-		});
+		menu.open_file_item_activated.connect (open_file);
 		box.pack_start (scrolled_window, true, true, 1);		
 
 		timeline.interval_selected.connect ((begin, end) =>
@@ -133,6 +103,41 @@ public class MainWindow: Gtk.ApplicationWindow
 		});
 
 		add (box);
+	}
+	
+	public void open_file (string path)
+	{
+		var child = scrolled_window.get_child ();
+		if (child != null)
+		{
+			child.destroy ();
+		}
+            
+		string ls_stdout;
+		string ls_stderr;
+		int ls_status;
+
+		Process.spawn_sync (null,
+					{"/usr/local/bin/gst-report-1.0", "--duration", path},
+					null,
+					SpawnFlags.SEARCH_PATH,
+					null,
+					out ls_stdout,
+					out ls_stderr,
+					out ls_status);
+                    
+		timeline.x_duration = int64.parse (ls_stdout) * 0.00000002;
+
+		working_trace_path = path;
+
+		string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tpng > gst-instruments-temp.bmp";
+		Posix.system (command);
+
+		var graph = new Gtk.Image.from_file ("gst-instruments-temp.bmp");
+		scrolled_window.add (graph);
+		scrolled_window.show_all ();
+        
+		timeline.update ();
 	}
 
 }
