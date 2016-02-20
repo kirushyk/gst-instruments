@@ -101,7 +101,7 @@ public class MainWindow: Gtk.ApplicationWindow
 		scrollbar.value_changed.connect (() =>
 		{
 			
-        	});
+		});
 		
 		box.pack_start (scrollbar, false, true, 1);
 		this.key_press_event.connect ((source, key) => 

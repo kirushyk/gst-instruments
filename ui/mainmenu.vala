@@ -69,7 +69,7 @@ public class MainMenu: Gtk.MenuBar
 			file_chooser.add_filter (filter);
 			if (file_chooser.run () == Gtk.ResponseType.ACCEPT)
 			{
-		    		this.open_file_item_activated (file_chooser.get_filename ());
+				this.open_file_item_activated (file_chooser.get_filename ());
 			}
 			file_chooser.destroy ();
 		});
