@@ -30,9 +30,13 @@ public class App: Gtk.Application
 
 	protected override void activate ()
 	{
-		Gtk.Window window = new MainWindow (this);
-		window.show_all ();
-		add_window (window);
+		var main_window = new MainWindow (this);
+		main_window.show_all ();
+		if (trace_path != null)
+		{
+			main_window.open_file (trace_path);
+		}
+		add_window (main_window);
 	}
 
 	public static int main (string[] args)
