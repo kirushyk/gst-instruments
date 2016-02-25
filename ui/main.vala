@@ -19,33 +19,35 @@
 
 public class App: Gtk.Application
 {
-	
-	public string? trace_path;
 
 	public App ()
 	{
-		Object (application_id: "net.freedesktop.gstreamer.instruments", flags: ApplicationFlags.FLAGS_NONE);
-		trace_path = null;
+		Object (application_id: "net.freedesktop.gstreamer.instruments", flags: ApplicationFlags.HANDLES_OPEN);
 	}
 
 	protected override void activate ()
 	{
 		var main_window = new MainWindow (this);
 		main_window.show_all ();
-		if (trace_path != null)
-		{
-			main_window.open_file (trace_path);
-		}
 		add_window (main_window);
+	}
+
+
+	public override void open (File[] files, string hint)
+	{
+		foreach (File file in files) {
+			var main_window = new MainWindow (this);
+			main_window.show_all ();
+			string path = file.get_path ();
+			stdout.printf ("%s\n", path);
+			main_window.open_file (path);
+			add_window (main_window);
+		}
 	}
 
 	public static int main (string[] args)
 	{
 		App app = new App ();
-		if (args.length == 2)
-		{
-			app.trace_path = args[1];
-		}
 		return app.run (args);
 	}
 
