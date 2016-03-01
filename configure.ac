@@ -57,3 +57,11 @@ AS_IF([test "x$enable_ui" != "xno"], [
 	 )
 
 AC_OUTPUT
+
+echo "
+
+Configuration
+	Source code location       : ${srcdir}
+	Prefix                     : ${prefix}
+	Compiler                   : ${CC}
+"
