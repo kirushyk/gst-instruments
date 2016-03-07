@@ -31,7 +31,7 @@ typedef struct GstTraceElementDiscoveredEntry
   GstTraceEntry entry;
   gpointer element_id;
   gchar element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gchar element_type_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gpointer parent_element_id;
 } GstTraceElementDiscoveredEntry;
 
@@ -42,7 +42,7 @@ typedef struct GstTraceElementEnteredEntry
   gpointer upperstack_element_id;
   gpointer downstack_element_id;
   gchar upperstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gchar downstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
 } GstTraceElementEnteredEntry;
 
 void
