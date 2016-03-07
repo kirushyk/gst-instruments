@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([gst-instruments], [0.1.1], [kirushyk@gmail.com])
+AC_INIT([gst-instruments], [0.2.0], [kirushyk@gmail.com])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
