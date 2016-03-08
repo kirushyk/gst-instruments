@@ -41,9 +41,20 @@ typedef struct GstTraceElementEnteredEntry
   gpointer thread_id;
   gpointer upperstack_element_id;
   gpointer downstack_element_id;
-  gchar upperstack_element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gchar upperstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  guint64 start;
 } GstTraceElementEnteredEntry;
+
+typedef struct GstTraceElementExitedEntry
+{
+  GstTraceEntry entry;
+  gpointer thread_id;
+  gchar upperstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  guint64 end;
+  guint64 duration;
+} GstTraceElementExitedEntry;
 
 void
 gst_trace_entry_init (GstTraceEntry *entry)
