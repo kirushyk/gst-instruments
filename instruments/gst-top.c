@@ -30,7 +30,7 @@ main (gint argc, gchar *argv[])
     return -1;
   }
 
-  g_set_prgname ("gst-top-1.0");
+  g_set_prgname ("gst-top-" GST_API_VERSION);
   g_set_application_name ("GStreamer Top Tool");
   
 #if defined(__MACH__)

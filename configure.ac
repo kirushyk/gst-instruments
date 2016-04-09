@@ -43,6 +43,10 @@ AC_CHECK_FUNCS([memset munmap strerror strtoul clock_gettime])
 AM_INIT_AUTOMAKE
 AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile instruments/Makefile data/Makefile ui/Makefile])
 
+GST_API_VERSION=1.0
+AC_SUBST(GST_API_VERSION)
+AC_DEFINE_UNQUOTED(GST_API_VERSION, "$GST_API_VERSION", [GStreamer API Version])
+
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Base trace filename])
 
 AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable feature ui]))

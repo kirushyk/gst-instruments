@@ -257,7 +257,7 @@ main (gint argc, gchar *argv[])
   GError *error = NULL;
   GOptionContext *option_context;
   
-  g_set_prgname ("gst-report-1.0");
+  g_set_prgname ("gst-report-" GST_API_VERSION);
   g_set_application_name ("GStreamer Report Tool");
   
   option_context = g_option_context_new (NULL);
