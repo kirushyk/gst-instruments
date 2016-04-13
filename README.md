@@ -77,6 +77,6 @@ Generates performance report for input trace file.
 	playbin                 0.0    0.0      0 ns
 	$
 
-You can generate performance graph in DOT language:
+You can generate performance graph in DOT format:
  
 	gst-report-1.0 --dot playbin.gsttrace | dot -Tsvg > perf.svg
