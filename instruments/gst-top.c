@@ -26,7 +26,7 @@ main (gint argc, gchar *argv[])
 {
   if (argc < 2) {
     g_print("Usage: %s PROG [ARGS]\n", argv[0]);
-    return -1;
+    return EXIT_FAILURE;
   }
 
   g_set_prgname ("gst-top-" GST_API_VERSION);
@@ -55,5 +55,5 @@ main (gint argc, gchar *argv[])
   else
     system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   
-  return 0;
+  return EXIT_SUCCESS;
 }
