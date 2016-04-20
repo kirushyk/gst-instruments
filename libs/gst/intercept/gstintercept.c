@@ -81,13 +81,13 @@ GstClockTime current_monotonic_time()
 #ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
   clock_serv_t cclock;
   mach_timespec_t mts;
-  host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
+  host_get_clock_service (mach_host_self (), SYSTEM_CLOCK, &cclock);
+  clock_get_time (cclock, &mts);
+  mach_port_deallocate (mach_task_self (), cclock);
   return mts.tv_sec * GST_SECOND + mts.tv_nsec;
 #else
   struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
+  clock_gettime (CLOCK_MONOTONIC, &ts);
   return ts.tv_sec * GST_SECOND + ts.tv_nsec;
 #endif
 }
@@ -104,18 +104,11 @@ void add_entry ()
 void *
 get_libgstreamer ()
 {
-  if (libgstreamer == NULL)
-  {
-    libgstreamer = dlopen (
-#if __MACH__
-			"libgstreamer-1.0.dylib",
-#else
-			"libgstreamer-1.0.so.0",
-#endif
-			RTLD_NOW);
+  if (libgstreamer == NULL) {
+    libgstreamer = dlopen (LIBGSTREAMER, RTLD_NOW);
   }
   
-  trace_init();
+  trace_init ();
   
   return libgstreamer;
 }
@@ -127,7 +120,7 @@ gpointer trace_heir (GstElement *element)
   if (element == NULL)
     return NULL;
   
-  for (parent = GST_OBJECT(element); GST_OBJECT_PARENT(parent) != NULL; parent = GST_OBJECT_PARENT(parent));
+  for (parent = GST_OBJECT (element); GST_OBJECT_PARENT (parent) != NULL; parent = GST_OBJECT_PARENT (parent));
   
   return parent;
 }
@@ -224,7 +217,7 @@ gst_element_change_state (GstElement *element, GstStateChange transition)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
   
   result = gst_element_change_state_orig (element, transition);
   
@@ -269,7 +262,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -300,7 +293,7 @@ for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
 {
   ListInfo *info = user_data;
   info->buffers_count++;
-  info->size += gst_buffer_get_size(*buffer);
+  info->size += gst_buffer_get_size (*buffer);
   return TRUE;
 }
 
@@ -331,7 +324,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -382,7 +375,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   guint64 start = get_cpu_time (thread);
   
   if (element_from && element) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+    trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   }
   
   result = gst_pad_push_event_orig (pad, event);
@@ -394,7 +387,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
 #endif
   
   if (element_from && element) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
+    trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   }
   
   return result;
@@ -417,7 +410,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     }
   }
   
-  THREAD thread = mach_thread_self();
+  THREAD thread = mach_thread_self ();
   
   gpointer element_from = GST_PAD_PARENT (pad);
   gpointer element = get_downstack_element (pad);
@@ -426,7 +419,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   

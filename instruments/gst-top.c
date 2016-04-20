@@ -25,7 +25,7 @@ gint
 main (gint argc, gchar *argv[])
 {
   if (argc < 2) {
-    g_print("Usage: %s PROG [ARGS]\n", argv[0]);
+    g_print ("Usage: %s PROG [ARGS]\n", argv[0]);
     return EXIT_FAILURE;
   }
 

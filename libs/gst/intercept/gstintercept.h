@@ -16,3 +16,9 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+
+#if __MACH__
+#define LIBGSTREAMER "libgstreamer-1.0.dylib"
+#else
+#define LIBGSTREAMER "libgstreamer-1.0.so.0"
+#endif
