@@ -24,8 +24,7 @@
 gint
 main (gint argc, gchar *argv[])
 {
-
-  if (argc < 2){
+  if (argc < 2) {
     g_print("Usage: %s PROG [ARGS]\n", argv[0]);
     return -1;
   }
@@ -50,7 +49,9 @@ main (gint argc, gchar *argv[])
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
   
   if (error)
-    g_print ("%s\n", error->message);
+    g_critical ("%s", error->message);
+  else if (status != EXIT_SUCCESS)
+    g_warning ("%s exited with code %d", argv[1], status);
   else
     system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   
