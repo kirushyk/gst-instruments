@@ -79,6 +79,8 @@
 		F1F5A6981BAEF42300743D04 /* formatters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../instruments/formatters.h; sourceTree = "<group>"; };
 		F1FF096C1CCECB88002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../instruments/Makefile.am; sourceTree = "<group>"; };
 		F1FF096D1CCECBB5002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../libs/gst/intercept/Makefile.am; sourceTree = "<group>"; };
+		F1FF096E1CCECD5E002404E0 /* configure.ac */ = {isa = PBXFileReference; lastKnownFileType = text; name = configure.ac; path = ../configure.ac; sourceTree = "<group>"; };
+		F1FF096F1CCECD5E002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../Makefile.am; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +152,8 @@
 		F1B7C95E1B766B4E00636C88 = {
 			isa = PBXGroup;
 			children = (
+				F1FF096E1CCECD5E002404E0 /* configure.ac */,
+				F1FF096F1CCECD5E002404E0 /* Makefile.am */,
 				F145A79E1C0B7708005EBF9F /* libgsttrace */,
 				F13483FF1B7CC9F9007BBFD5 /* libgstintercept */,
 				F13483FE1B7CC9F1007BBFD5 /* tools */,
