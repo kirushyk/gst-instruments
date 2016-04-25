@@ -77,6 +77,8 @@
 		F1D46F7F1B94B948002591EE /* gst-report.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-report.c"; path = "../instruments/gst-report.c"; sourceTree = "<group>"; };
 		F1F5A6971BAEF42300743D04 /* formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = formatters.c; path = ../instruments/formatters.c; sourceTree = "<group>"; };
 		F1F5A6981BAEF42300743D04 /* formatters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../instruments/formatters.h; sourceTree = "<group>"; };
+		F1FF096C1CCECB88002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../instruments/Makefile.am; sourceTree = "<group>"; };
+		F1FF096D1CCECBB5002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../libs/gst/intercept/Makefile.am; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 		F13483FE1B7CC9F1007BBFD5 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				F1FF096C1CCECB88002404E0 /* Makefile.am */,
 				F1D46F7F1B94B948002591EE /* gst-report.c */,
 				F13483FB1B7CAB0C007BBFD5 /* gst-top.c */,
 				F1F5A6971BAEF42300743D04 /* formatters.c */,
@@ -118,6 +121,7 @@
 		F13483FF1B7CC9F9007BBFD5 /* libgstintercept */ = {
 			isa = PBXGroup;
 			children = (
+				F1FF096D1CCECBB5002404E0 /* Makefile.am */,
 				F13484001B7CCA09007BBFD5 /* gstintercept.c */,
 				F13484011B7CCA09007BBFD5 /* gstintercept.h */,
 			);
