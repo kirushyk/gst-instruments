@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "intercept.h"
+#include "gstintercept.h"
 #include <glib.h>
 #include <time.h>
 #include <dlfcn.h>
@@ -27,7 +27,7 @@
 #include <signal.h>
 #include <gst/gst.h>
 #include <gst/gstpad.h>
-#include "trace.h"
+#include "../trace/gsttrace.h"
 #include <config.h>
 
 #if __MACH__
