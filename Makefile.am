@@ -1,4 +1,4 @@
 SUBDIRS = \
-  instruments \
+  tools \
   libs/gst/intercept \
   $(UI_DIR)

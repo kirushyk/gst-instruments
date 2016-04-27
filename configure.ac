@@ -41,7 +41,7 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS([memset munmap strerror strtoul clock_gettime])
 
 AM_INIT_AUTOMAKE([subdir-objects])
-AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile instruments/Makefile data/Makefile ui/Makefile])
+AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile tools/Makefile data/Makefile ui/Makefile])
 
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Trace filename base])
 AC_DEFINE([GST_ELEMENT_TYPE_NAME_LENGTH_MAX], [128], [Max length of type name of GstElement])
