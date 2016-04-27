@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libgstintercept.la
 
-libgstintercept_la_SOURCES = gstintercept.c \
+libgstintercept_la_SOURCES = \
+  gstintercept.c \
   ../trace/gstelementheadstone.c \
   ../trace/gstpadheadstone.c \
   ../trace/gsttaskheadstone.c \

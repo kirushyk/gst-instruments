@@ -1,1 +1,4 @@
-SUBDIRS =  instruments libs/gst/intercept $(UI_DIR)
+SUBDIRS = \
+  instruments \
+  libs/gst/intercept \
+  $(UI_DIR)
