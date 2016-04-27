@@ -48,12 +48,13 @@ main (gint argc, gchar *argv[])
   GError *error = NULL;
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
   
-  if (error)
+  if (error) {
     g_critical ("%s", error->message);
-  else if (status != EXIT_SUCCESS)
+  } else if (status != EXIT_SUCCESS) {
     g_warning ("%s exited with code %d", argv[1], status);
-  else
+  } else {
     system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
-  
+  }
+    
   return EXIT_SUCCESS;
 }

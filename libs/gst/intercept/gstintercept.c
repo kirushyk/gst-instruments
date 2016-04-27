@@ -112,8 +112,9 @@ gpointer trace_heir (GstElement *element)
 {
   GstObject *parent = NULL;
   
-  if (element == NULL)
+  if (element == NULL) {
     return NULL;
+  }
   
   for (parent = GST_OBJECT (element); GST_OBJECT_PARENT (parent) != NULL; parent = GST_OBJECT_PARENT (parent));
   
@@ -126,10 +127,11 @@ gpointer get_downstack_element (gpointer pad)
   do
   {
     gpointer peer = GST_PAD_PEER (element);
-    if (peer)
+    if (peer) {
       element = GST_PAD_PARENT (peer);
-    else
+    } else {
       return NULL;
+    }
   }
   while (!GST_IS_ELEMENT (element));
   
@@ -141,20 +143,23 @@ GHashTable *pipeline_by_element = NULL;
 void
 dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
 {
-  if (pipeline_by_element == NULL)
+  if (pipeline_by_element == NULL) {
     pipeline_by_element = g_hash_table_new (g_direct_hash, g_direct_equal);
-  else if (g_hash_table_lookup (pipeline_by_element, new_element))
+  } else if (g_hash_table_lookup (pipeline_by_element, new_element)) {
     return;
-  if (new_element)
+  }
+  if (new_element) {
     g_hash_table_insert (pipeline_by_element, new_element, pipeline);
+  }
   
   if (!g_hash_table_lookup (pipeline_by_element, pipeline)) {
     trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), LGI_OBJECT_TYPE_NAME (pipeline)));
     g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
   }
   
-  if (pipeline == NULL)
+  if (pipeline == NULL) {
     return;
+  }
   
   GstIterator *it = gst_bin_iterate_recurse (GST_BIN (pipeline));
   GValue item = G_VALUE_INIT;
@@ -191,17 +196,13 @@ gst_element_change_state (GstElement *element, GstStateChange transition)
   GstStateChangeReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_element_change_state_orig == NULL)
-  {
+  if (gst_element_change_state_orig == NULL) {
     gst_element_change_state_orig = dlsym (get_libgstreamer (), "gst_element_change_state");
     
-    if (gst_element_change_state_orig == NULL)
-    {
+    if (gst_element_change_state_orig == NULL) {
       GST_ERROR ("can not link to gst_element_change_state\n");
       return GST_FLOW_CUSTOM_ERROR;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_element_change_state linked: %p\n", gst_element_change_state_orig);
     }
   }
@@ -233,17 +234,13 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   GstFlowReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_push_orig == NULL)
-  {
+  if (gst_pad_push_orig == NULL) {
     gst_pad_push_orig = dlsym (get_libgstreamer (), "gst_pad_push");
     
-    if (gst_pad_push_orig == NULL)
-    {
+    if (gst_pad_push_orig == NULL) {
       GST_ERROR ("can not link to gst_pad_push\n");
       return GST_FLOW_CUSTOM_ERROR;
-    }
-    else
-    {
+    } else {
       GST_INFO ("gst_pad_push linked: %p\n", gst_pad_push_orig);
     }
   }
@@ -257,7 +254,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME(element), element, start));
+  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -298,8 +295,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   GstFlowReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_push_list_orig == NULL)
-  {
+  if (gst_pad_push_list_orig == NULL) {
     gst_pad_push_list_orig = dlsym (get_libgstreamer (), "gst_pad_push_list");
     
     if (gst_pad_push_list_orig == NULL) {
@@ -348,8 +344,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   gboolean result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_push_event_orig == NULL)
-  {
+  if (gst_pad_push_event_orig == NULL) {
     gst_pad_push_event_orig = dlsym (get_libgstreamer (), "gst_pad_push_event");
     
     if (gst_pad_push_event_orig == NULL) {
@@ -441,8 +436,7 @@ gst_element_set_state (GstElement *element, GstState state)
 {
   GstStateChangeReturn result;
   
-  if (gst_element_set_state_orig == NULL)
-  {
+  if (gst_element_set_state_orig == NULL) {
     gst_element_set_state_orig = dlsym (get_libgstreamer (), "gst_element_set_state");
     
     if (gst_element_set_state_orig == NULL) {
