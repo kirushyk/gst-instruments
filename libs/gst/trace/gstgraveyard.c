@@ -47,8 +47,9 @@ gst_graveyard_get_element (GstGraveyard *graveyard, gpointer element_id, gchar *
     element->name = NULL;
     element->type_name = NULL;
     element->total_cpu_time = 0;
-    if (element_name)
+    if (element_name) {
       element->name = g_string_new (element_name);
+    }
     g_hash_table_insert (graveyard->elements, element_id, element);
   }
   return element;
@@ -58,10 +59,11 @@ gint
 element_headstone_compare (gconstpointer a, gconstpointer b)
 {
   gint64 diff = (gint64)(*(GstElementHeadstone **)b)->total_cpu_time - (gint64)(*(GstElementHeadstone **)a)->total_cpu_time;
-  if (diff > 0)
+  if (diff > 0) {
     return 1;
-  else if (diff < 0)
+  } else if (diff < 0) {
     return -1;
+  }
   return 0;
 }
 
@@ -83,13 +85,16 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   GstElementHeadstone *element = (GstElementHeadstone *)value;
   GstElementHeadstone *parent;
   graveyard->total_cpu_time += element->total_cpu_time;
-  if (element->name == NULL)
+  if (element->name == NULL) {
     element->name = g_string_new("?");
-  if (element->type_name == NULL)
+  }
+  if (element->type_name == NULL) {
     element->type_name = g_string_new("?");
+  }
   element->nesting_level = 0;
-  for (parent = element->parent; parent != NULL; parent = parent->parent)
+  for (parent = element->parent; parent != NULL; parent = parent->parent) {
     element->nesting_level++;
+  }
   element->cpu_load = (float)element->total_cpu_time / (float)(graveyard->till - graveyard->from);
   g_array_append_val (graveyard->elements_sorted, value);
 }
@@ -98,8 +103,9 @@ GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till, gboolean query_duration_only)
 {
   FILE *input = fopen (filename,  "rt");
-  if (input == NULL)
+  if (input == NULL) {
     return NULL;
+  }
   
   GstGraveyard *graveyard = g_new0(GstGraveyard, 1);
   
@@ -113,11 +119,11 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
       break;
     }
     
-    if (event_timestamp > graveyard->duration)
+    if (event_timestamp > graveyard->duration) {
       graveyard->duration = event_timestamp;
+    }
     
-    if (query_duration_only)
-    {
+    if (query_duration_only) {
       gchar buffer[1024];
       fgets (buffer, sizeof (buffer), input);
       continue;
@@ -132,8 +138,9 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
         if (parent_element_id) {
           GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, parent_element_id, NULL);
-          if (element->type_name == NULL)
+          if (element->type_name == NULL) {
             element->type_name = g_string_new (element_type_name);
+          }
           gst_element_headstone_add_child (parent, element);
         }
       } else {
@@ -169,8 +176,9 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         if (task->currently_in_upstack_element) {
           element->is_subtopstack = TRUE;
           task->upstack_exit_timestamp = thread_time;
-          if ((task->upstack_enter_timestamp > 0) && TIMESTAMP_FITS (event_timestamp, from, till))
+          if ((task->upstack_enter_timestamp > 0) && TIMESTAMP_FITS (event_timestamp, from, till)) {
             task->total_upstack_time += task->upstack_exit_timestamp - task->upstack_enter_timestamp;
+          }
           task->currently_in_upstack_element = FALSE;
           if (task->name == NULL) {
             task->upstack_element_identifier = from_element_id;
@@ -179,8 +187,9 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         } else {
           element->is_subtopstack = FALSE;
         }
-        if (TIMESTAMP_FITS (event_timestamp, from, till))
+        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
           task->total_downstack_time += task->current_downstack_time;
+        }
         task->current_downstack_time = 0;
       } else {
         g_print ("couldn't parse event: %s\n", event_name);
@@ -205,8 +214,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           element->bytes_sent += size;
           
           GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_from);
-          if (!pad)
-          {
+          if (!pad) {
             pad = g_new0 (GstPadHeadstone, 1);
             pad->identifier = pad_from;
             pad->parent_element = element_from;
@@ -226,8 +234,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           element->bytes_received += size;
           
           GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_to);
-          if (!pad)
-          {
+          if (!pad) {
             pad = g_new0 (GstPadHeadstone, 1);
             pad->identifier = pad_to;
             pad->parent_element = element_to;
@@ -261,8 +268,9 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           g_print ("couldn't find element %p: %s\n", element_id, element_name);
           goto error;
         }
-        if (TIMESTAMP_FITS (event_timestamp, from, till))
+        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
           element->total_cpu_time += duration - task->current_downstack_time;
+        }
         task->current_downstack_time = duration;
         if (element->is_subtopstack) {
           task->upstack_enter_timestamp = thread_time;
