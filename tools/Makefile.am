@@ -1,4 +1,6 @@
-bin_PROGRAMS = gst-top-1.0 gst-report-1.0
+bin_PROGRAMS = \
+  gst-top-1.0 \
+  gst-report-1.0
 
 gst_top_1_0_SOURCES = gst-top.c
 gst_top_1_0_CFLAGS = $(GST_CFLAGS) -DLIBDIR='"$(libdir)"' -DBINDIR='"$(bindir)"'

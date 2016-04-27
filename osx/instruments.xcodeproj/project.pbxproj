@@ -110,11 +110,11 @@
 		F13483FE1B7CC9F1007BBFD5 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				F1654C081CD12EC000917076 /* Makefile.am */,
 				F1654C041CD12EC000917076 /* formatters.c */,
 				F1654C051CD12EC000917076 /* formatters.h */,
 				F1654C061CD12EC000917076 /* gst-report.c */,
 				F1654C071CD12EC000917076 /* gst-top.c */,
-				F1654C081CD12EC000917076 /* Makefile.am */,
 			);
 			name = tools;
 			sourceTree = "<group>";
