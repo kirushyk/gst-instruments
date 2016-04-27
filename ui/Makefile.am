@@ -1,6 +1,10 @@
-bin_PROGRAMS = gst-instruments
+bin_PROGRAMS = gst-instruments-@GST_API_VERSION@
 
-gst_instruments_SOURCES = main.vala mainwindow.vala timeline.vala mainmenu.vala
-gst_instruments_VALAFLAGS = --pkg gtk+-3.0 --pkg posix -X -g -X -lm -X -I./
-gst_instruments_CFLAGS = $(GTK_CFLAGS)
-gst_instruments_LDFLAGS = $(GTK_LIBS)
+gst_instruments_@GST_API_VERSION@_SOURCES = \
+  main.vala \
+  mainmenu.vala \
+  timeline.vala \
+  mainwindow.vala
+gst_instruments_@GST_API_VERSION@_VALAFLAGS = --pkg gtk+-3.0 --pkg posix -X -g -X -lm -X -I./
+gst_instruments_@GST_API_VERSION@_CFLAGS = $(GTK_CFLAGS)
+gst_instruments_@GST_API_VERSION@_LDFLAGS = $(GTK_LIBS)
