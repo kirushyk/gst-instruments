@@ -1,7 +1,7 @@
 GStreamer Instruments
 =====================
 
-GStreamer Instruments is a set of performance analyzing tools for time profiling of GStreamer pipelines and data flow inspection.
+Set of performance analyzing tools for time profiling and data flow inspection in GStreamer apps.
 
 ![GStreamer Instruments UI](https://pp.vk.me/c631317/v631317037/f67e/uPWTkFy5ZCE.jpg)
 
@@ -34,7 +34,7 @@ Inspired by top and perf-top, this utility displays performance report for the p
 libgstintercept
 ---------------
 
-Intercepts GStreamer ABI calls and records communication between the App and GStreamer into the trace file. 
+Intercepts GStreamer ABI calls and records communication between the app and GStreamer into the trace file. 
 
 	$ DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib \
 		DYLD_FORCE_FLAT_NAMESPACE= \
