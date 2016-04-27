@@ -80,7 +80,7 @@ gst_trace_entry_set_timestamp (GstTraceEntry *entry, GstClockTime timestamp)
 }
 
 GstClockTime
-gst_trace_entry_get_timestamp (GstTraceEntry *)
+gst_trace_entry_get_timestamp (GstTraceEntry *entry)
 {
   g_assert (entry != NULL);
   return entry->timestamp;
