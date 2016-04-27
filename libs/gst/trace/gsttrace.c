@@ -44,13 +44,10 @@ gst_trace_dump_pipeline_to_file (GstTrace *trace, GstElement *pipeline, const gc
   for (iterator = g_list_last (trace->entries); iterator != NULL; iterator = iterator->prev) {
     GstTraceEntry *entry = (GstTraceEntry *)iterator->data;
     if (entry) {
-      if ((pipeline == NULL) ||
-          (gst_trace_entry_get_pipeline(entry) == (gpointer)pipeline)) {
+      if ((pipeline == NULL) || (pipeline == gst_trace_entry_get_pipeline (entry))) {
         
         // @todo: Dump entry here
-        // fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
-        
-        iterator->data = NULL;
+        // fprintf (output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
       }
     }
   }
@@ -73,15 +70,20 @@ void
 gst_trace_free (GstTrace *trace)
 {
   g_mutex_lock (&trace->mutex);
-  trace->entries = g_list_remove_all(trace->entries, NULL);
+  trace->entries = g_list_remove_all (trace->entries, NULL);
   g_mutex_unlock (&trace->mutex);
   g_mutex_clear (&trace->mutex);
-  g_free(trace);
+  g_free (trace);
 }
 
 void
 trace_add_entry (GstTrace *trace, GstElement *pipeline, GstTraceEntry  *entry)
 {
+  GstClockTime current_time = gst_trace_entry_get_timestamp (entry);
+  if (trace->startup_time == GST_CLOCK_TIME_NONE) {
+    trace->startup_time = current_time;
+  }
+  current_time -= trace->startup_time;
   g_mutex_lock (&trace->mutex);
   trace->entries = g_list_prepend (trace->entries, entry);
   g_mutex_unlock (&trace->mutex);

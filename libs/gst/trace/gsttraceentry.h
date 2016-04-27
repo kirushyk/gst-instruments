@@ -47,6 +47,11 @@ void gst_trace_entry_init (GstTraceEntry *);
 
 gpointer gst_trace_entry_get_pipeline (GstTraceEntry *);
 
+void gst_trace_entry_set_timestamp (GstTraceEntry *entry,
+                                    GstClockTime   timestamp);
+
+GstClockTime gst_trace_entry_get_timestamp (GstTraceEntry *);
+
 void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *);
 
 #endif

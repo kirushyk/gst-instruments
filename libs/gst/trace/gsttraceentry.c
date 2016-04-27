@@ -59,6 +59,7 @@ typedef struct GstTraceElementExitedEntry
 void
 gst_trace_entry_init (GstTraceEntry *entry)
 {
+  g_assert (entry != NULL);
   entry->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
   entry->timestamp = GST_CLOCK_TIME_NONE;
   entry->pipeline = NULL;
@@ -67,10 +68,26 @@ gst_trace_entry_init (GstTraceEntry *entry)
 gpointer
 gst_trace_entry_get_pipeline (GstTraceEntry *entry)
 {
+  g_assert (entry != NULL);
   return entry->pipeline;
 }
 
-void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
+void
+gst_trace_entry_set_timestamp (GstTraceEntry *entry, GstClockTime timestamp)
+{
+  g_assert (entry != NULL);
+  entry->timestamp = timestamp;
+}
+
+GstClockTime
+gst_trace_entry_get_timestamp (GstTraceEntry *)
+{
+  g_assert (entry != NULL);
+  return entry->timestamp;
+}
+
+void
+gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;

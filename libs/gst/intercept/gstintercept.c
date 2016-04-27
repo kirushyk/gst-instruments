@@ -69,6 +69,8 @@ static guint64 get_cpu_time (THREAD thread) {
 
 gpointer libgstreamer = NULL;
 
+GstTrace *trace = NULL;
+
 GstStateChangeReturn (*gst_element_change_state_orig) (GstElement *element, GstStateChange transition) = NULL;
 GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
 GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NULL;
@@ -92,15 +94,6 @@ GstClockTime current_monotonic_time()
 #endif
 }
 
-void add_entry ()
-{
-//  GstClockTime current_time = current_monotonic_time ();
-//  if (trace->startup_time == GST_CLOCK_TIME_NONE) {
-//    trace->startup_time = current_time;
-//  }
-//  current_time -= trace->startup_time;
-}
-
 void *
 get_libgstreamer ()
 {
@@ -108,7 +101,9 @@ get_libgstreamer ()
     libgstreamer = dlopen (LIBGSTREAMER, RTLD_NOW);
   }
   
-  trace_init ();
+  if (trace == NULL) {
+    trace = gst_trace_new();
+  }
   
   return libgstreamer;
 }
