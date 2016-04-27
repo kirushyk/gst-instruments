@@ -94,11 +94,11 @@ GstClockTime current_monotonic_time()
 
 void add_entry ()
 {
-  GstClockTime current_time = current_monotonic_time ();
-  if (trace->startup_time == GST_CLOCK_TIME_NONE) {
-    trace->startup_time = current_time;
-  }
-  current_time -= trace->startup_time;
+//  GstClockTime current_time = current_monotonic_time ();
+//  if (trace->startup_time == GST_CLOCK_TIME_NONE) {
+//    trace->startup_time = current_time;
+//  }
+//  current_time -= trace->startup_time;
 }
 
 void *

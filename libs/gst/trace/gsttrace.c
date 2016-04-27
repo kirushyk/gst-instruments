@@ -26,13 +26,13 @@
 
 struct GstTrace
 {
-  GMutex        trace_mutex;
-  GList        *trace_entries;
+  GMutex        mutex;
+  GList        *entries;
   GstClockTime  startup_time;
 };
 
 void
-gst_element_dump_to_file (GstElement *element, const gchar *filename)
+gst_trace_dump_pipeline_to_file (GstTrace *trace, GstElement *pipeline, const gchar *filename)
 {
   GList *iterator;
   
@@ -40,23 +40,21 @@ gst_element_dump_to_file (GstElement *element, const gchar *filename)
   if (output == NULL)
     return;
       
-  g_mutex_lock (&trace_mutex);
-  for (iterator = g_list_last (trace_entries); iterator != NULL; iterator = iterator->prev) {
-    TraceEntry *entry = (TraceEntry *)iterator->data;
+  g_mutex_lock (&trace->mutex);
+  for (iterator = g_list_last (trace->entries); iterator != NULL; iterator = iterator->prev) {
+    GstTraceEntry *entry = (GstTraceEntry *)iterator->data;
     if (entry) {
-      if ((element == NULL) || ((gpointer)entry->pipeline == (gpointer)element)) {
-        fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
+      if ((pipeline == NULL) ||
+          (gst_trace_entry_get_pipeline(entry) == (gpointer)pipeline)) {
+        
+        // @todo: Dump entry here
+        // fprintf(output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
         
         iterator->data = NULL;
-        g_free(entry->text);
-        g_free(entry);
       }
     }
   }
-  
-  /// @todo: Optimize removal
-  trace_entries = g_list_remove_all(trace_entries, NULL);
-  g_mutex_unlock (&trace_mutex);
+  g_mutex_unlock (&trace->mutex);
   
   fclose (output);
 }
@@ -66,25 +64,25 @@ gst_trace_new (void)
 {
   GstTrace *trace = g_new0 (GstTrace, 1);
   trace->startup_time = GST_CLOCK_TIME_NONE;
-  trace->trace_entries = NULL;
-  g_mutex_init (&trace->trace_mutex);
+  trace->entries = NULL;
+  g_mutex_init (&trace->mutex);
+  return trace;
 }
 
 void
 gst_trace_free (GstTrace *trace)
 {
-  g_mutex_lock (&trace->trace_mutex);
-  trace->trace_entries = g_list_remove_all(trace->trace_entries, NULL);
-  g_mutex_unlock (&trace->trace_mutex);
-  g_mutex_clear (&trace->trace_mutex);
+  g_mutex_lock (&trace->mutex);
+  trace->entries = g_list_remove_all(trace->entries, NULL);
+  g_mutex_unlock (&trace->mutex);
+  g_mutex_clear (&trace->mutex);
   g_free(trace);
 }
 
 void
 trace_add_entry (GstTrace *trace, GstElement *pipeline, GstTraceEntry  *entry)
 {
-  
-  g_mutex_lock (&trace->trace_mutex);
-  trace_entries = g_list_prepend (trace->trace_entries, entry);
-  g_mutex_unlock (&trace->trace_mutex);
+  g_mutex_lock (&trace->mutex);
+  trace->entries = g_list_prepend (trace->entries, entry);
+  g_mutex_unlock (&trace->mutex);
 }

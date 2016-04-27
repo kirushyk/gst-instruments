@@ -64,6 +64,12 @@ gst_trace_entry_init (GstTraceEntry *entry)
   entry->pipeline = NULL;
 }
 
+gpointer
+gst_trace_entry_get_pipeline (GstTraceEntry *entry)
+{
+  return entry->pipeline;
+}
+
 void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);

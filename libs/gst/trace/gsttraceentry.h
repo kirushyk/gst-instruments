@@ -45,6 +45,8 @@ typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
 void gst_trace_entry_init (GstTraceEntry *);
 
+gpointer gst_trace_entry_get_pipeline (GstTraceEntry *);
+
 void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *);
 
 #endif
