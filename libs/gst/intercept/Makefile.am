@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = subdir-objects
-
 lib_LTLIBRARIES = libgstintercept.la
 
 libgstintercept_la_SOURCES = gstintercept.c \

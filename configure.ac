@@ -40,7 +40,7 @@ AC_TYPE_UINT8_T
 AC_FUNC_MMAP
 AC_CHECK_FUNCS([memset munmap strerror strtoul clock_gettime])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile instruments/Makefile data/Makefile ui/Makefile])
 
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Trace filename base])
