@@ -39,3 +39,5 @@ depcomp
 stamp-h1
 config.h.in
 *.dirstamp
+osx/
+
