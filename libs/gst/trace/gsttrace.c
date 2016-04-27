@@ -32,7 +32,7 @@ struct GstTrace
 };
 
 void
-gst_trace_dump_pipeline_to_file (GstTrace *trace, GstElement *pipeline, const gchar *filename)
+gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const gchar *filename)
 {
   GList *iterator;
   
@@ -75,7 +75,7 @@ gst_trace_free (GstTrace *trace)
 }
 
 void
-trace_add_entry (GstTrace *trace, GstElement *pipeline, GstTraceEntry  *entry)
+gst_trace_add_entry (GstTrace *trace, GstPipeline *pipeline, GstTraceEntry  *entry)
 {
   GstClockTime current_time = gst_trace_entry_get_timestamp (entry);
   if (trace->startup_time == GST_CLOCK_TIME_NONE) {

@@ -36,7 +36,7 @@ void                gst_trace_add_entry                    (GstTrace           *
 
 
 void                gst_trace_dump_pipeline_to_file        (GstTrace           *trace,
-                                                            GstElement         *pipeline,
+                                                            GstPipeline        *pipeline,
                                                             const gchar        *filename);
 
 void                gst_trace_free                         (GstTrace           *trace);
