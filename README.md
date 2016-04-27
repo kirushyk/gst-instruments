@@ -8,7 +8,7 @@ GStreamer Instruments is a set of performance analyzing tools for time profiling
 gst-top
 -------
 
-Utiity inspired by top and perf-top, displays performance report for the particular command, analyzing GStreamer ABI calls.
+Inspired by top and perf-top, this utility displays performance report for the particular command, analyzing GStreamer ABI calls.
 
 	$ gst-top-1.0 gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
 	Setting pipeline to PAUSED ...
