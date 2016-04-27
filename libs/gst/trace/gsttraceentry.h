@@ -20,6 +20,7 @@
 #ifndef __GST_TRACE_ENTRY_H__
 #define __GST_TRACE_ENTRY_H__
 
+#include <stdio.h>
 #include <glib.h>
 #include <gst/gst.h>
 #include "../../../config.h"
@@ -43,15 +44,18 @@ typedef struct GstTraceElementExitedEntry GstTraceElementExitedEntry;
 
 typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
-void gst_trace_entry_init (GstTraceEntry *);
+void                gst_trace_entry_init                   (GstTraceEntry *);
 
-gpointer gst_trace_entry_get_pipeline (GstTraceEntry *);
+gpointer            gst_trace_entry_get_pipeline           (GstTraceEntry *);
 
-void gst_trace_entry_set_timestamp (GstTraceEntry *entry,
-                                    GstClockTime   timestamp);
+void                gst_trace_entry_set_timestamp          (GstTraceEntry      *entry,
+                                                            GstClockTime        timestamp);
 
-GstClockTime gst_trace_entry_get_timestamp (GstTraceEntry *);
+GstClockTime        gst_trace_entry_get_timestamp          (GstTraceEntry *);
 
-void gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *);
+void                gst_trace_entry_dump_to_fd             (GstTraceEntry      *entry,
+                                                            FILE               *fd);
+
+void                gst_trace_element_discoved_entry_init  (GstTraceElementDiscoveredEntry *);
 
 #endif

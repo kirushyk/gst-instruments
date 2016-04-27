@@ -45,9 +45,7 @@ gst_trace_dump_pipeline_to_file (GstTrace *trace, GstElement *pipeline, const gc
     GstTraceEntry *entry = (GstTraceEntry *)iterator->data;
     if (entry) {
       if ((pipeline == NULL) || (pipeline == gst_trace_entry_get_pipeline (entry))) {
-        
-        // @todo: Dump entry here
-        // fprintf (output, "%" G_GUINT64_FORMAT " %s\n", entry->timestamp, entry->text);
+        gst_trace_entry_dump_to_fd (entry, output);
       }
     }
   }
