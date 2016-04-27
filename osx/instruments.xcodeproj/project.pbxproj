@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */ = {isa = PBXBuildFile; fileRef = F13483FB1B7CAB0C007BBFD5 /* gst-top.c */; };
 		F134840D1B7CCD99007BBFD5 /* gstintercept.c in Sources */ = {isa = PBXBuildFile; fileRef = F13484001B7CCA09007BBFD5 /* gstintercept.c */; };
 		F14B26331C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
 		F14B26341C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
 		F1654C031CD1068A00917076 /* gsttraceentry.c in Sources */ = {isa = PBXBuildFile; fileRef = F1654C011CD1068A00917076 /* gsttraceentry.c */; };
+		F1654C091CD12EC700917076 /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1654C041CD12EC000917076 /* formatters.c */; };
+		F1654C0A1CD12EC700917076 /* gst-report.c in Sources */ = {isa = PBXBuildFile; fileRef = F1654C061CD12EC000917076 /* gst-report.c */; };
+		F1654C0B1CD12ECA00917076 /* gst-top.c in Sources */ = {isa = PBXBuildFile; fileRef = F1654C071CD12EC000917076 /* gst-top.c */; };
 		F16CD3031C343A4900FBDAEB /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55801C2F39CB006261FB /* gstelementheadstone.c */; };
 		F16CD3041C343A4900FBDAEB /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55821C2F39CB006261FB /* gstgraveyard.c */; };
 		F16CD3051C343A4900FBDAEB /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55841C2F39CB006261FB /* gstpadheadstone.c */; };
 		F16CD3061C343A4900FBDAEB /* gsttaskheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55861C2F39CB006261FB /* gsttaskheadstone.c */; };
-		F16CD3071C343A6000FBDAEB /* formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = F1F5A6971BAEF42300743D04 /* formatters.c */; };
 		F18C55881C2F39CB006261FB /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55801C2F39CB006261FB /* gstelementheadstone.c */; };
 		F18C55891C2F39CB006261FB /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55821C2F39CB006261FB /* gstgraveyard.c */; };
 		F18C558A1C2F39CB006261FB /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55841C2F39CB006261FB /* gstpadheadstone.c */; };
 		F18C558B1C2F39CB006261FB /* gsttaskheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55861C2F39CB006261FB /* gsttaskheadstone.c */; };
-		F1D46F811B94BBD0002591EE /* gst-report.c in Sources */ = {isa = PBXBuildFile; fileRef = F1D46F7F1B94B948002591EE /* gst-report.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,7 +55,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F13483FB1B7CAB0C007BBFD5 /* gst-top.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-top.c"; path = "../instruments/gst-top.c"; sourceTree = "<group>"; };
 		F13484001B7CCA09007BBFD5 /* gstintercept.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gstintercept.c; path = ../libs/gst/intercept/gstintercept.c; sourceTree = "<group>"; };
 		F13484011B7CCA09007BBFD5 /* gstintercept.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gstintercept.h; path = ../libs/gst/intercept/gstintercept.h; sourceTree = "<group>"; };
 		F134840C1B7CCD8F007BBFD5 /* libgstintercept */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libgstintercept; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +62,11 @@
 		F14B26321C138BDE00852101 /* gsttrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttrace.h; path = ../libs/gst/trace/gsttrace.h; sourceTree = "<group>"; };
 		F1654C011CD1068A00917076 /* gsttraceentry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gsttraceentry.c; path = ../libs/gst/trace/gsttraceentry.c; sourceTree = "<group>"; };
 		F1654C021CD1068A00917076 /* gsttraceentry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttraceentry.h; path = ../libs/gst/trace/gsttraceentry.h; sourceTree = "<group>"; };
+		F1654C041CD12EC000917076 /* formatters.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = formatters.c; path = ../tools/formatters.c; sourceTree = "<group>"; };
+		F1654C051CD12EC000917076 /* formatters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../tools/formatters.h; sourceTree = "<group>"; };
+		F1654C061CD12EC000917076 /* gst-report.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "gst-report.c"; path = "../tools/gst-report.c"; sourceTree = "<group>"; };
+		F1654C071CD12EC000917076 /* gst-top.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "gst-top.c"; path = "../tools/gst-top.c"; sourceTree = "<group>"; };
+		F1654C081CD12EC000917076 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../tools/Makefile.am; sourceTree = "<group>"; };
 		F18C55801C2F39CB006261FB /* gstelementheadstone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstelementheadstone.c; path = ../libs/gst/trace/gstelementheadstone.c; sourceTree = "<group>"; };
 		F18C55811C2F39CB006261FB /* gstelementheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstelementheadstone.h; path = ../libs/gst/trace/gstelementheadstone.h; sourceTree = "<group>"; };
 		F18C55821C2F39CB006261FB /* gstgraveyard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstgraveyard.c; path = ../libs/gst/trace/gstgraveyard.c; sourceTree = "<group>"; };
@@ -73,10 +77,6 @@
 		F18C55871C2F39CB006261FB /* gsttaskheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttaskheadstone.h; path = ../libs/gst/trace/gsttaskheadstone.h; sourceTree = "<group>"; };
 		F1B7C9671B766B4E00636C88 /* gst-top */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "gst-top"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1D46F7E1B94B923002591EE /* gst-report */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "gst-report"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F1D46F7F1B94B948002591EE /* gst-report.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-report.c"; path = "../instruments/gst-report.c"; sourceTree = "<group>"; };
-		F1F5A6971BAEF42300743D04 /* formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = formatters.c; path = ../instruments/formatters.c; sourceTree = "<group>"; };
-		F1F5A6981BAEF42300743D04 /* formatters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = formatters.h; path = ../instruments/formatters.h; sourceTree = "<group>"; };
-		F1FF096C1CCECB88002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../instruments/Makefile.am; sourceTree = "<group>"; };
 		F1FF096D1CCECBB5002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../libs/gst/intercept/Makefile.am; sourceTree = "<group>"; };
 		F1FF096E1CCECD5E002404E0 /* configure.ac */ = {isa = PBXFileReference; lastKnownFileType = text; name = configure.ac; path = ../configure.ac; sourceTree = "<group>"; };
 		F1FF096F1CCECD5E002404E0 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = ../Makefile.am; sourceTree = "<group>"; };
@@ -110,11 +110,11 @@
 		F13483FE1B7CC9F1007BBFD5 /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				F1FF096C1CCECB88002404E0 /* Makefile.am */,
-				F1D46F7F1B94B948002591EE /* gst-report.c */,
-				F13483FB1B7CAB0C007BBFD5 /* gst-top.c */,
-				F1F5A6971BAEF42300743D04 /* formatters.c */,
-				F1F5A6981BAEF42300743D04 /* formatters.h */,
+				F1654C041CD12EC000917076 /* formatters.c */,
+				F1654C051CD12EC000917076 /* formatters.h */,
+				F1654C061CD12EC000917076 /* gst-report.c */,
+				F1654C071CD12EC000917076 /* gst-top.c */,
+				F1654C081CD12EC000917076 /* Makefile.am */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -277,7 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */,
+				F1654C0B1CD12ECA00917076 /* gst-top.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,12 +285,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1654C091CD12EC700917076 /* formatters.c in Sources */,
 				F18C55881C2F39CB006261FB /* gstelementheadstone.c in Sources */,
 				F18C55891C2F39CB006261FB /* gstgraveyard.c in Sources */,
 				F18C558B1C2F39CB006261FB /* gsttaskheadstone.c in Sources */,
-				F16CD3071C343A6000FBDAEB /* formatters.c in Sources */,
-				F1D46F811B94BBD0002591EE /* gst-report.c in Sources */,
 				F14B26341C138BDE00852101 /* gsttrace.c in Sources */,
+				F1654C0A1CD12EC700917076 /* gst-report.c in Sources */,
 				F18C558A1C2F39CB006261FB /* gstpadheadstone.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
