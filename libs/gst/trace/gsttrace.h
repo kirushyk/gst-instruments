@@ -22,7 +22,7 @@
 
 #include <glib.h>
 #include <gst/gst.h>
-#include "gstentry.h"
+#include "gsttraceentry.h"
 
 G_BEGIN_DECLS
 

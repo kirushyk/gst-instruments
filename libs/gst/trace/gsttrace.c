@@ -21,15 +21,15 @@
 #include <sys/time.h>
 #include <glib.h>
 #include <stdio.h>
-#include "trace.h"
-#include "../trace/entry.h"
+#include "../trace/gsttrace.h"
+#include "../trace/gsttraceentry.h"
 
 struct GstTrace
 {
   GMutex        trace_mutex;
   GList        *trace_entries;
   GstClockTime  startup_time;
-}
+};
 
 void
 gst_element_dump_to_file (GstElement *element, const gchar *filename)

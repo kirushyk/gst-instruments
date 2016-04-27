@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F1320D961C21C3BC002BD63A /* gstentry.c in Sources */ = {isa = PBXBuildFile; fileRef = F1320D951C21C3B0002BD63A /* gstentry.c */; };
-		F1320D971C21C3C8002BD63A /* gstentry.c in Sources */ = {isa = PBXBuildFile; fileRef = F1320D951C21C3B0002BD63A /* gstentry.c */; };
 		F13483FD1B7CAB0C007BBFD5 /* gst-top.c in Sources */ = {isa = PBXBuildFile; fileRef = F13483FB1B7CAB0C007BBFD5 /* gst-top.c */; };
 		F134840D1B7CCD99007BBFD5 /* gstintercept.c in Sources */ = {isa = PBXBuildFile; fileRef = F13484001B7CCA09007BBFD5 /* gstintercept.c */; };
 		F14B26331C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
 		F14B26341C138BDE00852101 /* gsttrace.c in Sources */ = {isa = PBXBuildFile; fileRef = F14B26311C138BDE00852101 /* gsttrace.c */; };
+		F1654C031CD1068A00917076 /* gsttraceentry.c in Sources */ = {isa = PBXBuildFile; fileRef = F1654C011CD1068A00917076 /* gsttraceentry.c */; };
 		F16CD3031C343A4900FBDAEB /* gstelementheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55801C2F39CB006261FB /* gstelementheadstone.c */; };
 		F16CD3041C343A4900FBDAEB /* gstgraveyard.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55821C2F39CB006261FB /* gstgraveyard.c */; };
 		F16CD3051C343A4900FBDAEB /* gstpadheadstone.c in Sources */ = {isa = PBXBuildFile; fileRef = F18C55841C2F39CB006261FB /* gstpadheadstone.c */; };
@@ -56,14 +55,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F1320D951C21C3B0002BD63A /* gstentry.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gstentry.c; path = ../libs/gst/trace/gstentry.c; sourceTree = "<group>"; };
 		F13483FB1B7CAB0C007BBFD5 /* gst-top.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gst-top.c"; path = "../instruments/gst-top.c"; sourceTree = "<group>"; };
 		F13484001B7CCA09007BBFD5 /* gstintercept.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gstintercept.c; path = ../libs/gst/intercept/gstintercept.c; sourceTree = "<group>"; };
 		F13484011B7CCA09007BBFD5 /* gstintercept.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gstintercept.h; path = ../libs/gst/intercept/gstintercept.h; sourceTree = "<group>"; };
 		F134840C1B7CCD8F007BBFD5 /* libgstintercept */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libgstintercept; sourceTree = BUILT_PRODUCTS_DIR; };
-		F145A79F1C0B771C005EBF9F /* gstentry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gstentry.h; path = ../libs/gst/trace/gstentry.h; sourceTree = "<group>"; };
 		F14B26311C138BDE00852101 /* gsttrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gsttrace.c; path = ../libs/gst/trace/gsttrace.c; sourceTree = "<group>"; };
 		F14B26321C138BDE00852101 /* gsttrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttrace.h; path = ../libs/gst/trace/gsttrace.h; sourceTree = "<group>"; };
+		F1654C011CD1068A00917076 /* gsttraceentry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gsttraceentry.c; path = ../libs/gst/trace/gsttraceentry.c; sourceTree = "<group>"; };
+		F1654C021CD1068A00917076 /* gsttraceentry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gsttraceentry.h; path = ../libs/gst/trace/gsttraceentry.h; sourceTree = "<group>"; };
 		F18C55801C2F39CB006261FB /* gstelementheadstone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstelementheadstone.c; path = ../libs/gst/trace/gstelementheadstone.c; sourceTree = "<group>"; };
 		F18C55811C2F39CB006261FB /* gstelementheadstone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstelementheadstone.h; path = ../libs/gst/trace/gstelementheadstone.h; sourceTree = "<group>"; };
 		F18C55821C2F39CB006261FB /* gstgraveyard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gstgraveyard.c; path = ../libs/gst/trace/gstgraveyard.c; sourceTree = "<group>"; };
@@ -141,8 +140,8 @@
 				F18C55851C2F39CB006261FB /* gstpadheadstone.h */,
 				F18C55861C2F39CB006261FB /* gsttaskheadstone.c */,
 				F18C55871C2F39CB006261FB /* gsttaskheadstone.h */,
-				F1320D951C21C3B0002BD63A /* gstentry.c */,
-				F145A79F1C0B771C005EBF9F /* gstentry.h */,
+				F1654C011CD1068A00917076 /* gsttraceentry.c */,
+				F1654C021CD1068A00917076 /* gsttraceentry.h */,
 				F14B26311C138BDE00852101 /* gsttrace.c */,
 				F14B26321C138BDE00852101 /* gsttrace.h */,
 			);
@@ -264,13 +263,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1320D961C21C3BC002BD63A /* gstentry.c in Sources */,
 				F16CD3061C343A4900FBDAEB /* gsttaskheadstone.c in Sources */,
 				F16CD3031C343A4900FBDAEB /* gstelementheadstone.c in Sources */,
 				F16CD3051C343A4900FBDAEB /* gstpadheadstone.c in Sources */,
 				F134840D1B7CCD99007BBFD5 /* gstintercept.c in Sources */,
 				F14B26331C138BDE00852101 /* gsttrace.c in Sources */,
 				F16CD3041C343A4900FBDAEB /* gstgraveyard.c in Sources */,
+				F1654C031CD1068A00917076 /* gsttraceentry.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +286,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F18C55881C2F39CB006261FB /* gstelementheadstone.c in Sources */,
-				F1320D971C21C3C8002BD63A /* gstentry.c in Sources */,
 				F18C55891C2F39CB006261FB /* gstgraveyard.c in Sources */,
 				F18C558B1C2F39CB006261FB /* gsttaskheadstone.c in Sources */,
 				F16CD3071C343A6000FBDAEB /* formatters.c in Sources */,
@@ -492,7 +490,7 @@
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBGUG=1",
-					"DATADIR=\"/usr/local/share/\"",
+					"DATADIR=\\\"/usr/local/share/\\\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -501,7 +499,7 @@
 		F1D46F7D1B94B923002591EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = "DATADIR=\"/usr/local/share/\"";
+				GCC_PREPROCESSOR_DEFINITIONS = "DATADIR=\\\"/usr/local/share/\\\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
