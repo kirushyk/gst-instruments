@@ -45,7 +45,7 @@ gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const g
     GstTraceEntry *entry = (GstTraceEntry *)iterator->data;
     if (entry) {
       if ((pipeline == NULL) || (pipeline == gst_trace_entry_get_pipeline (entry))) {
-        gst_trace_entry_dump_to_fd (entry, output);
+        gst_trace_entry_dump_to_file (entry, output);
       }
     }
   }

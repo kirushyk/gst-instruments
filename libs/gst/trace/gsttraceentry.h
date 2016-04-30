@@ -53,7 +53,7 @@ void                gst_trace_entry_set_timestamp          (GstTraceEntry      *
 
 GstClockTime        gst_trace_entry_get_timestamp          (GstTraceEntry *);
 
-void                gst_trace_entry_dump_to_fd             (GstTraceEntry      *entry,
+void                gst_trace_entry_dump_to_file           (GstTraceEntry      *entry,
                                                             FILE               *fd);
 
 void                gst_trace_element_discoved_entry_init  (GstTraceElementDiscoveredEntry *);
