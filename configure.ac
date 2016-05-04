@@ -55,7 +55,10 @@ AC_OUTPUT
 echo "
 
 Configuration
+	Version                    : ${VERSION}
 	Source code location       : ${srcdir}
 	Prefix                     : ${prefix}
 	Compiler                   : ${CC}
+
+	GUI                        : ${enable_ui}
 "
