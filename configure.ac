@@ -1,4 +1,5 @@
 AC_INIT([gst-instruments], [0.2.0], [kirushyk@gmail.com])
+AC_CONFIG_SRCDIR([tools/gst-top.c])
 AC_CONFIG_HEADER([config.h])
 
 AC_PROG_CC
