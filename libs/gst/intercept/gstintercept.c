@@ -78,7 +78,7 @@ GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint siz
 gboolean (*gst_pad_push_event_orig) (GstPad *pad, GstEvent *event) = NULL;
 GstStateChangeReturn (*gst_element_set_state_orig) (GstElement *element, GstState state) = NULL;
 
-GstClockTime current_monotonic_time()
+GstClockTime current_monotonic_time ()
 {
 #ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
   clock_serv_t cclock;
@@ -124,8 +124,7 @@ gpointer trace_heir (GstElement *element)
 gpointer get_downstack_element (gpointer pad)
 {
   gpointer element = pad;
-  do
-  {
+  do {
     gpointer peer = GST_PAD_PEER (element);
     if (peer) {
       element = GST_PAD_PARENT (peer);
@@ -148,6 +147,7 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
   } else if (g_hash_table_lookup (pipeline_by_element, new_element)) {
     return;
   }
+  
   if (new_element) {
     g_hash_table_insert (pipeline_by_element, new_element, pipeline);
   }
@@ -166,24 +166,27 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
   gboolean done = FALSE;
   while (!done) {
     switch (gst_iterator_next (it, &item)) {
-      case GST_ITERATOR_OK:
-        {
-          GstElement *internal = g_value_get_object (&item);
-          GstElement *parent = GST_ELEMENT_PARENT (internal);
-          
-          trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
-          g_value_reset (&item);
-        }
-        break;
-      case GST_ITERATOR_RESYNC:
-        gst_iterator_resync (it);
-        break;
-      case GST_ITERATOR_ERROR:
-        done = TRUE;
-        break;
-      case GST_ITERATOR_DONE:
-        done = TRUE;
-        break;
+    case GST_ITERATOR_OK:
+      {
+        GstElement *internal = g_value_get_object (&item);
+        GstElement *parent = GST_ELEMENT_PARENT (internal);
+        
+        trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
+        g_value_reset (&item);
+      }
+      break;
+        
+    case GST_ITERATOR_RESYNC:
+      gst_iterator_resync (it);
+      break;
+        
+    case GST_ITERATOR_ERROR:
+      done = TRUE;
+      break;
+        
+    case GST_ITERATOR_DONE:
+      done = TRUE;
+      break;
     }
   }
   g_value_unset (&item);
@@ -447,8 +450,7 @@ gst_element_set_state (GstElement *element, GstState state)
     }
   }
   
-  switch (state)
-  {
+  switch (state) {
   case GST_STATE_NULL:
     if (GST_IS_PIPELINE (element)) {
       const gchar *path = g_getenv ("GST_DEBUG_DUMP_TRACE_DIR");
