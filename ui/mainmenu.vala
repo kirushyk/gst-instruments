@@ -68,8 +68,7 @@ public class MainMenu: Gtk.MenuBar
       filter.set_filter_name ("GStreamer Trace (*.gsttrace)");
       filter.add_pattern ("*.gsttrace");
       file_chooser.add_filter (filter);
-      if (file_chooser.run () == Gtk.ResponseType.ACCEPT)
-      {
+      if (file_chooser.run () == Gtk.ResponseType.ACCEPT) {
         this.open_file_item_activated (file_chooser.get_filename ());
       }
       file_chooser.destroy ();

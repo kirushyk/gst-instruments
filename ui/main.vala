@@ -32,7 +32,6 @@ public class App: Gtk.Application
     add_window (main_window);
   }
 
-
   public override void open (File[] files, string hint)
   {
     foreach (File file in files) {
