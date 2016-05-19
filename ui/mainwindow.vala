@@ -117,16 +117,22 @@ public class MainWindow: Gtk.ApplicationWindow
     string ls_stderr;
     int ls_status;
 
-    Process.spawn_sync (null,
-                        {"/usr/local/bin/gst-report-1.0", "--duration", path},
-                        null,
-                        SpawnFlags.SEARCH_PATH,
-                        null,
-                        out ls_stdout,
-                        out ls_stderr,
-                        out ls_status);
+    try
+    {
+      Process.spawn_sync (null,
+                          {"/usr/local/bin/gst-report-1.0", "--duration", path},
+                          null,
+                          SpawnFlags.SEARCH_PATH,
+                          null,
+                          out ls_stdout,
+                          out ls_stderr,
+                          out ls_status);
 
-    timeline.x_duration = int64.parse (ls_stdout) * 0.00000002;
+      timeline.x_duration = int64.parse (ls_stdout) * 0.00000002;
+    }
+    catch (GLib.SpawnError error	)
+    {
+    }
 
     working_trace_path = path;
 

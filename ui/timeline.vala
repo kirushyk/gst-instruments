@@ -48,7 +48,6 @@ public class Timeline: Gtk.DrawingArea
   public override bool draw (Cairo.Context c)
   {
     int i = 0;
-    float scale = 1.0f;
     int width = get_allocated_width ();
     int height = get_allocated_height ();
 
