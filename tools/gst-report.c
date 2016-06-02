@@ -305,14 +305,16 @@ main (gint argc, gchar *argv[])
   
   if (!dot) {
     g_print ("ELEMENT");
-    gsize space = max_length - 7; // sizeof "ELEMENT"
-    for (j = 0; j < space; j++) {
-      g_print (" ");
+    gsize space = (max_length > 7) ? max_length - 7 : 0;
+    if (max_length > 7) {
+      for (j = 0; j < space; j++) {
+        g_print (" ");
+      }
     }
     
     if (show_types) {
       g_print (" TYPE");
-      space = max_type_name_length - 4; // sizeof "ELEMENT"
+      space = (max_type_name_length > 4) ? max_type_name_length - 4 : 0;
       for (j = 0; j < space; j++) {
         g_print (" ");
       }
