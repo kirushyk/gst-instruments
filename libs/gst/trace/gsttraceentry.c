@@ -19,23 +19,23 @@
 
 #include "gsttraceentry.h"
 
-typedef struct GstTraceEntry
+struct GstTraceEntry
 {
   GstTraceEntryType type;
   GstClockTime timestamp;
   gpointer pipeline;
-} GstTraceEntry;
+};
 
-typedef struct GstTraceElementDiscoveredEntry
+struct GstTraceElementDiscoveredEntry
 {
   GstTraceEntry entry;
   gpointer element_id;
-  gchar element_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gchar element_type_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
   gpointer parent_element_id;
-} GstTraceElementDiscoveredEntry;
+};
 
-typedef struct GstTraceElementEnteredEntry
+struct GstTraceElementEnteredEntry
 {
   GstTraceEntry entry;
   gpointer thread_id;
@@ -44,9 +44,9 @@ typedef struct GstTraceElementEnteredEntry
   gchar upperstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   guint64 start;
-} GstTraceElementEnteredEntry;
+};
 
-typedef struct GstTraceElementExitedEntry
+struct GstTraceElementExitedEntry
 {
   GstTraceEntry entry;
   gpointer thread_id;
@@ -54,7 +54,7 @@ typedef struct GstTraceElementExitedEntry
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   guint64 end;
   guint64 duration;
-} GstTraceElementExitedEntry;
+};
 
 void
 gst_trace_entry_init (GstTraceEntry *entry)
@@ -63,6 +63,13 @@ gst_trace_entry_init (GstTraceEntry *entry)
   entry->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
   entry->timestamp = GST_CLOCK_TIME_NONE;
   entry->pipeline = NULL;
+}
+
+void
+gst_trace_entry_set_pipeline  (GstTraceEntry *entry, GstPipeline *pipeline)
+{
+  g_assert (entry != NULL);
+  entry->pipeline = pipeline;
 }
 
 gpointer
@@ -96,6 +103,27 @@ void
 gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
-  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
+  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED;
+  entry->element_id = NULL;
+  entry->element_name[0] = '\0';
+  entry->element_type_name[0] = '\0';
+  entry->parent_element_id = NULL;
+}
+
+GstTraceElementDiscoveredEntry *
+gst_trace_element_discoved_entry_new (void)
+{
+  GstTraceElementDiscoveredEntry *entry = g_new(GstTraceElementDiscoveredEntry, 1);
+  gst_trace_element_discoved_entry_init (entry);
+  return entry;
+}
+
+void
+gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry,  GstElement    *element)
+{
+  entry->element_id = element;
+  g_strlcpy(entry->element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  g_strlcpy(entry->element_type_name, LGI_OBJECT_TYPE_NAME (element), GST_ELEMENT_TYPE_NAME_LENGTH_MAX);
+  entry->parent_element_id = (element);
 }
 

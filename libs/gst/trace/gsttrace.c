@@ -75,8 +75,11 @@ gst_trace_free (GstTrace *trace)
 }
 
 void
-gst_trace_add_entry (GstTrace *trace, GstPipeline *pipeline, GstTraceEntry  *entry)
+gst_trace_add_entry (GstTrace *trace, GstPipeline *pipeline, GstTraceEntry *entry)
 {
+  if (trace == NULL) {
+    return;
+  }
   GstClockTime current_time = gst_trace_entry_get_timestamp (entry);
   if (trace->startup_time == GST_CLOCK_TIME_NONE) {
     trace->startup_time = current_time;

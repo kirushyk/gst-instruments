@@ -25,6 +25,9 @@
 #include <gst/gst.h>
 #include "../../../config.h"
 
+#define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
+#define LGI_OBJECT_TYPE_NAME(element) ((element) != NULL) ? G_OBJECT_TYPE_NAME (element) : "0"
+
 typedef enum GstTraceEntryType
 {
   GST_TRACE_ENTRY_TYPE_UNKNOWN,
@@ -44,18 +47,24 @@ typedef struct GstTraceElementExitedEntry GstTraceElementExitedEntry;
 
 typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
-void                gst_trace_entry_init                   (GstTraceEntry *);
+void                gst_trace_entry_init                   (GstTraceEntry      *entry);
 
-gpointer            gst_trace_entry_get_pipeline           (GstTraceEntry *);
+void                gst_trace_entry_set_pipeline           (GstTraceEntry      *entry,
+                                                            GstPipeline        *pipeline);
+
+gpointer            gst_trace_entry_get_pipeline           (GstTraceEntry      *entry);
 
 void                gst_trace_entry_set_timestamp          (GstTraceEntry      *entry,
                                                             GstClockTime        timestamp);
 
-GstClockTime        gst_trace_entry_get_timestamp          (GstTraceEntry *);
+GstClockTime        gst_trace_entry_get_timestamp          (GstTraceEntry      *entry);
 
 void                gst_trace_entry_dump_to_file           (GstTraceEntry      *entry,
                                                             FILE               *fd);
 
-void                gst_trace_element_discoved_entry_init  (GstTraceElementDiscoveredEntry *);
+GstTraceElementDiscoveredEntry * gst_trace_element_discoved_entry_new (void);
+
+void                             gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry,
+                                                                                    GstElement    *element);
 
 #endif
