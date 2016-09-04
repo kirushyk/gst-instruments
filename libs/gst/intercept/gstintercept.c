@@ -31,6 +31,9 @@
 #include <config.h>
 
 #if __MACH__
+# define INTERPOSE(_replacment, _replacee) \
+__attribute__((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
+__attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee };
 # include <mach/mach_init.h>
 # include <mach/thread_act.h>
 # include <mach/mach_port.h>
@@ -43,9 +46,6 @@
 # define THREAD int
 THREAD mach_thread_self() { return 0; }
 #endif
-
-#define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
-#define LGI_OBJECT_TYPE_NAME(element) ((element) != NULL) ? G_OBJECT_TYPE_NAME (element) : "0"
 
 static guint64 get_cpu_time (THREAD thread) {
 #if __MACH__
@@ -69,7 +69,7 @@ static guint64 get_cpu_time (THREAD thread) {
 
 gpointer libgstreamer = NULL;
 
-GstTrace *trace = NULL;
+GstTrace *current_trace = NULL;
 
 GstStateChangeReturn (*gst_element_change_state_orig) (GstElement *element, GstStateChange transition) = NULL;
 GstFlowReturn (*gst_pad_push_orig) (GstPad *pad, GstBuffer *buffer) = NULL;
@@ -101,11 +101,81 @@ get_libgstreamer ()
     libgstreamer = dlopen (LIBGSTREAMER, RTLD_NOW);
   }
   
-  if (trace == NULL) {
-    trace = gst_trace_new();
+  return libgstreamer;
+}
+
+void optional_init()
+{
+  if (current_trace == NULL) {
+    current_trace = gst_trace_new();
   }
   
-  return libgstreamer;
+#ifdef __MACH__
+  
+  gst_element_change_state_orig = gst_element_change_state;
+  gst_pad_push_orig = gst_pad_push;
+  gst_pad_push_list_orig = gst_pad_push_list;
+  gst_pad_pull_range_orig = gst_pad_pull_range;
+  gst_pad_push_event_orig = gst_pad_push_event;
+  gst_element_set_state_orig = gst_element_set_state;
+  
+#else
+  
+  gst_element_change_state_orig = dlsym (get_libgstreamer (), "gst_element_change_state");
+  
+  if (gst_element_change_state_orig == NULL) {
+    GST_ERROR ("can not link to gst_element_change_state\n");
+    return GST_FLOW_CUSTOM_ERROR;
+  } else {
+    GST_INFO ("gst_element_change_state linked: %p\n", gst_element_change_state_orig);
+  }
+  
+  gst_pad_push_orig = dlsym (get_libgstreamer (), "gst_pad_push");
+  
+  if (gst_pad_push_orig == NULL) {
+    GST_ERROR ("can not link to gst_pad_push\n");
+    return GST_FLOW_CUSTOM_ERROR;
+  } else {
+    GST_INFO ("gst_pad_push linked: %p\n", gst_pad_push_orig);
+  }
+  gst_pad_push_list_orig = dlsym (get_libgstreamer (), "gst_pad_push_list");
+  
+  if (gst_pad_push_list_orig == NULL) {
+    GST_ERROR ("can not link to gst_pad_push_list\n");
+    return GST_FLOW_CUSTOM_ERROR;
+  } else {
+    GST_INFO ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
+  }
+  
+  gst_pad_push_event_orig = dlsym (get_libgstreamer (), "gst_pad_push_event");
+  
+  if (gst_pad_push_event_orig == NULL) {
+    GST_ERROR ("can not link to gst_pad_push_event\n");
+    return FALSE;
+  } else {
+    GST_INFO ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
+  }
+  
+  gst_pad_pull_range_orig = dlsym (get_libgstreamer (), "gst_pad_pull_range");
+  
+  if (gst_pad_pull_range_orig == NULL) {
+    GST_ERROR ("can not link to gst_pad_pull_range\n");
+    return GST_FLOW_CUSTOM_ERROR;
+  } else {
+    GST_INFO ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
+  }
+  
+  gst_element_set_state_orig = dlsym (get_libgstreamer (), "gst_element_set_state");
+  
+  if (gst_element_set_state_orig == NULL) {
+    GST_ERROR ("can not link to gst_element_set_state\n");
+    return GST_FLOW_CUSTOM_ERROR;
+  } else {
+    GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
+  }
+  
+#endif
+  
 }
 
 gpointer trace_heir (GstElement *element)
@@ -153,7 +223,12 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
   }
   
   if (!g_hash_table_lookup (pipeline_by_element, pipeline)) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), LGI_OBJECT_TYPE_NAME (pipeline)));
+    GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new();
+    gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
+    gst_trace_element_discoved_entry_init_set_element(entry, (GstElement *)pipeline);
+    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+    // trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), LGI_OBJECT_TYPE_NAME (pipeline)));
+    
     g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
   }
   
@@ -168,10 +243,14 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
     switch (gst_iterator_next (it, &item)) {
     case GST_ITERATOR_OK:
       {
-        GstElement *internal = g_value_get_object (&item);
-        GstElement *parent = GST_ELEMENT_PARENT (internal);
+        GstElement *element = g_value_get_object (&item);
         
-        trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
+        GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new();
+        gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
+        gst_trace_element_discoved_entry_init_set_element(entry, element);
+        gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+        
+        //trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
         g_value_reset (&item);
       }
       break;
@@ -194,21 +273,12 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
 }
 
 GstStateChangeReturn
-gst_element_change_state (GstElement *element, GstStateChange transition)
+lgi_element_change_state (GstElement *element, GstStateChange transition)
 {
   GstStateChangeReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_element_change_state_orig == NULL) {
-    gst_element_change_state_orig = dlsym (get_libgstreamer (), "gst_element_change_state");
-    
-    if (gst_element_change_state_orig == NULL) {
-      GST_ERROR ("can not link to gst_element_change_state\n");
-      return GST_FLOW_CUSTOM_ERROR;
-    } else {
-      GST_INFO ("gst_element_change_state linked: %p\n", gst_element_change_state_orig);
-    }
-  }
+  optional_init ();
   
   THREAD thread = mach_thread_self ();
   
@@ -216,7 +286,7 @@ gst_element_change_state (GstElement *element, GstStateChange transition)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
   
   result = gst_element_change_state_orig (element, transition);
   
@@ -226,28 +296,19 @@ gst_element_change_state (GstElement *element, GstStateChange transition)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
 }
 
 GstFlowReturn
-gst_pad_push (GstPad *pad, GstBuffer *buffer)
+lgi_pad_push (GstPad *pad, GstBuffer *buffer)
 {
   GstFlowReturn result;
+  
+  optional_init ();
+  
   GstPipeline *pipeline = NULL;
-  
-  if (gst_pad_push_orig == NULL) {
-    gst_pad_push_orig = dlsym (get_libgstreamer (), "gst_pad_push");
-    
-    if (gst_pad_push_orig == NULL) {
-      GST_ERROR ("can not link to gst_pad_push\n");
-      return GST_FLOW_CUSTOM_ERROR;
-    } else {
-      GST_INFO ("gst_pad_push linked: %p\n", gst_pad_push_orig);
-    }
-  }
-  
   THREAD thread = mach_thread_self ();
   
   gpointer element_from = GST_PAD_PARENT (pad);
@@ -257,14 +318,16 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
   GstPad *peer = GST_PAD_PEER (pad);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, 1, gst_buffer_get_size (buffer)));
+  // trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, 1, gst_buffer_get_size (buffer)));
+  GST_INFO ("pushin: %p %p\n", pad, buffer);
   result = gst_pad_push_orig (pad, buffer);
+  GST_INFO ("pushed: %d\n", result);
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
@@ -272,7 +335,7 @@ gst_pad_push (GstPad *pad, GstBuffer *buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
 }
@@ -293,22 +356,13 @@ for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
 }
 
 GstFlowReturn
-gst_pad_push_list (GstPad *pad, GstBufferList *list)
+lgi_pad_push_list (GstPad *pad, GstBufferList *list)
 {
   GstFlowReturn result;
+  
+  optional_init ();
+  
   GstPipeline *pipeline = NULL;
-  
-  if (gst_pad_push_list_orig == NULL) {
-    gst_pad_push_list_orig = dlsym (get_libgstreamer (), "gst_pad_push_list");
-    
-    if (gst_pad_push_list_orig == NULL) {
-      GST_ERROR ("can not link to gst_pad_push_list\n");
-      return GST_FLOW_CUSTOM_ERROR;
-    } else {
-      GST_INFO ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
-    }
-  }
-  
   THREAD thread = mach_thread_self ();
   
   gpointer element_from = GST_PAD_PARENT (pad);
@@ -318,7 +372,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -326,7 +380,7 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
   GstPad *peer = GST_PAD_PEER (pad);
   
-  trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, list_info.buffers_count, list_info.size));
+  // trace_add_entry (pipeline, g_strdup_printf ("data-sent s %p %p %p %p %d %" G_GUINT64_FORMAT, element_from, pad, element, peer, list_info.buffers_count, list_info.size));
   
   result = gst_pad_push_list_orig (pad, list);
     
@@ -336,27 +390,18 @@ gst_pad_push_list (GstPad *pad, GstBufferList *list)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
 }
 
 gboolean
-gst_pad_push_event (GstPad *pad, GstEvent *event)
+lgi_pad_push_event (GstPad *pad, GstEvent *event)
 {
   gboolean result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_push_event_orig == NULL) {
-    gst_pad_push_event_orig = dlsym (get_libgstreamer (), "gst_pad_push_event");
-    
-    if (gst_pad_push_event_orig == NULL) {
-      GST_ERROR ("can not link to gst_pad_push_event\n");
-      return FALSE;
-    } else {
-      GST_INFO ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
-    }
-  }
+  optional_init ();
   
   THREAD thread = mach_thread_self ();
   
@@ -368,7 +413,7 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
   guint64 start = get_cpu_time (thread);
   
   if (element_from && element) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
+    // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   }
   
   result = gst_pad_push_event_orig (pad, event);
@@ -380,28 +425,19 @@ gst_pad_push_event (GstPad *pad, GstEvent *event)
 #endif
   
   if (element_from && element) {
-    trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
+    // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   }
   
   return result;
 }
 
 GstFlowReturn
-gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
+lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
 {
   GstFlowReturn result;
   GstPipeline *pipeline = NULL;
   
-  if (gst_pad_pull_range_orig == NULL) {
-    gst_pad_pull_range_orig = dlsym (get_libgstreamer (), "gst_pad_pull_range");
-
-    if (gst_pad_pull_range_orig == NULL) {
-      GST_ERROR ("can not link to gst_pad_pull_range\n");
-      return GST_FLOW_CUSTOM_ERROR;
-    } else {
-      GST_INFO ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
-    }
-  }
+  optional_init ();
   
   THREAD thread = mach_thread_self ();
   
@@ -412,7 +448,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 start = get_cpu_time (thread);
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -420,7 +456,7 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   if (*buffer) {
     GstPad *peer = GST_PAD_PEER (pad);
-    trace_add_entry (pipeline, g_strdup_printf ("data-sent l %p %p %p %p %d %" G_GUINT64_FORMAT, element, peer, element_from, pad, 1, gst_buffer_get_size (*buffer)));
+    // trace_add_entry (pipeline, g_strdup_printf ("data-sent l %p %p %p %p %d %" G_GUINT64_FORMAT, element, peer, element_from, pad, 1, gst_buffer_get_size (*buffer)));
   }
   
   guint64 end = get_cpu_time (thread);
@@ -429,26 +465,17 @@ gst_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
+  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
 }
 
 GstStateChangeReturn
-gst_element_set_state (GstElement *element, GstState state)
+lgi_element_set_state (GstElement *element, GstState state)
 {
   GstStateChangeReturn result;
   
-  if (gst_element_set_state_orig == NULL) {
-    gst_element_set_state_orig = dlsym (get_libgstreamer (), "gst_element_set_state");
-    
-    if (gst_element_set_state_orig == NULL) {
-      GST_ERROR ("can not link to gst_element_set_state\n");
-      return GST_FLOW_CUSTOM_ERROR;
-    } else {
-      GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
-    }
-  }
+  optional_init ();
   
   switch (state) {
   case GST_STATE_NULL:
@@ -456,7 +483,8 @@ gst_element_set_state (GstElement *element, GstState state)
       const gchar *path = g_getenv ("GST_DEBUG_DUMP_TRACE_DIR");
       const gchar *name = g_getenv ("GST_DEBUG_DUMP_TRACE_FILENAME");
       gchar *filename = g_strdup_printf ("%s/%s.gsttrace", path ? path : ".", name ? name : GST_OBJECT_NAME (element));
-      gst_element_dump_to_file (element, filename);
+      // gst_element_dump_to_file (element, filename);
+      gst_trace_dump_pipeline_to_file(current_trace, (GstPipeline *)element, filename);
       g_free (filename);
     }
     break;
@@ -470,3 +498,10 @@ gst_element_set_state (GstElement *element, GstState state)
   
   return result;
 }
+
+INTERPOSE(lgi_pad_push, gst_pad_push);
+INTERPOSE(lgi_pad_push_list, gst_pad_push_list);
+INTERPOSE(lgi_pad_push_event, gst_pad_push_event);
+INTERPOSE(lgi_pad_pull_range, gst_pad_pull_range);
+INTERPOSE(lgi_element_set_state, gst_element_set_state);
+INTERPOSE(lgi_element_change_state, gst_element_change_state);
