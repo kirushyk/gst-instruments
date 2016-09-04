@@ -18,6 +18,7 @@
  */
 
 #include "gsttraceentry.h"
+#include <config.h>
 
 struct GstTraceEntry
 {
@@ -93,10 +94,30 @@ gst_trace_entry_get_timestamp (GstTraceEntry *entry)
   return entry->timestamp;
 }
 
+size_t
+gst_trace_entry_get_size (GstTraceEntry *entry)
+{
+  g_assert (entry != NULL);
+  
+  switch (entry->type) {
+    case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
+      return sizeof(GstTraceElementDiscoveredEntry);
+    case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
+    case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
+    case GST_TRACE_ENTRY_TYPE_DATA_SENT:
+    case GST_TRACE_ENTRY_TYPE_UNKNOWN:
+    default:
+      return 0;
+  }
+}
+
 void
 gst_trace_entry_dump_to_file (GstTraceEntry *entry, FILE *fd)
 {
-  
+  char buffer[GST_TRACE_ENTRY_SIZE] = {0};
+  size_t size = gst_trace_entry_get_size(entry);
+  fwrite(entry, size, 1, fd);
+  fwrite(buffer, 1, 512 - size, fd);
 }
 
 void

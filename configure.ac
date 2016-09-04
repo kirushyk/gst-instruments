@@ -36,6 +36,7 @@ AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile tools/Makefile data/Makefi
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Trace filename base])
 AC_DEFINE([GST_ELEMENT_TYPE_NAME_LENGTH_MAX], [128], [Max length of type name of GstElement])
 AC_DEFINE([GST_ELEMENT_NAME_LENGTH_MAX], [128], [Max length of name of GstElement])
+AC_DEFINE([GST_TRACE_ENTRY_SIZE], [512], [Fixed size of GstEntry, in bytes])
 GST_API_VERSION=1.0
 AC_SUBST(GST_API_VERSION)
 AC_DEFINE_UNQUOTED(GST_API_VERSION, "$GST_API_VERSION", [GStreamer API Version])

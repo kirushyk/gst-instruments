@@ -36,7 +36,7 @@ gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const g
 {
   GList *iterator;
   
-  FILE *output = fopen (filename, "wt");
+  FILE *output = fopen (filename, "wb");
   if (output == NULL)
     return;
       
