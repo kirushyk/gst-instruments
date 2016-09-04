@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <config.h>
 
+gboolean insert_libraries = TRUE;
+
 gint
 main (gint argc, gchar *argv[])
 {
@@ -32,14 +34,16 @@ main (gint argc, gchar *argv[])
   g_set_prgname ("gst-top-" GST_API_VERSION);
   g_set_application_name ("GStreamer Top Tool");
   
+  if (insert_libraries) {
 #if defined(__MACH__)
-  g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
-  g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
+    g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "1", FALSE);
+    g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
-  g_setenv ("LD_PRELOAD", LIBDIR "/libgstintercept.so.0", TRUE);
+    g_setenv ("LD_PRELOAD", LIBDIR "/libgstintercept.so.0", TRUE);
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif
+  }
   
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
   g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", GST_TOP_TRACE_FILENAME_BASE, TRUE);
