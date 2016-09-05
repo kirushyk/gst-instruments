@@ -245,9 +245,9 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
       {
         GstElement *element = g_value_get_object (&item);
         
-        GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new();
-        gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
-        gst_trace_element_discoved_entry_init_set_element(entry, element);
+        GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new ();
+        gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+        gst_trace_element_discoved_entry_init_set_element (entry, element);
         gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
         
         //trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
@@ -285,6 +285,12 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
+  
+  GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+  gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+  gst_trace_element_entered_entry_set_upstack_element_id (entry, NULL);
+  gst_trace_element_entered_entry_set_downstack_element_id (entry, element);
   
   // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
   

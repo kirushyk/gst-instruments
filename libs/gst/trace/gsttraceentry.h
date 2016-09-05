@@ -59,6 +59,9 @@ void                gst_trace_entry_set_timestamp          (GstTraceEntry      *
 
 GstClockTime        gst_trace_entry_get_timestamp          (GstTraceEntry      *entry);
 
+void                gst_trace_entry_set_thread_id          (GstTraceEntry      *entry,
+                                                            gpointer            thread_id);
+
 void                gst_trace_entry_dump_to_file           (GstTraceEntry      *entry,
                                                             FILE               *fd);
 
@@ -66,5 +69,11 @@ GstTraceElementDiscoveredEntry * gst_trace_element_discoved_entry_new (void);
 
 void                             gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry,
                                                                                     GstElement    *element);
+
+GstTraceElementEnteredEntry    * gst_trace_element_entered_entry_new (void);
+
+void        gst_trace_element_entered_entry_set_upstack_element_id   (GstTraceElementEnteredEntry *entry,  GstElement *element);
+
+void        gst_trace_element_entered_entry_set_downstack_element_id (GstTraceElementEnteredEntry *entry,  GstElement *element);
 
 #endif
