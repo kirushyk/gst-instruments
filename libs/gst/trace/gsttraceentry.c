@@ -19,7 +19,9 @@
 
 #include "gsttraceentry.h"
 #include <config.h>
+#include <string.h>
 
+/** @todo: Think about #pragma pack */
 struct GstTraceEntry
 {
   GstTraceEntryType type;
@@ -122,10 +124,11 @@ gst_trace_entry_get_size (GstTraceEntry *entry)
 void
 gst_trace_entry_dump_to_file (GstTraceEntry *entry, FILE *fd)
 {
-  char buffer[GST_TRACE_ENTRY_SIZE] = {0};
-  size_t size = gst_trace_entry_get_size(entry);
-  fwrite(entry, size, 1, fd);
-  fwrite(buffer, 1, 512 - size, fd);
+  char buffer[GST_TRACE_ENTRY_SIZE];
+  memset (buffer, 0, GST_TRACE_ENTRY_SIZE);
+  size_t size = gst_trace_entry_get_size (entry);
+  fwrite (entry, size, 1, fd);
+  fwrite (buffer, 1, 512 - size, fd);
 }
 
 void
@@ -142,7 +145,7 @@ gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
 GstTraceElementDiscoveredEntry *
 gst_trace_element_discoved_entry_new (void)
 {
-  GstTraceElementDiscoveredEntry *entry = g_new(GstTraceElementDiscoveredEntry, 1);
+  GstTraceElementDiscoveredEntry *entry = g_new0 (GstTraceElementDiscoveredEntry, 1);
   gst_trace_element_discoved_entry_init (entry);
   return entry;
 }
@@ -170,7 +173,7 @@ gst_trace_element_entered_entry_init (GstTraceElementEnteredEntry *entry)
 GstTraceElementEnteredEntry *
 gst_trace_element_entered_entry_new (void)
 {
-  GstTraceElementEnteredEntry *entry = g_new(GstTraceElementEnteredEntry, 1);
+  GstTraceElementEnteredEntry *entry = g_new0 (GstTraceElementEnteredEntry, 1);
   gst_trace_element_entered_entry_init (entry);
   return entry;
 }
@@ -203,7 +206,7 @@ gst_trace_element_entered_exited_init (GstTraceElementExitedEntry *entry)
 GstTraceElementExitedEntry *
 gst_trace_element_exited_entry_new (void)
 {
-  GstTraceElementExitedEntry *entry = g_new(GstTraceElementExitedEntry, 1);
+  GstTraceElementExitedEntry *entry = g_new0(GstTraceElementExitedEntry, 1);
   gst_trace_element_entered_exited_init (entry);
   return entry;
 }

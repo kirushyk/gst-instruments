@@ -227,7 +227,6 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
     gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
     gst_trace_element_discoved_entry_init_set_element(entry, (GstElement *)pipeline);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
-    // trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s 0", pipeline, LGI_ELEMENT_NAME (pipeline), LGI_OBJECT_TYPE_NAME (pipeline)));
     
     g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
   }
@@ -250,7 +249,6 @@ dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
         gst_trace_element_discoved_entry_init_set_element (entry, element);
         gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
         
-        //trace_add_entry (pipeline, g_strdup_printf ("element-discovered %p %s %s %p", internal, LGI_ELEMENT_NAME (internal), LGI_OBJECT_TYPE_NAME (internal), parent));
         g_value_reset (&item);
       }
       break;
@@ -293,8 +291,6 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
-
-  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
   
   result = gst_element_change_state_orig (element, transition);
   
@@ -311,7 +307,6 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
 }
@@ -340,7 +335,6 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -364,7 +358,6 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
 }
@@ -408,7 +401,6 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -433,7 +425,6 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
 }
@@ -463,7 +454,6 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
       gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
       gst_trace_element_entered_entry_set_downstack_element (entry, element);
     }
-    // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   }
   
   result = gst_pad_push_event_orig (pad, event);
@@ -482,7 +472,6 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
       gst_trace_element_exited_entry_set_downstack_element (entry, element);
       gst_trace_element_exited_entry_set_duration (entry, duration);
     }
-    // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   }
   
   return result;
@@ -512,7 +501,6 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
   
@@ -536,7 +524,6 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
   }
-  // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
 }
