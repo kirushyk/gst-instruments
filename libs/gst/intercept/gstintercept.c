@@ -286,12 +286,14 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   
   guint64 start = get_cpu_time (thread);
   
-  GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
-  gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-  gst_trace_element_entered_entry_set_upstack_element_id (entry, NULL);
-  gst_trace_element_entered_entry_set_downstack_element_id (entry, element);
-  
+  {
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+  }
+
   // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p gst_element_change_state 0 %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, start));
   
   result = gst_element_change_state_orig (element, transition);
@@ -302,6 +304,13 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
+  {
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_duration (entry, duration);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
@@ -324,6 +333,13 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   
   guint64 start = get_cpu_time (thread);
   
+  {
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
@@ -341,6 +357,13 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
+  {
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_duration (entry, duration);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;
@@ -378,6 +401,13 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   
   guint64 start = get_cpu_time (thread);
   
+  {
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
@@ -396,6 +426,13 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
+  {
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_duration (entry, duration);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
   
   return result;
@@ -419,6 +456,13 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
   guint64 start = get_cpu_time (thread);
   
   if (element_from && element) {
+    {
+      GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+      gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+      gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+      gst_trace_element_entered_entry_set_downstack_element (entry, element);
+    }
     // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   }
   
@@ -431,6 +475,13 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
 #endif
   
   if (element_from && element) {
+    {
+      GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+      gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+      gst_trace_element_exited_entry_set_downstack_element (entry, element);
+      gst_trace_element_exited_entry_set_duration (entry, duration);
+    }
     // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element), element, end, duration));
   }
   
@@ -454,6 +505,13 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   guint64 start = get_cpu_time (thread);
   
+  {
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-entered %p %s %p %s %p %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME (element_from), element_from, LGI_ELEMENT_NAME (element), element, start));
   
   dump_hierarchy_info_if_needed (pipeline, element);
@@ -471,6 +529,13 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
+  {
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_duration (entry, duration);
+  }
   // trace_add_entry (pipeline, g_strdup_printf ("element-exited %p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, g_thread_self (), LGI_ELEMENT_NAME(element), element, end, duration));
 
   return result;

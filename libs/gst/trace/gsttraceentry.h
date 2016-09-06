@@ -72,8 +72,17 @@ void                             gst_trace_element_discoved_entry_init_set_eleme
 
 GstTraceElementEnteredEntry    * gst_trace_element_entered_entry_new (void);
 
-void        gst_trace_element_entered_entry_set_upstack_element_id   (GstTraceElementEnteredEntry *entry,  GstElement *element);
+void        gst_trace_element_entered_entry_set_upstack_element   (GstTraceElementEnteredEntry *entry,  GstElement *element);
 
-void        gst_trace_element_entered_entry_set_downstack_element_id (GstTraceElementEnteredEntry *entry,  GstElement *element);
+void        gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element);
+
+GstTraceElementExitedEntry    * gst_trace_element_exited_entry_new (void);
+
+void        gst_trace_element_exited_entry_set_upstack_element   (GstTraceElementExitedEntry *entry,  GstElement *element);
+
+void        gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry,  GstElement *element);
+
+void                gst_trace_element_exited_entry_set_duration  (GstTraceElementExitedEntry      *entry,
+                                                                  GstClockTime        duration);
 
 #endif

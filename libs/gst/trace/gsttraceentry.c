@@ -40,20 +40,18 @@ struct GstTraceElementDiscoveredEntry
 struct GstTraceElementEnteredEntry
 {
   GstTraceEntry entry;
-  gpointer upperstack_element_id;
+  gpointer upstack_element_id;
   gpointer downstack_element_id;
-  gchar upperstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  guint64 start;
 };
 
 struct GstTraceElementExitedEntry
 {
   GstTraceEntry entry;
-  gpointer thread_id;
-  gchar upperstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  // gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gpointer downstack_element_id;
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  guint64 end;
   guint64 duration;
 };
 
@@ -111,7 +109,9 @@ gst_trace_entry_get_size (GstTraceEntry *entry)
     case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
       return sizeof (GstTraceElementDiscoveredEntry);
     case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
+      return sizeof (GstTraceElementEnteredEntry);
     case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
+      return sizeof (GstTraceElementExitedEntry);
     case GST_TRACE_ENTRY_TYPE_DATA_SENT:
     case GST_TRACE_ENTRY_TYPE_UNKNOWN:
     default:
@@ -161,6 +161,10 @@ gst_trace_element_entered_entry_init (GstTraceElementEnteredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED;
+  entry->upstack_element_id = NULL;
+  entry->downstack_element_id = NULL;
+  entry->upstack_element_name[0] = '\0';
+  entry->downstack_element_name[0] = '\0';
 }
 
 GstTraceElementEnteredEntry *
@@ -168,24 +172,57 @@ gst_trace_element_entered_entry_new (void)
 {
   GstTraceElementEnteredEntry *entry = g_new(GstTraceElementEnteredEntry, 1);
   gst_trace_element_entered_entry_init (entry);
-  entry->upperstack_element_id = NULL;
-  entry->downstack_element_id = NULL;
-  entry->upperstack_element_name[0] = '\0';
-  entry->downstack_element_name[0] = '\0';
-  entry->start = GST_CLOCK_TIME_NONE;
   return entry;
 }
 
 void
-gst_trace_element_entered_entry_set_upstack_element_id (GstTraceElementEnteredEntry *entry,  GstElement *element)
+gst_trace_element_entered_entry_set_upstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element)
 {
-  entry->upperstack_element_id = element;
-  g_strlcpy(entry->upperstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  entry->upstack_element_id = element;
+  g_strlcpy(entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
 }
 
 void
-gst_trace_element_entered_entry_set_downstack_element_id (GstTraceElementEnteredEntry *entry,  GstElement *element)
+gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element)
 {
   entry->downstack_element_id = element;
   g_strlcpy(entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+}
+
+void
+gst_trace_element_entered_exited_init (GstTraceElementExitedEntry *entry)
+{
+  gst_trace_entry_init ((GstTraceEntry *)entry);
+  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED;
+  // entry->upstack_element_name[0] = '\0';
+  entry->downstack_element_id = NULL;
+  entry->downstack_element_name[0] = '\0';
+  entry->duration = GST_CLOCK_TIME_NONE;
+}
+
+GstTraceElementExitedEntry *
+gst_trace_element_exited_entry_new (void)
+{
+  GstTraceElementExitedEntry *entry = g_new(GstTraceElementExitedEntry, 1);
+  gst_trace_element_entered_exited_init (entry);
+  return entry;
+}
+
+void
+gst_trace_element_exited_entry_set_upstack_element (GstTraceElementExitedEntry *entry, GstElement *element)
+{
+  // g_strlcpy(entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+}
+
+void
+gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry, GstElement *element)
+{
+  entry->downstack_element_id = element;
+  g_strlcpy(entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+}
+
+void
+gst_trace_element_exited_entry_set_duration (GstTraceElementExitedEntry *entry, GstClockTime duration)
+{
+  entry->duration = duration;
 }
