@@ -20,6 +20,8 @@
 #define TIMESTAMP_FITS(ts, min, max) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
   (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
 
+#include <config.h>
+#include "gsttraceentry.h"
 #include "gstgraveyard.h"
 #include "gstpadheadstone.h"
 #include "gsttaskheadstone.h"
@@ -102,7 +104,7 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till, gboolean query_duration_only)
 {
-  FILE *input = fopen (filename,  "rt");
+  FILE *input = fopen (filename,  "rb");
   if (input == NULL) {
     return NULL;
   }
@@ -113,90 +115,111 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   graveyard->elements = g_hash_table_new (g_direct_hash, g_direct_equal);
   
   while (!feof (input)) {
-    GstClockTime event_timestamp;
-    gchar event_name[1000];
-    if (fscanf (input, "%" G_GUINT64_FORMAT " %s", &event_timestamp, event_name) != 2) {
+    gchar buffer[GST_TRACE_ENTRY_SIZE];
+    
+    if (fread(buffer, GST_TRACE_ENTRY_SIZE, 1, input) != 1) {
       break;
     }
     
+    GstTraceEntry *entry = (GstTraceEntry *)buffer;
+    
+    GstClockTime event_timestamp = gst_trace_entry_get_timestamp(entry);
     if (event_timestamp > graveyard->duration) {
       graveyard->duration = event_timestamp;
     }
     
     if (query_duration_only) {
-      gchar buffer[1024];
-      fgets (buffer, sizeof (buffer), input);
       continue;
     }
     
-    if (g_ascii_strcasecmp (event_name, "element-discovered") == 0) {
-      gpointer element_id;
-      gpointer parent_element_id;
-      gchar element_name[1000];
-      gchar element_type_name[1000];
-      if (fscanf (input, "%p %s %s %p\n", &element_id, element_name, element_type_name, &parent_element_id) == 4) {
-        GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
-        if (parent_element_id) {
-          GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, parent_element_id, NULL);
-          if (element->type_name == NULL) {
-            element->type_name = g_string_new (element_type_name);
+    switch (gst_trace_entry_get_type (entry)) {
+      case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
+        {
+          GstTraceElementDiscoveredEntry *ed_entry = (GstTraceElementDiscoveredEntry *)entry;
+          GstElementHeadstone *element = gst_graveyard_get_element (graveyard, ed_entry->element_id, ed_entry->element_name);
+          if (ed_entry->parent_element_id) {
+            GstElementHeadstone *parent = gst_graveyard_get_element (graveyard, ed_entry->parent_element_id, NULL);
+            if (element->type_name == NULL) {
+              element->type_name = g_string_new (ed_entry->element_type_name);
+            }
+            gst_element_headstone_add_child (parent, element);
           }
-          gst_element_headstone_add_child (parent, element);
         }
-      } else {
-        g_print ("couldn't parse event: %s\n", event_name);
-        goto error;
-      }
-    } else if (g_ascii_strcasecmp (event_name, "element-entered") == 0) {
-      gpointer task_id;
-      gchar from_element_name[1000];
-      gpointer from_element_id;
-      gchar element_name[1000];
-      gpointer element_id;
-      guint64 thread_time;
-      if (fscanf (input, "%p %s %p %s %p %" G_GUINT64_FORMAT "\n", &task_id, from_element_name, &from_element_id, element_name, &element_id, &thread_time) == 6) {
-        GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_id, element_name);
-        
-        g_assert_true (element != NULL);
-        
-        GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, task_id);
-        if (!task) {
-          task = g_new0 (GstTaskHeadstone, 1);
-          task->identifier = task_id;
-          task->total_upstack_time = 0;
-          task->upstack_enter_timestamp = 0;
-          task->currently_in_upstack_element = TRUE;
-          task->name = NULL;
-          task->upstack_element_identifier = NULL;
-          g_hash_table_insert (graveyard->tasks, task_id, task);
-        }
-        
-        g_assert_true (task != NULL);
-        
-        if (task->currently_in_upstack_element) {
-          element->is_subtopstack = TRUE;
-          task->upstack_exit_timestamp = thread_time;
-          if ((task->upstack_enter_timestamp > 0) && TIMESTAMP_FITS (event_timestamp, from, till)) {
-            task->total_upstack_time += task->upstack_exit_timestamp - task->upstack_enter_timestamp;
+        break;
+      case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
+        {
+          GstTraceElementEnteredEntry *ee_entry = (GstTraceElementEnteredEntry *)entry;
+          GstElementHeadstone *element = gst_graveyard_get_element (graveyard, ee_entry->downstack_element_id, ee_entry->downstack_element_name);
+          
+          g_assert_true (element != NULL);
+          
+          GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, entry->thread_id);
+          if (!task) {
+            task = g_new0 (GstTaskHeadstone, 1);
+            task->identifier = ee_entry->entry.thread_id;
+            task->total_upstack_time = 0;
+            task->upstack_enter_timestamp = 0;
+            task->currently_in_upstack_element = TRUE;
+            task->name = NULL;
+            task->upstack_element_identifier = NULL;
+            g_hash_table_insert (graveyard->tasks, entry->thread_id, task);
           }
-          task->currently_in_upstack_element = FALSE;
-          if (task->name == NULL) {
-            task->upstack_element_identifier = from_element_id;
-            task->name = g_string_new (from_element_name);
+          
+          g_assert_true (task != NULL);
+          
+          if (task->currently_in_upstack_element) {
+            element->is_subtopstack = TRUE;
+            task->upstack_exit_timestamp = entry->timestamp;
+            if ((task->upstack_enter_timestamp > 0) && TIMESTAMP_FITS (event_timestamp, from, till)) {
+              task->total_upstack_time += task->upstack_exit_timestamp - task->upstack_enter_timestamp;
+            }
+            task->currently_in_upstack_element = FALSE;
+            if (task->name == NULL) {
+              task->upstack_element_identifier = ee_entry->upstack_element_id;
+              task->name = g_string_new (ee_entry->upstack_element_name);
+            }
+          } else {
+            element->is_subtopstack = FALSE;
           }
-        } else {
-          element->is_subtopstack = FALSE;
+          if (TIMESTAMP_FITS (event_timestamp, from, till)) {
+            task->total_downstack_time += task->current_downstack_time;
+          }
+          task->current_downstack_time = 0;
         }
-        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
-          task->total_downstack_time += task->current_downstack_time;
+        break;
+      case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
+        {
+          GstTraceElementExitedEntry *ee_entry = (GstTraceElementExitedEntry *)entry;
+          GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, entry->thread_id);
+          if (!task) {
+            g_print ("couldn't find task %p\n", entry->thread_id);
+            goto error;
+          }
+          GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, ee_entry->downstack_element_id);
+          if (!element) {
+            g_print ("couldn't find element %p: %s\n", ee_entry->downstack_element_id, ee_entry->downstack_element_name);
+            goto error;
+          }
+          if (TIMESTAMP_FITS (event_timestamp, from, till)) {
+            element->total_cpu_time += ee_entry->duration - task->current_downstack_time;
+          }
+          task->current_downstack_time = ee_entry->duration;
+          if (element->is_subtopstack) {
+            task->upstack_enter_timestamp = entry->timestamp;
+            task->currently_in_upstack_element = TRUE;
+          } else {
+            task->currently_in_upstack_element = FALSE;
+          }
         }
-        task->current_downstack_time = 0;
-      } else {
-        g_print ("couldn't parse event: %s\n", event_name);
-        goto error;
-      }
+        break;
+      case GST_TRACE_ENTRY_TYPE_DATA_SENT:
+        break;
+      case GST_TRACE_ENTRY_TYPE_UNKNOWN:
+      default:
+        break;
     }
-    else if (g_ascii_strcasecmp (event_name, "data-sent") == 0)
+    
+    /*else if (g_ascii_strcasecmp (event_name, "data-sent") == 0)
     {
       gchar mode[2];
       GstPadMode pad_mode;
@@ -251,47 +274,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         g_print ("couldn't parse event: %s\n", event_name);
         goto error;
       }
-    } else if (g_ascii_strcasecmp (event_name, "element-exited") == 0) {
-      gpointer task_id;
-      gchar element_name[1000];
-      gpointer element_id;
-      guint64 thread_time;
-      guint64 duration;
-      if (fscanf (input, "%p %s %p %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT "\n", &task_id, element_name, &element_id, &thread_time, &duration) == 5) {
-        GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, task_id);
-        if (!task) {
-          g_print ("couldn't find task %p\n", task_id);
-          goto error;
-        }
-        GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, element_id);
-        if (!element) {
-          g_print ("couldn't find element %p: %s\n", element_id, element_name);
-          goto error;
-        }
-        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
-          element->total_cpu_time += duration - task->current_downstack_time;
-        }
-        task->current_downstack_time = duration;
-        if (element->is_subtopstack) {
-          task->upstack_enter_timestamp = thread_time;
-          task->currently_in_upstack_element = TRUE;
-        } else {
-          task->currently_in_upstack_element = FALSE;
-        }
-      } else {
-        g_print ("couldn't parse event: %s\n", event_name);
-        goto error;
-      }
-    } else if (g_ascii_strcasecmp (event_name, "task") == 0) {
-      gpointer task_id;
-      if (fscanf (input, "%p\n", &task_id) != 1) {
-        g_print ("couldn't parse task\n");
-        goto error;
-      }
-    } else {
-      g_print ("couldn't recognize event: %s\n", event_name);
-      goto error;
-    }
+    }*/
   }
   fclose (input);
   

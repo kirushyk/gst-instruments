@@ -332,7 +332,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
   
@@ -398,7 +398,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
   
@@ -498,7 +498,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
   }
   

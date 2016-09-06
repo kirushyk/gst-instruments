@@ -21,42 +21,6 @@
 #include <config.h>
 #include <string.h>
 
-/** @todo: Think about #pragma pack */
-struct GstTraceEntry
-{
-  GstTraceEntryType type;
-  GstClockTime timestamp;
-  gpointer pipeline;
-  gpointer thread_id;
-};
-
-struct GstTraceElementDiscoveredEntry
-{
-  GstTraceEntry entry;
-  gpointer element_id;
-  gchar element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
-  gpointer parent_element_id;
-};
-
-struct GstTraceElementEnteredEntry
-{
-  GstTraceEntry entry;
-  gpointer upstack_element_id;
-  gpointer downstack_element_id;
-  gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-};
-
-struct GstTraceElementExitedEntry
-{
-  GstTraceEntry entry;
-  // gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  gpointer downstack_element_id;
-  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  guint64 duration;
-};
-
 void
 gst_trace_entry_init (GstTraceEntry *entry)
 {
@@ -65,6 +29,13 @@ gst_trace_entry_init (GstTraceEntry *entry)
   entry->timestamp = GST_CLOCK_TIME_NONE;
   entry->pipeline = NULL;
   entry->thread_id = NULL;
+}
+
+GstTraceEntryType
+gst_trace_entry_get_type (GstTraceEntry *entry)
+{
+  g_assert (entry != NULL);
+  return entry->type;
 }
 
 void
@@ -108,16 +79,16 @@ gst_trace_entry_get_size (GstTraceEntry *entry)
   g_assert (entry != NULL);
   
   switch (entry->type) {
-    case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
-      return sizeof (GstTraceElementDiscoveredEntry);
-    case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
-      return sizeof (GstTraceElementEnteredEntry);
-    case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
-      return sizeof (GstTraceElementExitedEntry);
-    case GST_TRACE_ENTRY_TYPE_DATA_SENT:
-    case GST_TRACE_ENTRY_TYPE_UNKNOWN:
-    default:
-      return 0;
+  case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
+    return sizeof (GstTraceElementDiscoveredEntry);
+  case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
+    return sizeof (GstTraceElementEnteredEntry);
+  case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
+    return sizeof (GstTraceElementExitedEntry);
+  case GST_TRACE_ENTRY_TYPE_DATA_SENT:
+  case GST_TRACE_ENTRY_TYPE_UNKNOWN:
+  default:
+    return 0;
   }
 }
 

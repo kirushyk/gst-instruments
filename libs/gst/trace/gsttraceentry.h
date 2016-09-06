@@ -39,15 +39,53 @@ typedef enum GstTraceEntryType
 
 typedef struct GstTraceEntry GstTraceEntry;
 
+/** @todo: Think about #pragma pack */
+struct GstTraceEntry
+{
+  GstTraceEntryType type;
+  GstClockTime timestamp;
+  gpointer pipeline;
+  gpointer thread_id;
+};
+
 typedef struct GstTraceElementDiscoveredEntry GstTraceElementDiscoveredEntry;
+
+struct GstTraceElementDiscoveredEntry
+{
+  GstTraceEntry entry;
+  gpointer element_id;
+  gchar element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar element_type_name[GST_ELEMENT_TYPE_NAME_LENGTH_MAX];
+  gpointer parent_element_id;
+};
 
 typedef struct GstTraceElementEnteredEntry GstTraceElementEnteredEntry;
 
+struct GstTraceElementEnteredEntry
+{
+  GstTraceEntry entry;
+  gpointer upstack_element_id;
+  gpointer downstack_element_id;
+  gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+};
+
 typedef struct GstTraceElementExitedEntry GstTraceElementExitedEntry;
+
+struct GstTraceElementExitedEntry
+{
+  GstTraceEntry entry;
+  // gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  gpointer downstack_element_id;
+  gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  guint64 duration;
+};
 
 typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
 void                gst_trace_entry_init                   (GstTraceEntry      *entry);
+
+GstTraceEntryType   gst_trace_entry_get_type               (GstTraceEntry      *entry);
 
 void                gst_trace_entry_set_pipeline           (GstTraceEntry      *entry,
                                                             GstPipeline        *pipeline);
