@@ -127,11 +127,11 @@ void        gst_trace_element_entered_entry_set_downstack_element (GstTraceEleme
 
 GstTraceElementExitedEntry    * gst_trace_element_exited_entry_new (void);
 
-void        gst_trace_element_exited_entry_set_upstack_element   (GstTraceElementExitedEntry *entry,  GstElement *element);
-
 void        gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry,  GstElement *element);
 
 void                gst_trace_element_exited_entry_set_duration  (GstTraceElementExitedEntry      *entry,
                                                                   GstClockTime        duration);
+
+GstTraceDataSentEntry * gst_trace_data_sent_entry_new (void);
 
 #endif

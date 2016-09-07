@@ -168,7 +168,6 @@ gst_trace_element_entered_exited_init (GstTraceElementExitedEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED;
-  // entry->upstack_element_name[0] = '\0';
   entry->downstack_element_id = NULL;
   entry->downstack_element_name[0] = '\0';
   entry->duration = GST_CLOCK_TIME_NONE;
@@ -183,12 +182,6 @@ gst_trace_element_exited_entry_new (void)
 }
 
 void
-gst_trace_element_exited_entry_set_upstack_element (GstTraceElementExitedEntry *entry, GstElement *element)
-{
-  // g_strlcpy(entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
-}
-
-void
 gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry, GstElement *element)
 {
   entry->downstack_element_id = element;
@@ -199,4 +192,26 @@ void
 gst_trace_element_exited_entry_set_duration (GstTraceElementExitedEntry *entry, GstClockTime duration)
 {
   entry->duration = duration;
+}
+
+void
+gst_trace_data_sent_entry_init (GstTraceDataSentEntry *entry)
+{
+  gst_trace_entry_init ((GstTraceEntry *)entry);
+  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_DATA_SENT;
+  entry->pad_mode = GST_PAD_MODE_NONE;
+  entry->sender_element = NULL;
+  entry->receiver_element = NULL;
+  entry->sender_pad = NULL;
+  entry->receiver_pad = NULL;
+  entry->buffers_count = 0;
+  entry->bytes_count = 0;
+}
+
+GstTraceDataSentEntry *
+gst_trace_data_sent_entry_new (void)
+{
+  GstTraceDataSentEntry *entry = g_new0(GstTraceDataSentEntry, 1);
+  gst_trace_data_sent_entry_init (entry);
+  return entry;
 }
