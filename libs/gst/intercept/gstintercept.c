@@ -31,9 +31,6 @@
 #include <config.h>
 
 #if __MACH__
-# define INTERPOSE(_replacment, _replacee) \
-__attribute__((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
-__attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee };
 # include <mach/mach_init.h>
 # include <mach/thread_act.h>
 # include <mach/mach_port.h>
@@ -41,6 +38,12 @@ __attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long
 # include <mach/mach.h>
 # define THREAD thread_port_t
 #else
+# define lgi_pad_push gst_pad_push
+# define lgi_pad_push_list gst_pad_push_list
+# define lgi_pad_push_event gst_pad_push_event
+# define lgi_pad_pull_range gst_pad_pull_range
+# define lgi_element_set_state gst_element_set_state
+# define lgi_element_change_state gst_element_change_state
 # include <signal.h>
 # include <time.h>
 # define THREAD int
@@ -577,9 +580,14 @@ lgi_element_set_state (GstElement *element, GstState state)
   return result;
 }
 
+#if __MACH__
+# define INTERPOSE(_replacment, _replacee) \
+__attribute__((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
+__attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee };
 INTERPOSE(lgi_pad_push, gst_pad_push);
 INTERPOSE(lgi_pad_push_list, gst_pad_push_list);
 INTERPOSE(lgi_pad_push_event, gst_pad_push_event);
 INTERPOSE(lgi_pad_pull_range, gst_pad_pull_range);
 INTERPOSE(lgi_element_set_state, gst_element_set_state);
 INTERPOSE(lgi_element_change_state, gst_element_change_state);
+#endif
