@@ -18,6 +18,12 @@ which "aclocal" 2>/dev/null || {
   exit 1
 }
 
+echo "Checking for libtool..."
+which "libtool" 2>/dev/null || {
+  echo "Please install libtool."
+  exit 1
+}
+
 package=gst-instruments
 
 autoreconf -vif

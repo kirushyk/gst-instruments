@@ -1,10 +1,8 @@
 AC_INIT([gst-instruments], [0.2.0], [kirushyk@gmail.com])
 AC_CONFIG_SRCDIR([tools/gst-top.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC
-AC_PROG_LIBTOOL
-
 LT_INIT
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -41,15 +39,30 @@ GST_API_VERSION=1.0
 AC_SUBST(GST_API_VERSION)
 AC_DEFINE_UNQUOTED(GST_API_VERSION, "$GST_API_VERSION", [GStreamer API Version])
 
-AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable feature ui]))
+AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable Gtk+ UI]))
 
+enable_ui=no
+AC_SUBST([UI_DIR], [""])
 AS_IF([test "x$enable_ui" != "xno"], [
-  enable_ui=yes
-  AM_PROG_VALAC
-  AC_CHECK_PROG(DOT, dot, yes)
-  PKG_CHECK_MODULES([GTK], [gtk+-3.0])
-  AC_SUBST([UI_DIR], [ui])],
-  [ AC_SUBST([UI_DIR], [""]) ]
+  AM_PROG_VALAC(, [
+    AC_CHECK_PROG(DOT, dot, yes, no)
+    AS_IF([test "x$DOT" != "xno"], [
+        PKG_CHECK_MODULES([GTK], [gtk+-3.0], [
+            enable_ui=yes
+            AC_SUBST([UI_DIR], [ui])
+          ], [
+            echo "Gtk+ not found, Gtk+ UI will not be built"
+          ]
+        )
+      ], [
+        echo "Graphviz not found, Gtk+ UI will not be built"
+      ]
+    )
+    ], [
+      echo "Vala not found, Gtk+ UI will not be built"
+    ]
+  )
+  ]
 )
 
 AC_OUTPUT
@@ -62,5 +75,5 @@ Configuration
 	Prefix                     : ${prefix}
 	Compiler                   : ${CC}
 
-	GUI                        : ${enable_ui}
+	Gtk+ UI                    : ${enable_ui}
 "
