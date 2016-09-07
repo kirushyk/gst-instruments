@@ -125,8 +125,8 @@ void
 gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry,  GstElement *element)
 {
   entry->element_id = element;
-  g_strlcpy(entry->element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
-  g_strlcpy(entry->element_type_name, LGI_OBJECT_TYPE_NAME (element), GST_ELEMENT_TYPE_NAME_LENGTH_MAX);
+  g_strlcpy (entry->element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  g_strlcpy (entry->element_type_name, LGI_OBJECT_TYPE_NAME (element), GST_ELEMENT_TYPE_NAME_LENGTH_MAX);
   entry->parent_element_id = GST_ELEMENT_PARENT (element);
 }
 
@@ -153,14 +153,14 @@ void
 gst_trace_element_entered_entry_set_upstack_element (GstTraceElementEnteredEntry *entry, GstElement *element)
 {
   entry->upstack_element_id = element;
-  g_strlcpy(entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  g_strlcpy (entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
 }
 
 void
 gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry, GstElement *element)
 {
   entry->downstack_element_id = element;
-  g_strlcpy(entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  g_strlcpy (entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
 }
 
 void
@@ -185,7 +185,7 @@ void
 gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry, GstElement *element)
 {
   entry->downstack_element_id = element;
-  g_strlcpy(entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
+  g_strlcpy (entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
 }
 
 void

@@ -349,9 +349,9 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   
   GstPad *peer = GST_PAD_PEER (pad);
   
-  GstTraceDataSentEntry *entry = gst_trace_element_entered_entry_new ();
+  GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
   gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
-  gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
+  gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
   entry->sender_element = element_from;
@@ -360,6 +360,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   entry->receiver_pad = peer;
   entry->buffers_count = 1;
   entry->bytes_count = gst_buffer_get_size (buffer);
+  gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   
   GST_INFO ("pushin: %p %p\n", pad, buffer);
   result = gst_pad_push_orig (pad, buffer);
@@ -432,9 +433,9 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
   GstPad *peer = GST_PAD_PEER (pad);
   
-  GstTraceDataSentEntry *entry = gst_trace_element_entered_entry_new ();
+  GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
   gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
-  gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
+  gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
   entry->sender_element = element_from;
@@ -443,6 +444,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   entry->receiver_pad = peer;
   entry->buffers_count = list_info.buffers_count;
   entry->bytes_count = list_info.size;
+  gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   
   result = gst_pad_push_list_orig (pad, list);
     
@@ -551,9 +553,9 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   if (*buffer) {
     GstPad *peer = GST_PAD_PEER (pad);
     {
-      GstTraceDataSentEntry *entry = gst_trace_element_entered_entry_new ();
+      GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
       gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
-      gst_trace_entry_set_pipeline((GstTraceEntry *)entry, pipeline);
+      gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       entry->pad_mode = GST_PAD_MODE_PULL;
       entry->sender_element = element;
@@ -562,6 +564,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
       entry->receiver_pad = pad;
       entry->buffers_count = 1;
       entry->bytes_count = gst_buffer_get_size (*buffer);
+      gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
     }
   }
   

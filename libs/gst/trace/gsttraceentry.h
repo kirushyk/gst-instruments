@@ -85,6 +85,7 @@ typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
 struct GstTraceDataSentEntry
 {
+  GstTraceEntry entry;
   GstPadMode pad_mode;
   gpointer sender_element;
   gpointer receiver_element;
