@@ -124,7 +124,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
     GstTraceEntry *entry = (GstTraceEntry *)buffer;
     
     GstClockTime event_timestamp = gst_trace_entry_get_timestamp(entry);
-    if (event_timestamp > graveyard->duration) {
+    if (event_timestamp != GST_CLOCK_TIME_NONE && event_timestamp > graveyard->duration) {
       graveyard->duration = event_timestamp;
     }
     
