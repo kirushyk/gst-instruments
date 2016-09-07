@@ -49,6 +49,7 @@ AS_IF([test "x$enable_ui" != "xno"], [
     AC_CHECK_PROG(DOT, dot, yes, no)
     AS_IF([test "x$DOT" != "xno"], [
       PKG_CHECK_MODULES([GTK], [gtk+-3.0], [
+        enable_ui=yes
         AC_SUBST([UI_DIR], [ui])
       ], [
         enable_ui=no
