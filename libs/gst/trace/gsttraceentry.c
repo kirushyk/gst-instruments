@@ -39,7 +39,7 @@ gst_trace_entry_get_type (GstTraceEntry *entry)
 }
 
 void
-gst_trace_entry_set_pipeline  (GstTraceEntry *entry, GstPipeline *pipeline)
+gst_trace_entry_set_pipeline (GstTraceEntry *entry, GstPipeline *pipeline)
 {
   g_assert (entry != NULL);
   entry->pipeline = pipeline;
@@ -76,7 +76,7 @@ gst_trace_entry_set_thread_id (GstTraceEntry *entry, gpointer thread_id)
 size_t
 gst_trace_entry_get_size (GstTraceEntry *entry)
 {
-  g_assert (entry != NULL);
+  g_return_val_if_fail (entry != NULL, 0);
   
   switch (entry->type) {
   case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
@@ -150,14 +150,14 @@ gst_trace_element_entered_entry_new (void)
 }
 
 void
-gst_trace_element_entered_entry_set_upstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element)
+gst_trace_element_entered_entry_set_upstack_element (GstTraceElementEnteredEntry *entry, GstElement *element)
 {
   entry->upstack_element_id = element;
   g_strlcpy(entry->upstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
 }
 
 void
-gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element)
+gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry, GstElement *element)
 {
   entry->downstack_element_id = element;
   g_strlcpy(entry->downstack_element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
