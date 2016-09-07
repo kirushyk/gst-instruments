@@ -22,49 +22,51 @@
 gchar *
 format_time (GstClockTime nanoseconds, gboolean use_mu_symbol)
 {
-  if (nanoseconds < 1000)
+  if (nanoseconds < 1000) {
     return g_strdup_printf ("%" G_GUINT64_FORMAT " ns", nanoseconds);
-  else if (nanoseconds < 10000)
+  } else if (nanoseconds < 10000) {
     return g_strdup_printf ("%.2f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
-  else if (nanoseconds < 100000)
+  } else if (nanoseconds < 100000) {
     return g_strdup_printf ("%.1f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
-  else if (nanoseconds < 1000000)
+  } else if (nanoseconds < 1000000) {
     return g_strdup_printf ("%.0f %ss", 0.001 * nanoseconds, use_mu_symbol ? "μ" : "u");
-  else if (nanoseconds < 10000000)
+  } else if (nanoseconds < 10000000) {
     return g_strdup_printf ("%.2f ms", 0.000001 * nanoseconds);
-  else if (nanoseconds < 100000000)
+  } else if (nanoseconds < 100000000) {
     return g_strdup_printf ("%.1f ms", 0.000001 * nanoseconds);
-  else if (nanoseconds < 1000000000)
+  } else if (nanoseconds < 1000000000) {
     return g_strdup_printf ("%.0f ms", 0.000001 * nanoseconds);
-  else if (nanoseconds < 10000000000)
+  } else if (nanoseconds < 10000000000) {
     return g_strdup_printf ("%.2f s", 0.000000001 * nanoseconds);
-  else if (nanoseconds < 100000000000)
+  } else if (nanoseconds < 100000000000) {
     return g_strdup_printf ("%.1f s", 0.000000001 * nanoseconds);
-  else
+  } else {
     return g_strdup_printf ("%.0f s", 0.000000001 * nanoseconds);
+  }
 }
 
 gchar *
 format_memory_size (gsize bytes)
 {
-  if (bytes < 1024)
+  if (bytes < 1024) {
     return g_strdup_printf ("%" G_GUINT64_FORMAT " B", bytes);
-  else if (bytes < 10240)
+  } else if (bytes < 10240) {
     return g_strdup_printf ("%.2f KiB", bytes / 1024.f);
-  else if (bytes < 102400)
+  } else if (bytes < 102400) {
     return g_strdup_printf ("%.1f KiB", bytes / 1024.f);
-  else if (bytes < 1024000)
+  } else if (bytes < 1024000) {
     return g_strdup_printf ("%.0f KiB", bytes / 1024.f);
-  else if (bytes < 10485760)
+  } else if (bytes < 10485760) {
     return g_strdup_printf ("%.2f MiB", bytes / 1048576.f);
-  else if (bytes < 104857600)
+  } else if (bytes < 104857600) {
     return g_strdup_printf ("%.1f MiB", bytes / 1048576.f);
-  else if (bytes < 1048576000)
+  } else if (bytes < 1048576000) {
     return g_strdup_printf ("%.0f MiB", bytes / 1048576.f);
-  else if (bytes < 10737418240)
+  } else if (bytes < 10737418240) {
     return g_strdup_printf ("%.2f GiB", bytes / 1073741824.f);
-  else if (bytes < 107374182400)
+  } else if (bytes < 107374182400) {
     return g_strdup_printf ("%.1f GiB", bytes / 1073741824.f);
-  else
+  } else {
     return g_strdup_printf ("%.0f GiB", bytes / 1073741824.f);
+  }
 }

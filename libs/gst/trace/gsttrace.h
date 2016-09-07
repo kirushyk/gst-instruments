@@ -22,16 +22,24 @@
 
 #include <glib.h>
 #include <gst/gst.h>
+#include "gsttraceentry.h"
 
 G_BEGIN_DECLS
 
-void                gst_element_dump_to_file               (GstElement         *pipeline,
+typedef struct GstTrace GstTrace;
+
+GstTrace *          gst_trace_new                          (void);
+
+void                gst_trace_add_entry                    (GstTrace           *trace,
+                                                            GstPipeline        *pipeline,
+                                                            GstTraceEntry      *entry);
+
+
+void                gst_trace_dump_pipeline_to_file        (GstTrace           *trace,
+                                                            GstPipeline        *pipeline,
                                                             const gchar        *filename);
 
-void                trace_init                             (void);
-
-void                trace_add_entry                        (GstPipeline        *pipeline,
-                                                            gchar              *text);
+void                gst_trace_free                         (GstTrace           *trace);
 
 G_END_DECLS
 

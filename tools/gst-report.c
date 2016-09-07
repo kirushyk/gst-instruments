@@ -19,9 +19,9 @@
 
 #include "formatters.h"
 #include <config.h>
-#include "gstgraveyard.h"
-#include "gstpadheadstone.h"
-#include "gstelementheadstone.h"
+#include "../libs/gst/trace/gstgraveyard.h"
+#include "../libs/gst/trace//gstpadheadstone.h"
+#include "../libs/gst/trace//gstelementheadstone.h"
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
@@ -65,10 +65,11 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
   render_space (space);
   g_print ("label=\"\";\n");
   render_space (space);
-  if (simple_pads)
+  if (simple_pads) {
     g_print ("en%p_pad_%p [shape=\"box\" label=\"%s\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "[]=>" : "=>[]");
-  else
+  } else {
     g_print ("en%p_pad_%p [shape=\"none\", label=\"\", image=\"" DATADIR "/" PACKAGE_NAME "/%s.svg\", fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->mode == GST_PAD_MODE_PULL ? "pull" : "push");
+  }
   space--;
   render_space (space);
   g_print ("}\n");
@@ -178,15 +179,14 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element, gsize m
              "</TABLE>>;\n", element->type_name->str, element->name->str, time_string, total_cpu_time * 100.f / graveyard->total_cpu_time, (nested_time ? gst_element_headstone_get_nested_load (element) : element->cpu_load) * 100.0f);
   
     g_free (time_string);
-  }
-  else
-  {
+  } else {
     g_print ("%s", element->name->str);
   }
 
   space = max_length - element->name->len - ((hierarchy && !dot) ? element->nesting_level : 0);
-  for (j = 0; j < space; j++)
+  for (j = 0; j < space; j++) {
     g_print (" ");
+  }
   
   if (!dot && show_types) {
     if (element->type_name) {
@@ -270,10 +270,12 @@ main (gint argc, gchar *argv[])
   }
   g_option_context_free (option_context);
   
-  if (from > 0)
+  if (from > 0) {
     from_ns = from * GST_SECOND;
-  if (till > 0)
+  }
+  if (till > 0) {
     till_ns = till * GST_SECOND;
+  }
   
   if (dot) {
     hierarchy = TRUE;
@@ -282,8 +284,10 @@ main (gint argc, gchar *argv[])
   }
   
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns, dur_only);
-  if (graveyard == NULL)
+  if (graveyard == NULL) {
+    g_print ("could not read trace file: %s\n", argv[argc - 1]);
     return 3;
+  }
   
   if (dur_only) {
     g_print ("%" G_GUINT64_FORMAT, graveyard->duration);
@@ -302,22 +306,25 @@ main (gint argc, gchar *argv[])
   
   if (!dot) {
     g_print ("ELEMENT");
-    gsize space = (max_length > 7) ? max_length - 7 : 0; // sizeof "ELEMENT"
-    if (max_length > 7)
-    for (j = 0; j < space; j++)
-      g_print (" ");
+    gsize space = (max_length > 7) ? max_length - 7 : 0;
+    if (max_length > 7) {
+      for (j = 0; j < space; j++) {
+        g_print (" ");
+      }
+    }
     
     if (show_types) {
       g_print (" TYPE");
-      space = (max_type_name_length > 4) ? max_type_name_length - 4 : 0; // sizeof "ELEMENT"
+      space = (max_type_name_length > 4) ? max_type_name_length - 4 : 0;
       for (j = 0; j < space; j++) {
         g_print (" ");
       }
     }
     g_print (" %%CPU   %%TIME   TIME");
     
-    if (show_memory)
+    if (show_memory) {
       g_print ("     INPUT     OUTPUT");
+    }
     
     g_print ("\n");
   }

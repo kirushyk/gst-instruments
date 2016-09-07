@@ -16,3 +16,17 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+
+#ifndef __FORMATTERS_H__
+#define __FORMATTERS_H__
+
+#include <glib.h>
+#include <gst/gst.h>
+
+/* Use g_free to release memory taken by return value */
+gchar *             format_time                           (GstClockTime        nanoseconds,
+                                                           gboolean            use_mu_symbol);
+
+gchar *             format_memory_size                    (gsize               bytes);
+
+#endif

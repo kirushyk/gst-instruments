@@ -17,24 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef __GST_TRACE_ENTRY_H__
-#define __GST_TRACE_ENTRY_H__
-
-#include <glib.h>
-
-typedef enum GstTraceEntryType
-{
-  GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED,
-  GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED,
-  GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED,
-  GST_TRACE_ENTRY_TYPE_DATA_SENT
-} GstTraceEntryType;
-
-typedef struct GstTraceEntry
-{
-  GstTraceEntryType type;
-  GstClockTime timestamp;
-  GstPipeline *pipeline;
-} GstTraceEntry;
-
+#if __MACH__
+#define LIBGSTREAMER "libgstreamer-1.0.dylib"
+#else
+#define LIBGSTREAMER "libgstreamer-1.0.so.0"
 #endif

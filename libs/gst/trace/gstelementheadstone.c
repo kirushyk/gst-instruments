@@ -24,9 +24,11 @@ gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadston
 {
   GList *iterator;
   child->parent = parent;
-  for (iterator = parent->children; iterator != NULL; iterator = iterator->next)
-    if (iterator->data == child)
+  for (iterator = parent->children; iterator != NULL; iterator = iterator->next) {
+    if (iterator->data == child) {
       return;
+    }
+  }
   parent->children = g_list_prepend (parent->children, child);
 }
 
@@ -35,8 +37,9 @@ gst_element_headstone_get_nested_time (GstElementHeadstone *element)
 {
   GList *child;
   guint64 result = element->total_cpu_time;
-  for (child = element->children; child != NULL; child = child->next)
+  for (child = element->children; child != NULL; child = child->next) {
     result += gst_element_headstone_get_nested_time (child->data);
+  }
   return result;
 }
 
@@ -45,7 +48,8 @@ gst_element_headstone_get_nested_load (GstElementHeadstone *element)
 {
   GList *child;
   gfloat result = element->cpu_load;
-  for (child = element->children; child != NULL; child = child->next)
+  for (child = element->children; child != NULL; child = child->next) {
     result += gst_element_headstone_get_nested_load (child->data);
+  }
   return result;
 }

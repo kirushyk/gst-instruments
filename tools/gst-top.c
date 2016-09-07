@@ -21,25 +21,29 @@
 #include <stdlib.h>
 #include <config.h>
 
+gboolean insert_libraries = TRUE;
+
 gint
 main (gint argc, gchar *argv[])
 {
   if (argc < 2) {
-    g_print("Usage: %s PROG [ARGS]\n", argv[0]);
+    g_print ("Usage: %s PROG [ARGS]\n", argv[0]);
     return EXIT_FAILURE;
   }
 
   g_set_prgname ("gst-top-" GST_API_VERSION);
   g_set_application_name ("GStreamer Top Tool");
   
+  if (insert_libraries) {
 #if defined(__MACH__)
-  g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "", FALSE);
-  g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
+    g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "1", FALSE);
+    g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
 #elif defined(G_OS_UNIX)
-  g_setenv ("LD_PRELOAD", LIBDIR "/libgstintercept.so.0", TRUE);
+    g_setenv ("LD_PRELOAD", LIBDIR "/libgstintercept.so.0", TRUE);
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif
+  }
   
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
   g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", GST_TOP_TRACE_FILENAME_BASE, TRUE);
@@ -48,12 +52,13 @@ main (gint argc, gchar *argv[])
   GError *error = NULL;
   g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
   
-  if (error)
+  if (error) {
     g_critical ("%s", error->message);
-  else if (status != EXIT_SUCCESS)
+  } else if (status != EXIT_SUCCESS) {
     g_warning ("%s exited with code %d", argv[1], status);
-  else
+  } else {
     system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
-  
+  }
+    
   return EXIT_SUCCESS;
 }
