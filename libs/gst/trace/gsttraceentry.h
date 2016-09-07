@@ -83,6 +83,17 @@ struct GstTraceElementExitedEntry
 
 typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
 
+struct GstTraceDataSentEntry
+{
+  GstPadMode pad_mode;
+  gpointer sender_element;
+  gpointer receiver_element;
+  gpointer sender_pad;
+  gpointer receiver_pad;
+  gint buffers_count;
+  guint64 bytes_count;
+};
+
 void                gst_trace_entry_init                   (GstTraceEntry      *entry);
 
 GstTraceEntryType   gst_trace_entry_get_type               (GstTraceEntry      *entry);

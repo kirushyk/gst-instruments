@@ -146,6 +146,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           }
         }
         break;
+        
       case GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED:
         {
           GstTraceElementEnteredEntry *ee_entry = (GstTraceElementEnteredEntry *)entry;
@@ -187,6 +188,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           task->current_downstack_time = 0;
         }
         break;
+        
       case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
         {
           GstTraceElementExitedEntry *ee_entry = (GstTraceElementExitedEntry *)entry;
@@ -212,69 +214,57 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           }
         }
         break;
+        
       case GST_TRACE_ENTRY_TYPE_DATA_SENT:
+        {
+          GstTraceDataSentEntry *ds_entry = (GstTraceDataSentEntry *)entry;
+          
+          GstElementHeadstone *element = gst_graveyard_get_element (graveyard, ds_entry->sender_element, NULL);
+          
+          if (TIMESTAMP_FITS (event_timestamp, from, till)) {
+            element->bytes_sent += ds_entry->bytes_count;
+            
+            GstPadHeadstone *pad = g_hash_table_lookup (element->pads, ds_entry->sender_pad);
+            if (!pad) {
+              pad = g_new0 (GstPadHeadstone, 1);
+              pad->identifier = ds_entry->sender_pad;
+              pad->parent_element = ds_entry->sender_element;
+              pad->peer = ds_entry->receiver_pad;
+              pad->peer_element = ds_entry->receiver_element;
+              pad->mode = ds_entry->pad_mode;
+              pad->bytes = 0;
+              pad->direction = GST_PAD_SRC;
+              g_hash_table_insert (element->pads, ds_entry->sender_pad, pad);
+            }
+            pad->bytes += ds_entry->bytes_count;
+          }
+          
+          element = gst_graveyard_get_element (graveyard, ds_entry->receiver_element, NULL);
+          
+          if (TIMESTAMP_FITS (event_timestamp, from, till)) {
+            element->bytes_received += ds_entry->bytes_count;
+            
+            GstPadHeadstone *pad = g_hash_table_lookup (element->pads, ds_entry->receiver_pad);
+            if (!pad) {
+              pad = g_new0 (GstPadHeadstone, 1);
+              pad->identifier = ds_entry->receiver_pad;
+              pad->parent_element = ds_entry->receiver_element;
+              pad->peer = ds_entry->sender_pad;
+              pad->peer_element = ds_entry->sender_element;
+              pad->mode = ds_entry->pad_mode;
+              pad->bytes = 0;
+              pad->direction = GST_PAD_SINK;
+              g_hash_table_insert (element->pads, ds_entry->receiver_pad, pad);
+            }
+            pad->bytes += ds_entry->bytes_count;
+          }
+        }
         break;
+        
       case GST_TRACE_ENTRY_TYPE_UNKNOWN:
       default:
         break;
     }
-    
-    /*else if (g_ascii_strcasecmp (event_name, "data-sent") == 0)
-    {
-      gchar mode[2];
-      GstPadMode pad_mode;
-      gpointer element_from;
-      gpointer element_to;
-      gpointer pad_from;
-      gpointer pad_to;
-      gint buffers_count;
-      guint64 size;
-      if (fscanf (input, "%1s %p %p %p %p %d %" G_GUINT64_FORMAT "\n", mode, &element_from, &pad_from, &element_to, &pad_to, &buffers_count, &size) == 7) {
-        GstElementHeadstone *element = gst_graveyard_get_element (graveyard, element_from, NULL);
-        pad_mode = mode[0] == 'l' ? GST_PAD_MODE_PULL : GST_PAD_MODE_PUSH;
-        
-        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
-          element->bytes_sent += size;
-          
-          GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_from);
-          if (!pad) {
-            pad = g_new0 (GstPadHeadstone, 1);
-            pad->identifier = pad_from;
-            pad->parent_element = element_from;
-            pad->peer = pad_to;
-            pad->peer_element = element_to;
-            pad->mode = pad_mode;
-            pad->bytes = 0;
-            pad->direction = GST_PAD_SRC;
-            g_hash_table_insert (element->pads, pad_from, pad);
-          }
-          pad->bytes += size;
-        }
-        
-        element = gst_graveyard_get_element (graveyard, element_to, NULL);
-        
-        if (TIMESTAMP_FITS (event_timestamp, from, till)) {
-          element->bytes_received += size;
-          
-          GstPadHeadstone *pad = g_hash_table_lookup (element->pads, pad_to);
-          if (!pad) {
-            pad = g_new0 (GstPadHeadstone, 1);
-            pad->identifier = pad_to;
-            pad->parent_element = element_to;
-            pad->peer = pad_from;
-            pad->peer_element = element_from;
-            pad->mode = pad_mode;
-            pad->bytes = 0;
-            pad->direction = GST_PAD_SINK;
-            g_hash_table_insert (element->pads, pad_to, pad);
-          }
-          pad->bytes += size;
-        }
-      } else {
-        g_print ("couldn't parse event: %s\n", event_name);
-        goto error;
-      }
-    }*/
   }
   fclose (input);
   
