@@ -86,6 +86,7 @@ gst_trace_entry_get_size (GstTraceEntry *entry)
   case GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED:
     return sizeof (GstTraceElementExitedEntry);
   case GST_TRACE_ENTRY_TYPE_DATA_SENT:
+    return sizeof (GstTraceDataSentEntry);
   case GST_TRACE_ENTRY_TYPE_UNKNOWN:
   default:
     return 0;

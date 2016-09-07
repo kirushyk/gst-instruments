@@ -355,8 +355,8 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
   entry->sender_element = element_from;
-  entry->receiver_element = pad;
-  entry->sender_pad = element;
+  entry->receiver_element = element;
+  entry->sender_pad = pad;
   entry->receiver_pad = peer;
   entry->buffers_count = 1;
   entry->bytes_count = gst_buffer_get_size (buffer);
@@ -439,8 +439,8 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
   entry->sender_element = element_from;
-  entry->receiver_element = pad;
-  entry->sender_pad = element;
+  entry->receiver_element = element;
+  entry->sender_pad = pad;
   entry->receiver_pad = peer;
   entry->buffers_count = list_info.buffers_count;
   entry->bytes_count = list_info.size;
@@ -559,8 +559,8 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       entry->pad_mode = GST_PAD_MODE_PULL;
       entry->sender_element = element;
-      entry->receiver_element = peer;
-      entry->sender_pad = element_from;
+      entry->receiver_element = element_from;
+      entry->sender_pad = peer;
       entry->receiver_pad = pad;
       entry->buffers_count = 1;
       entry->bytes_count = gst_buffer_get_size (*buffer);
