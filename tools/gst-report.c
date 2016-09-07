@@ -285,6 +285,7 @@ main (gint argc, gchar *argv[])
   
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1], from_ns, till_ns, dur_only);
   if (graveyard == NULL) {
+    g_print ("could not read trace file: %s\n", argv[argc - 1]);
     return 3;
   }
   
