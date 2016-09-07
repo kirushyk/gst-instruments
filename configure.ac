@@ -41,29 +41,28 @@ AC_DEFINE_UNQUOTED(GST_API_VERSION, "$GST_API_VERSION", [GStreamer API Version])
 
 AC_ARG_ENABLE([ui], AS_HELP_STRING([--disable-ui], [Disable Gtk+ UI]))
 
-enable_ui=no
 AC_SUBST([UI_DIR], [""])
+echo "checking deps for Gtk+ UI..."
 AS_IF([test "x$enable_ui" != "xno"], [
+  echo "checking for vala..."
   AM_PROG_VALAC(, [
     AC_CHECK_PROG(DOT, dot, yes, no)
     AS_IF([test "x$DOT" != "xno"], [
-        PKG_CHECK_MODULES([GTK], [gtk+-3.0], [
-            enable_ui=yes
-            AC_SUBST([UI_DIR], [ui])
-          ], [
-            echo "Gtk+ not found, Gtk+ UI will not be built"
-          ]
-        )
+      PKG_CHECK_MODULES([GTK], [gtk+-3.0], [
+        AC_SUBST([UI_DIR], [ui])
       ], [
-        echo "Graphviz not found, Gtk+ UI will not be built"
-      ]
-    )
+        enable_ui=no
+        echo "Gtk+ not found, Gtk+ UI will not be built"
+      ])
     ], [
-      echo "Vala not found, Gtk+ UI will not be built"
-    ]
-  )
-  ]
-)
+      enable_ui=no
+      echo "Graphviz not found, Gtk+ UI will not be built"
+    ])
+  ], [
+    enable_ui=no
+    echo "Vala not found, Gtk+ UI will not be built"
+  ])
+])
 
 AC_OUTPUT
 
