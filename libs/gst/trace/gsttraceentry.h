@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <gst/gst.h>
-#include "../../../config.h"
+#include <config.h>
 
 #define LGI_ELEMENT_NAME(element) ((element) != NULL) ? GST_ELEMENT_NAME (element) : "0"
 #define LGI_OBJECT_TYPE_NAME(element) ((element) != NULL) ? G_OBJECT_TYPE_NAME (element) : "0"
