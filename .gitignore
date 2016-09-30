@@ -8,6 +8,7 @@ ui/gst-instruments
 *.dylib
 *.dSYM/
 *~
+.vscode/
 xcuserdata/
 project.xcworkspace/
 autom4te.cache/
