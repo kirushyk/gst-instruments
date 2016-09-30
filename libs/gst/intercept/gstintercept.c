@@ -294,7 +294,7 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
@@ -312,7 +312,7 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
@@ -342,7 +342,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
@@ -355,7 +355,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   GstPad *peer = GST_PAD_PEER (pad);
   
   GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
-  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
   gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
@@ -379,7 +379,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
@@ -424,7 +424,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
@@ -439,7 +439,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   GstPad *peer = GST_PAD_PEER (pad);
   
   GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
-  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
   gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
@@ -461,7 +461,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
@@ -492,7 +492,7 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
   if (element_from && element) {
     {
       GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
@@ -512,7 +512,7 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
   if (element_from && element) {
     {
       GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       gst_trace_element_exited_entry_set_downstack_element (entry, element);
@@ -543,7 +543,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
@@ -559,7 +559,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     GstPad *peer = GST_PAD_PEER (pad);
     {
       GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
-      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, start);
+      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       entry->pad_mode = GST_PAD_MODE_PULL;
@@ -581,7 +581,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, end);
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
