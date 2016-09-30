@@ -85,18 +85,26 @@ GstStateChangeReturn (*gst_element_set_state_orig) (GstElement *element, GstStat
 GstClockTime
 current_monotonic_time ()
 {
+  static GstClockTime startup_time = GST_CLOCK_TIME_NONE;
+  
 #ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
   clock_serv_t cclock;
-  mach_timespec_t mts;
+  mach_timespec_t ts;
   host_get_clock_service (mach_host_self (), SYSTEM_CLOCK, &cclock);
-  clock_get_time (cclock, &mts);
+  clock_get_time (cclock, &ts);
   mach_port_deallocate (mach_task_self (), cclock);
-  return mts.tv_sec * GST_SECOND + mts.tv_nsec;
 #else
   struct timespec ts;
   clock_gettime (CLOCK_MONOTONIC, &ts);
-  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
 #endif
+  
+  GstClockTime current_time = ts.tv_sec * GST_SECOND + ts.tv_nsec;
+  
+  if (GST_CLOCK_TIME_NONE == startup_time) {
+    startup_time = current_time;
+  }
+  
+  return current_time - startup_time;
 }
 
 void *
