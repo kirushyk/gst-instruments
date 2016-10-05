@@ -27,7 +27,6 @@ which "libtool" 2>/dev/null || {
 package=gst-instruments
 
 autoreconf -vif
-#./configure $*
 
 ./configure $* || {
   echo "Configure failed"
