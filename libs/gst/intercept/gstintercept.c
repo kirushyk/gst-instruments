@@ -139,7 +139,7 @@ optional_init ()
   
   if (gst_element_change_state_orig == NULL) {
     GST_ERROR ("can not link to gst_element_change_state\n");
-    return GST_FLOW_CUSTOM_ERROR;
+    return;
   } else {
     GST_INFO ("gst_element_change_state linked: %p\n", gst_element_change_state_orig);
   }
@@ -148,7 +148,7 @@ optional_init ()
   
   if (gst_pad_push_orig == NULL) {
     GST_ERROR ("can not link to gst_pad_push\n");
-    return GST_FLOW_CUSTOM_ERROR;
+    return;
   } else {
     GST_INFO ("gst_pad_push linked: %p\n", gst_pad_push_orig);
   }
@@ -156,7 +156,7 @@ optional_init ()
   
   if (gst_pad_push_list_orig == NULL) {
     GST_ERROR ("can not link to gst_pad_push_list\n");
-    return GST_FLOW_CUSTOM_ERROR;
+    return;
   } else {
     GST_INFO ("gst_pad_push_list linked: %p\n", gst_pad_push_orig);
   }
@@ -165,7 +165,7 @@ optional_init ()
   
   if (gst_pad_push_event_orig == NULL) {
     GST_ERROR ("can not link to gst_pad_push_event\n");
-    return FALSE;
+    return;
   } else {
     GST_INFO ("gst_pad_push_event linked: %p\n", gst_pad_push_event_orig);
   }
@@ -174,7 +174,7 @@ optional_init ()
   
   if (gst_pad_pull_range_orig == NULL) {
     GST_ERROR ("can not link to gst_pad_pull_range\n");
-    return GST_FLOW_CUSTOM_ERROR;
+    return;
   } else {
     GST_INFO ("gst_pad_pull_range linked: %p\n", gst_pad_pull_range_orig);
   }
@@ -183,7 +183,7 @@ optional_init ()
   
   if (gst_element_set_state_orig == NULL) {
     GST_ERROR ("can not link to gst_element_set_state\n");
-    return GST_FLOW_CUSTOM_ERROR;
+    return;
   } else {
     GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
   }
