@@ -41,4 +41,8 @@ stamp-h1
 config.h.in
 *.dirstamp
 osx/
-
+*.config
+*.creator
+*.creator.user
+*.files
+*.includes
