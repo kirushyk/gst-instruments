@@ -1,4 +1,4 @@
-AC_INIT([gst-instruments], [0.2.0], [kirushyk@gmail.com])
+AC_INIT([gst-instruments], [0.2.1], [kirushyk@gmail.com])
 AC_CONFIG_SRCDIR([tools/gst-top.c])
 AC_CONFIG_HEADERS([config.h])
 
@@ -18,7 +18,16 @@ AC_PREREQ
 
 PKG_CHECK_MODULES([GST], [gstreamer-1.0])
 
-AC_CHECK_HEADERS([fcntl.h stdint.h stdlib.h string.h sys/ioctl.h unistd.h mach/mach.h sys/time.h])
+AC_CHECK_HEADERS(
+  [fcntl.h \
+   stdint.h \
+   stdlib.h \
+   string.h \
+   sys/ioctl.h \
+   unistd.h \
+   mach/mach.h \
+   sys/time.h]
+)
 
 AC_TYPE_INT32_T
 AC_TYPE_SIZE_T
@@ -29,7 +38,14 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS([memset munmap strerror strtoul clock_gettime])
 
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-AC_CONFIG_FILES([Makefile libs/gst/intercept/Makefile tools/Makefile data/Makefile ui/Makefile])
+AC_CONFIG_FILES(
+  [Makefile \
+   libs/gst/intercept/Makefile \
+   plugins/tracers/Makefile \
+   tools/Makefile \
+   data/Makefile \
+   ui/Makefile]
+)
 
 AC_DEFINE([GST_TOP_TRACE_FILENAME_BASE], ["gst-top"], [Trace filename base])
 AC_DEFINE([GST_ELEMENT_TYPE_NAME_LENGTH_MAX], [128], [Max length of type name of GstElement])
