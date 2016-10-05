@@ -22,16 +22,39 @@
 #endif
 
 #include <gst/gst.h>
+#include "gstinstruments.h"
+
+static void
+gst_latency_tracer_init (GstLatencyTracer * self)
+{
+  GstTracer *tracer = GST_TRACER (self);
+  /*
+  gst_tracing_register_hook (tracer, "pad-push-pre",
+      G_CALLBACK (do_push_buffer_pre));
+  gst_tracing_register_hook (tracer, "pad-push-list-pre",
+      G_CALLBACK (do_push_buffer_pre));
+  gst_tracing_register_hook (tracer, "pad-push-post",
+      G_CALLBACK (do_push_buffer_post));
+  gst_tracing_register_hook (tracer, "pad-push-list-post",
+      G_CALLBACK (do_push_buffer_post));
+  gst_tracing_register_hook (tracer, "pad-pull-range-pre",
+      G_CALLBACK (do_pull_range_pre));
+  gst_tracing_register_hook (tracer, "pad-pull-range-post",
+      G_CALLBACK (do_pull_range_post));
+  gst_tracing_register_hook (tracer, "pad-push-event-pre",
+      G_CALLBACK (do_push_event_pre));
+   */
+}
 
 static gboolean
 plugin_init (GstPlugin * plugin)
 {
-//  if (!gst_tracer_register (plugin, "", gst_latency_tracer_get_type ()))
-//    return FALSE;
+  if (!gst_tracer_register (plugin, "instruments", gst_instruments_tracer_get_type ()))
+    return FALSE;
   return TRUE;
 }
 
 GST_PLUGIN_DEFINE (GST_VERSION_MAJOR, GST_VERSION_MINOR, instruments,
-    "gst-instruments tracer", plugin_init, VERSION, GST_LICENSE,
-    GST_PACKAGE_NAME, GST_PACKAGE_ORIGIN);
+    "gst-instruments tracer", plugin_init, VERSION, "LGPL",
+    "instruments", "GST_PACKAGE_ORIGIN");
 
