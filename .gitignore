@@ -1,3 +1,5 @@
+.buildconfig
+autoregen.sh
 .README.md.swp
 ui/gst-instruments
 *.bmp
