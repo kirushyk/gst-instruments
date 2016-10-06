@@ -8,11 +8,13 @@
 
 #include "spycommon.h"
 
+#ifndef __MACH__
 THREAD
-mach_thread_self()
+mach_thread_self ()
 {
   return 0;
 }
+#endif
 
 guint64
 get_cpu_time (THREAD thread) {
