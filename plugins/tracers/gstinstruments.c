@@ -105,11 +105,11 @@ do_push_event_pre (GstTracer * self, guint64 ts, GstPad * pad, GstEvent * ev)
 {
   optional_init ();
   
-//  GstElement *element = get_real_pad_parent (pad);
-//  
-//  GstPipeline *pipeline = trace_heir (element);
-//  
-//  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  GstElement *element = get_real_pad_parent (pad);
+  if (element) {
+    GstPipeline *pipeline = trace_heir (element);
+    dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  }
   
 }
 
