@@ -17,33 +17,46 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
-
+#include "config.h"
 #include <gst/gst.h>
 #include "gstinstruments.h"
 
+GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
+#define GST_CAT_DEFAULT gst_instruments_debug
+
+#define _do_init \
+GST_DEBUG_CATEGORY_INIT (gst_instruments_debug, "instruments", 0, "instruments tracer");
+#define gst_instruments_tracer_parent_class parent_class
+G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_TRACER,
+                         _do_init);
+
+
+
+
 static void
-gst_latency_tracer_init (GstLatencyTracer * self)
+gst_instruments_tracer_class_init (GstInstrumentsTracerClass * klass)
+{
+  
+}
+
+static void
+gst_instruments_tracer_init (GstInstrumentsTracer * self)
 {
   GstTracer *tracer = GST_TRACER (self);
-  /*
-  gst_tracing_register_hook (tracer, "pad-push-pre",
-      G_CALLBACK (do_push_buffer_pre));
-  gst_tracing_register_hook (tracer, "pad-push-list-pre",
-      G_CALLBACK (do_push_buffer_pre));
-  gst_tracing_register_hook (tracer, "pad-push-post",
-      G_CALLBACK (do_push_buffer_post));
-  gst_tracing_register_hook (tracer, "pad-push-list-post",
-      G_CALLBACK (do_push_buffer_post));
-  gst_tracing_register_hook (tracer, "pad-pull-range-pre",
-      G_CALLBACK (do_pull_range_pre));
-  gst_tracing_register_hook (tracer, "pad-pull-range-post",
-      G_CALLBACK (do_pull_range_post));
-  gst_tracing_register_hook (tracer, "pad-push-event-pre",
-      G_CALLBACK (do_push_event_pre));
-   */
+//  gst_tracing_register_hook (tracer, "pad-push-pre",
+//                             G_CALLBACK (do_push_buffer_pre));
+//  gst_tracing_register_hook (tracer, "pad-push-list-pre",
+//                             G_CALLBACK (do_push_buffer_pre));
+//  gst_tracing_register_hook (tracer, "pad-push-post",
+//                             G_CALLBACK (do_push_buffer_post));
+//  gst_tracing_register_hook (tracer, "pad-push-list-post",
+//                             G_CALLBACK (do_push_buffer_post));
+//  gst_tracing_register_hook (tracer, "pad-pull-range-pre",
+//                             G_CALLBACK (do_pull_range_pre));
+//  gst_tracing_register_hook (tracer, "pad-pull-range-post",
+//                             G_CALLBACK (do_pull_range_post));
+//  gst_tracing_register_hook (tracer, "pad-push-event-pre",
+//                             G_CALLBACK (do_push_event_pre));
 }
 
 static gboolean
