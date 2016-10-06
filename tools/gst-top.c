@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <config.h>
 
-gboolean insert_libraries = TRUE;
+gboolean insert_libraries = FALSE;
 
 gint
 main (gint argc, gchar *argv[])
@@ -38,6 +38,7 @@ main (gint argc, gchar *argv[])
   system ("rm -f " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   
   if (insert_libraries) {
+    /** @todo: Check library presence */
 #if defined(__MACH__)
     g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "1", FALSE);
     g_setenv ("DYLD_INSERT_LIBRARIES", LIBDIR "/libgstintercept.dylib", TRUE);
@@ -46,6 +47,9 @@ main (gint argc, gchar *argv[])
 #else
 # error GStreamer API calls interception is not supported on this platform
 #endif
+  } else {
+    /** @todo: Check tracer module presence */
+    
   }
   
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
