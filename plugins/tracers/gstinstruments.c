@@ -21,6 +21,7 @@
 #include <gst/gst.h>
 #include "../../libs/gst/trace/gsttrace.h"
 #include "gstinstruments.h"
+#include "spycommon.h"
 
 GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
 #define GST_CAT_DEFAULT gst_instruments_debug
@@ -33,6 +34,24 @@ G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_
 
 GstTrace *current_trace = NULL;
 
+static GstElement *
+get_real_pad_parent (GstPad * pad)
+{
+  GstObject *parent;
+  
+  if (!pad)
+    return NULL;
+  
+  parent = GST_OBJECT_PARENT (pad);
+  
+  /* if parent of pad is a ghost-pad, then pad is a proxy_pad */
+  if (parent && GST_IS_GHOST_PAD (parent)) {
+    pad = GST_PAD_CAST (parent);
+    parent = GST_OBJECT_PARENT (pad);
+  }
+  return GST_ELEMENT_CAST (parent);
+}
+
 void
 optional_init ()
 {
@@ -41,59 +60,58 @@ optional_init ()
   }
 }
 
-/*
 static void
 do_push_buffer_pre (GstTracer * self, guint64 ts, GstPad * pad)
 {
-  GstElement *parent = get_real_pad_parent (pad);
+  optional_init ();
   
-  send_latency_probe (parent, pad, ts);
+  GstElement *element = get_real_pad_parent (pad);
+  
+  GstPipeline *pipeline = trace_heir (element);
+  
+  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+ 
 }
 
 static void
 do_pull_range_pre (GstTracer * self, guint64 ts, GstPad * pad)
 {
-  GstPad *peer_pad = GST_PAD_PEER (pad);
-  GstElement *parent = get_real_pad_parent (peer_pad);
+  optional_init ();
   
-  send_latency_probe (parent, peer_pad, ts);
+  GstElement *element = get_real_pad_parent (pad);
+  
+  GstPipeline *pipeline = trace_heir (element);
+  
+  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  
 }
+ 
 static void
 do_push_buffer_post (GstTracer * self, guint64 ts, GstPad * pad)
 {
-  GstPad *peer_pad = GST_PAD_PEER (pad);
-  GstElement *parent = get_real_pad_parent (peer_pad);
-  
-  calculate_latency (parent, peer_pad, ts);
+  optional_init ();
+ 
 }
 
 static void
 do_pull_range_post (GstTracer * self, guint64 ts, GstPad * pad)
 {
-  GstElement *parent = get_real_pad_parent (pad);
+  optional_init ();
   
-  calculate_latency (parent, pad, ts);
 }
 
 static void
 do_push_event_pre (GstTracer * self, guint64 ts, GstPad * pad, GstEvent * ev)
 {
-  GstPad *peer_pad = GST_PAD_PEER (pad);
-  GstElement *parent = get_real_pad_parent (peer_pad);
+  optional_init ();
   
-  if (parent && (!GST_IS_BIN (parent)) &&
-      GST_OBJECT_FLAG_IS_SET (parent, GST_ELEMENT_FLAG_SINK)) {
-    if (GST_EVENT_TYPE (ev) == GST_EVENT_CUSTOM_DOWNSTREAM) {
-      const GstStructure *data = gst_event_get_structure (ev);
-      
-      if (gst_structure_get_name_id (data) == latency_probe_id) {
-        g_object_set_qdata ((GObject *) peer_pad, latency_probe_id,
-                            gst_event_ref (ev));
-      }
-    }
-  }
+//  GstElement *element = get_real_pad_parent (pad);
+//  
+//  GstPipeline *pipeline = trace_heir (element);
+//  
+//  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  
 }
-*/
 
 static void
 gst_instruments_tracer_class_init (GstInstrumentsTracerClass * klass)
@@ -149,20 +167,20 @@ gst_instruments_tracer_init (GstInstrumentsTracer * self)
   gst_tracing_register_hook (tracer, "element-change-state-post",
                              G_CALLBACK (do_element_change_state_post));
   
-//  gst_tracing_register_hook (tracer, "pad-push-pre",
-//                             G_CALLBACK (do_push_buffer_pre));
+  gst_tracing_register_hook (tracer, "pad-push-pre",
+                             G_CALLBACK (do_push_buffer_pre));
 //  gst_tracing_register_hook (tracer, "pad-push-list-pre",
 //                             G_CALLBACK (do_push_buffer_pre));
-//  gst_tracing_register_hook (tracer, "pad-push-post",
-//                             G_CALLBACK (do_push_buffer_post));
+  gst_tracing_register_hook (tracer, "pad-push-post",
+                             G_CALLBACK (do_push_buffer_post));
 //  gst_tracing_register_hook (tracer, "pad-push-list-post",
 //                             G_CALLBACK (do_push_buffer_post));
-//  gst_tracing_register_hook (tracer, "pad-pull-range-pre",
-//                             G_CALLBACK (do_pull_range_pre));
-//  gst_tracing_register_hook (tracer, "pad-pull-range-post",
-//                             G_CALLBACK (do_pull_range_post));
-//  gst_tracing_register_hook (tracer, "pad-push-event-pre",
-  //                             G_CALLBACK (do_push_event_pre));
+  gst_tracing_register_hook (tracer, "pad-pull-range-pre",
+                             G_CALLBACK (do_pull_range_pre));
+  gst_tracing_register_hook (tracer, "pad-pull-range-post",
+                             G_CALLBACK (do_pull_range_post));
+  gst_tracing_register_hook (tracer, "pad-push-event-pre",
+                               G_CALLBACK (do_push_event_pre));
   
 }
 
