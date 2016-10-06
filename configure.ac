@@ -69,7 +69,7 @@ AS_IF([test "x$enable_ui" != "xno"], [
         AC_SUBST([UI_DIR], [ui])
       ], [
         enable_ui=no
-        echo "Gtk+ not found, Gtk+ UI will not be built"
+        echo "Gtk+ 3.x not found, Gtk+ UI will not be built"
       ])
     ], [
       enable_ui=no
