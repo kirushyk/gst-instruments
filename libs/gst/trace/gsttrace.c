@@ -34,6 +34,8 @@ struct GstTrace
 void
 gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const gchar *filename)
 {
+  g_assert (trace != NULL);
+  
   GList *iterator;
   
   FILE *output = fopen (filename, "wb");

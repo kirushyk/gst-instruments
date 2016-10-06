@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <config.h>
 
-gboolean insert_libraries = FALSE;
+gboolean insert_libraries = TRUE;
 
 gint
 main (gint argc, gchar *argv[])
@@ -49,7 +49,8 @@ main (gint argc, gchar *argv[])
 #endif
   } else {
     /** @todo: Check tracer module presence */
-    
+    /** @todo: Read GST_TRACERS and append it with our tracer instead of just re-set it */
+    g_setenv ("GST_TRACERS", "instruments", TRUE);
   }
   
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);

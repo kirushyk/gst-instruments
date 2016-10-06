@@ -29,14 +29,9 @@
 #include <gst/gstpad.h>
 #include "../trace/gsttrace.h"
 #include <config.h>
+#include "spycommon.h"
 
 #if __MACH__
-# include <mach/mach_init.h>
-# include <mach/thread_act.h>
-# include <mach/mach_port.h>
-# include <mach/clock.h>
-# include <mach/mach.h>
-# define THREAD thread_port_t
 #else
 # define lgi_pad_push gst_pad_push
 # define lgi_pad_push_list gst_pad_push_list
@@ -46,30 +41,7 @@
 # define lgi_element_change_state gst_element_change_state
 # include <signal.h>
 # include <time.h>
-# define THREAD int
-THREAD mach_thread_self() { return 0; }
 #endif
-
-static guint64
-get_cpu_time (THREAD thread) {
-#if __MACH__
-  mach_msg_type_number_t count = THREAD_EXTENDED_INFO_COUNT;
-  thread_extended_info_data_t info;
-  
-  int kr = thread_info (thread, THREAD_EXTENDED_INFO, (thread_info_t) &info, &count);
-  if (kr != KERN_SUCCESS) {
-    return 0;
-  }
-  
-  return (guint64) info.pth_user_time + info.pth_system_time;
-#else
-  struct timespec ts;
-  if (clock_gettime (CLOCK_THREAD_CPUTIME_ID, &ts))
-    return 0;
-  
-  return ts.tv_sec * GST_SECOND + ts.tv_nsec;
-#endif
-}
 
 gpointer libgstreamer = NULL;
 
@@ -81,31 +53,6 @@ GstFlowReturn (*gst_pad_push_list_orig) (GstPad *pad, GstBufferList *list) = NUL
 GstFlowReturn (*gst_pad_pull_range_orig) (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer) = NULL;
 gboolean (*gst_pad_push_event_orig) (GstPad *pad, GstEvent *event) = NULL;
 GstStateChangeReturn (*gst_element_set_state_orig) (GstElement *element, GstState state) = NULL;
-
-GstClockTime
-current_monotonic_time ()
-{
-  static GstClockTime startup_time = GST_CLOCK_TIME_NONE;
-  
-#ifdef __MACH__ // Mach does not have clock_gettime, use clock_get_time
-  clock_serv_t cclock;
-  mach_timespec_t ts;
-  host_get_clock_service (mach_host_self (), SYSTEM_CLOCK, &cclock);
-  clock_get_time (cclock, &ts);
-  mach_port_deallocate (mach_task_self (), cclock);
-#else
-  struct timespec ts;
-  clock_gettime (CLOCK_MONOTONIC, &ts);
-#endif
-  
-  GstClockTime current_time = ts.tv_sec * GST_SECOND + ts.tv_nsec;
-  
-  if (GST_CLOCK_TIME_NONE == startup_time) {
-    startup_time = current_time;
-  }
-  
-  return current_time - startup_time;
-}
 
 void *
 get_libgstreamer ()
@@ -192,100 +139,6 @@ optional_init ()
   
 }
 
-gpointer
-trace_heir (GstElement *element)
-{
-  GstObject *parent = NULL;
-  
-  if (element == NULL) {
-    return NULL;
-  }
-  
-  for (parent = GST_OBJECT (element); GST_OBJECT_PARENT (parent) != NULL; parent = GST_OBJECT_PARENT (parent));
-  
-  return parent;
-}
-
-gpointer
-get_downstack_element (gpointer pad)
-{
-  gpointer element = pad;
-  do {
-    gpointer peer = GST_PAD_PEER (element);
-    if (peer) {
-      element = GST_PAD_PARENT (peer);
-    } else {
-      return NULL;
-    }
-  }
-  while (!GST_IS_ELEMENT (element));
-  
-  return element;
-}
-
-GHashTable *pipeline_by_element = NULL;
-
-void
-dump_hierarchy_info_if_needed (GstPipeline *pipeline, GstElement *new_element)
-{
-  if (pipeline_by_element == NULL) {
-    pipeline_by_element = g_hash_table_new (g_direct_hash, g_direct_equal);
-  } else if (g_hash_table_lookup (pipeline_by_element, new_element)) {
-    return;
-  }
-  
-  if (new_element) {
-    g_hash_table_insert (pipeline_by_element, new_element, pipeline);
-  }
-  
-  if (!g_hash_table_lookup (pipeline_by_element, pipeline)) {
-    GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new ();
-    gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
-    gst_trace_element_discoved_entry_init_set_element (entry, (GstElement *)pipeline);
-    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
-    
-    g_hash_table_insert (pipeline_by_element, pipeline, pipeline);
-  }
-  
-  if (pipeline == NULL) {
-    return;
-  }
-  
-  GstIterator *it = gst_bin_iterate_recurse (GST_BIN (pipeline));
-  GValue item = G_VALUE_INIT;
-  gboolean done = FALSE;
-  while (!done) {
-    switch (gst_iterator_next (it, &item)) {
-    case GST_ITERATOR_OK:
-      {
-        GstElement *element = g_value_get_object (&item);
-        
-        GstTraceElementDiscoveredEntry *entry = gst_trace_element_discoved_entry_new ();
-        gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
-        gst_trace_element_discoved_entry_init_set_element (entry, element);
-        gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
-        
-        g_value_reset (&item);
-      }
-      break;
-        
-    case GST_ITERATOR_RESYNC:
-      gst_iterator_resync (it);
-      break;
-        
-    case GST_ITERATOR_ERROR:
-      done = TRUE;
-      break;
-        
-    case GST_ITERATOR_DONE:
-      done = TRUE;
-      break;
-    }
-  }
-  g_value_unset (&item);
-  gst_iterator_free (it);
-}
-
 GstStateChangeReturn
 lgi_element_change_state (GstElement *element, GstStateChange transition)
 {
@@ -358,7 +211,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  dump_hierarchy_info_if_needed (pipeline, element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
   
   GstPad *peer = GST_PAD_PEER (pad);
   
@@ -440,7 +293,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  dump_hierarchy_info_if_needed (pipeline, element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
   
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
@@ -559,7 +412,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  dump_hierarchy_info_if_needed (pipeline, element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
   
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
@@ -614,7 +467,7 @@ lgi_element_set_state (GstElement *element, GstState state)
       const gchar *name = g_getenv ("GST_DEBUG_DUMP_TRACE_FILENAME");
       gchar *filename = g_strdup_printf ("%s/%s.gsttrace", path ? path : ".", name ? name : GST_OBJECT_NAME (element));
       // gst_element_dump_to_file (element, filename);
-      gst_trace_dump_pipeline_to_file(current_trace, (GstPipeline *)element, filename);
+      gst_trace_dump_pipeline_to_file (current_trace, (GstPipeline *)element, filename);
       g_free (filename);
     }
     break;
