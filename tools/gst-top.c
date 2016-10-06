@@ -34,6 +34,9 @@ main (gint argc, gchar *argv[])
   g_set_prgname ("gst-top-" GST_API_VERSION);
   g_set_application_name ("GStreamer Top Tool");
   
+  /** @todo: Fix configuration vulnerability */
+  system ("rm -f " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
+  
   if (insert_libraries) {
 #if defined(__MACH__)
     g_setenv ("DYLD_FORCE_FLAT_NAMESPACE", "1", FALSE);
