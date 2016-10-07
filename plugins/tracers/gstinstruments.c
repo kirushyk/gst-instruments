@@ -136,8 +136,27 @@ do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64
 {
   optional_init ();
   
+  
+  GstPad *sender_pad = GST_PAD_PEER (receiver_pad);
+  sender_pad = get_source_pad (sender_pad);
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
   GstPipeline *pipeline = trace_heir (receiver_element);
+  GstElement *sender_element = GST_PAD_PARENT (sender_pad);
+  
+  guint64 start = get_cpu_time (mach_thread_self ());
+  
+  {
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
+    gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, receiver_element);
+    gst_trace_element_entered_entry_set_downstack_element (entry, sender_element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
+    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+  }
+
+  
   dump_hierarchy_info_if_needed (current_trace, pipeline, receiver_element);
 }
 
@@ -156,7 +175,6 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
   GstElement *sender_element = GST_PAD_PARENT (sender_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   
-  
   if (buffer)
   {
     GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
@@ -170,6 +188,18 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
     entry->receiver_pad = receiver_pad;
     entry->buffers_count = 1;
     entry->bytes_count = gst_buffer_get_size (buffer);
+    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+  }
+  
+  guint64 end = get_cpu_time (mach_thread_self ());
+  
+  {
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
+    gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, sender_element);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
 }

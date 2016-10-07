@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <config.h>
 
-gboolean insert_libraries = TRUE;
+gboolean insert_libraries = FALSE;
 
 gint
 main (gint argc, gchar *argv[])
