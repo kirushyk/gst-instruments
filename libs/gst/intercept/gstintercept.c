@@ -228,9 +228,7 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   entry->bytes_count = gst_buffer_get_size (buffer);
   gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   
-  GST_INFO ("pushin: %p %p\n", pad, buffer);
   result = gst_pad_push_orig (pad, buffer);
-  GST_INFO ("pushed: %d\n", result);
   
   guint64 end = get_cpu_time (thread);
   guint64 duration = end - start;
