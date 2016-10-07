@@ -102,11 +102,12 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
 }
 
 ElementEnter *
-gst_graveyard_find_element_enter (GstGraveyard *graveyard, gpointer element_id, gpointer thread_id)
+gst_graveyard_pick_element_enter (GstGraveyard *graveyard, gpointer element_id, gpointer thread_id)
 {
   for (GList *iterator = graveyard->enters; iterator != NULL; iterator = iterator->next) {
     ElementEnter *current = (ElementEnter *)iterator->data;
     if ((current->element_id == element_id) && (current->thread_id == thread_id)) {
+      graveyard->enters = g_list_remove_link(graveyard->enters, iterator);
       return current;
     }
   }
@@ -223,12 +224,13 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             g_print ("couldn't find element %p: %s\n", ee_entry->downstack_element_id, ee_entry->downstack_element_name);
             goto error;
           }
-          ElementEnter *element_enter = gst_graveyard_find_element_enter (graveyard, ee_entry->downstack_element_id, ee_entry->entry.thread_id);
+          ElementEnter *element_enter = gst_graveyard_pick_element_enter (graveyard, ee_entry->downstack_element_id, ee_entry->entry.thread_id);
           if (element_enter) {
             if (TIMESTAMP_FITS (event_timestamp, from, till)) {
               element->total_cpu_time += (ee_entry->exit_time - element_enter->enter_time) - task->current_downstack_time;
             }
             task->current_downstack_time = (ee_entry->exit_time - element_enter->enter_time);
+            g_free (element_enter);
           } else {
             /// @note: We detected exit from downstack element but we have no clue when we entered it
           }
