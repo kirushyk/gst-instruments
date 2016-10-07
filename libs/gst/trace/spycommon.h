@@ -35,6 +35,8 @@ guint64            get_cpu_time                  (THREAD       thread);
 
 GstClockTime       current_monotonic_time        (void);
 
+GstPad *           get_source_pad                (GstPad      *pad);
+
 gpointer           trace_heir                    (GstElement  *element);
 
 gpointer           get_downstack_element         (gpointer     pad);

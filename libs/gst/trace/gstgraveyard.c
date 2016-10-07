@@ -110,6 +110,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   }
   
   GstGraveyard *graveyard = g_new0(GstGraveyard, 1);
+  graveyard->dsec = 0;
   
   graveyard->tasks = g_hash_table_new (g_direct_hash, g_direct_equal);
   graveyard->elements = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -217,6 +218,8 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
         
       case GST_TRACE_ENTRY_TYPE_DATA_SENT:
         {
+          graveyard->dsec++;
+          // fprintf(stderr, "%d\n", graveyard->dsec);
           GstTraceDataSentEntry *ds_entry = (GstTraceDataSentEntry *)entry;
           
           GstElementHeadstone *element = gst_graveyard_get_element (graveyard, ds_entry->sender_element, NULL);

@@ -25,6 +25,7 @@
 
 typedef struct GstGraveyard
 {
+  int dsec;
   GHashTable                           *tasks;
   GHashTable                           *elements;
   GArray                               *elements_sorted;

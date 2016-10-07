@@ -79,8 +79,8 @@ render_pad (gpointer key, gpointer value, gpointer user_data)
   g_print ("label=\"\";\n");
   render_space (space);
   if (simple_pads) {
-    g_print ("en%p_pad_%p [shape=\"box\" label=\"%s\", " \
-      "fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier,
+    g_print ("en%p_pad_%p [shape=\"box\" label=\"%p %s\", " \
+      "fillcolor=\"#ffffff\"];\n", element->identifier, pad->identifier, pad->identifier,
       pad->mode == GST_PAD_MODE_PULL ? "[]=>" : "=>[]");
   } else {
     g_print ("en%p_pad_%p [shape=\"none\", label=\"\", image=\"" DATADIR "/" \
@@ -154,8 +154,10 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element,
     render_space (space);
     g_print ("color=black;\n");
     render_space (space);
+    /*
     g_print ("label=\"pipeline0\";\n");
     render_space (space);
+    */
 #ifdef __APPLE__
     g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", "
              "fontname=\"Avenir Next\", margin=\"0.1,0.1\"];\n");
@@ -189,7 +191,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element,
              "<TD COLSPAN=\"2\" ALIGN=\"RIGHT\">%s</TD>"
              "</TR>"
              "<TR>"
-             "<TD COLSPAN=\"2\" ALIGN=\"RIGHT\">%s</TD>"
+             "<TD COLSPAN=\"2\" ALIGN=\"RIGHT\">%p %s</TD>"
              "</TR>"
              "<TR>"
              "<TD ALIGN=\"RIGHT\">Time:</TD>"
@@ -203,7 +205,7 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element,
              "<TD ALIGN=\"RIGHT\">CPU:</TD>"
              "<TD ALIGN=\"RIGHT\">%5.1f%%</TD>"
              "</TR>"
-             "</TABLE>>;\n", element->type_name->str, element->name->str,
+             "</TABLE>>;\n", element->type_name->str, element, element->name->str,
       time_string, total_cpu_time * 100.f / graveyard->total_cpu_time,
       (nested_time ? gst_element_headstone_get_nested_load (element) :
         element->cpu_load) * 100.0f);

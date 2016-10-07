@@ -29,7 +29,7 @@
 #include <gst/gstpad.h>
 #include "../trace/gsttrace.h"
 #include <config.h>
-#include "spycommon.h"
+#include "../trace/spycommon.h"
 
 #if __MACH__
 #else
@@ -259,10 +259,10 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   GstPipeline *pipeline = NULL;
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = GST_PAD_PARENT (pad);
-  gpointer element = get_downstack_element (pad);
+  gpointer sender_element = GST_PAD_PARENT (pad);
+  gpointer receiver_element = get_downstack_element (pad);
   
-  pipeline = trace_heir (element);
+  pipeline = trace_heir (receiver_element);
   
   guint64 start = get_cpu_time (thread);
   
@@ -271,12 +271,12 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
-    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+    gst_trace_element_entered_entry_set_upstack_element (entry, sender_element);
+    gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, receiver_element);
   
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
@@ -287,13 +287,13 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
   gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
   gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
   entry->pad_mode = GST_PAD_MODE_PUSH;
-  entry->sender_element = element_from;
-  entry->receiver_element = element;
+  entry->sender_element = sender_element;
+  entry->receiver_element = receiver_element;
   entry->sender_pad = pad;
   entry->receiver_pad = peer;
   entry->buffers_count = list_info.buffers_count;
   entry->bytes_count = list_info.size;
-  gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+  // gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   
   result = gst_pad_push_list_orig (pad, list);
     
@@ -308,7 +308,7 @@ lgi_pad_push_list (GstPad *pad, GstBufferList *list)
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
@@ -326,21 +326,21 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
   
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = GST_PAD_PARENT (pad);
-  gpointer element = get_downstack_element (pad);
+  gpointer sender_element = GST_PAD_PARENT (pad);
+  gpointer receiver_element = get_downstack_element (pad);
   
-  pipeline = trace_heir (element);
+  pipeline = trace_heir (receiver_element);
   
   guint64 start = get_cpu_time (thread);
   
-  if (element_from && element) {
+  if (sender_element && receiver_element) {
     {
       GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
       gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
-      gst_trace_element_entered_entry_set_downstack_element (entry, element);
+      gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
       gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
     }
   }
@@ -353,13 +353,13 @@ lgi_pad_push_event (GstPad *pad, GstEvent *event)
   mach_port_deallocate (mach_task_self (), thread);
 #endif
   
-  if (element_from && element) {
+  if (sender_element && receiver_element) {
     {
       GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
       gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-      gst_trace_element_exited_entry_set_downstack_element (entry, element);
+      gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
       gst_trace_element_exited_entry_set_duration (entry, duration);
       gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
     }
@@ -378,10 +378,10 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
   
   THREAD thread = mach_thread_self ();
   
-  gpointer element_from = GST_PAD_PARENT (pad);
-  gpointer element = get_downstack_element (pad);
+  gpointer receiver_element = GST_PAD_PARENT (pad);
+  gpointer sender_element = get_downstack_element (pad);
   
-  pipeline = trace_heir (element);
+  pipeline = trace_heir (sender_element);
   
   guint64 start = get_cpu_time (thread);
   
@@ -390,12 +390,12 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_entered_entry_set_upstack_element (entry, element_from);
-    gst_trace_element_entered_entry_set_downstack_element (entry, element);
+    gst_trace_element_entered_entry_set_upstack_element (entry, receiver_element);
+    gst_trace_element_entered_entry_set_downstack_element (entry, sender_element);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
   
   result = gst_pad_pull_range_orig (pad, offset, size, buffer);
   
@@ -407,8 +407,8 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       entry->pad_mode = GST_PAD_MODE_PULL;
-      entry->sender_element = element;
-      entry->receiver_element = element_from;
+      entry->sender_element = sender_element;
+      entry->receiver_element = receiver_element;
       entry->sender_pad = peer;
       entry->receiver_pad = pad;
       entry->buffers_count = 1;
@@ -428,7 +428,7 @@ lgi_pad_pull_range (GstPad *pad, guint64 offset, guint size, GstBuffer **buffer)
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-    gst_trace_element_exited_entry_set_downstack_element (entry, element);
+    gst_trace_element_exited_entry_set_downstack_element (entry, sender_element);
     gst_trace_element_exited_entry_set_duration (entry, duration);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }

@@ -7,6 +7,7 @@
 //
 
 #include "spycommon.h"
+#include <gst/gstghostpad.h>
 
 #ifndef __MACH__
 THREAD
@@ -74,6 +75,21 @@ trace_heir (GstElement *element)
   for (parent = GST_OBJECT (element); GST_OBJECT_PARENT (parent) != NULL; parent = GST_OBJECT_PARENT (parent));
   
   return parent;
+}
+
+GstPad *
+get_source_pad (GstPad *pad)
+{
+  while (pad) {
+    if (GST_IS_GHOST_PAD (pad)) {
+      pad = gst_ghost_pad_get_target (GST_GHOST_PAD(pad));
+    } else if (GST_OBJECT_PARENT(pad) && GST_IS_GHOST_PAD(GST_OBJECT_PARENT(pad))) {
+      pad = GST_PAD_PEER (GST_OBJECT_PARENT (pad));
+    } else {
+      break;
+    }
+  }
+  return pad;
 }
 
 gpointer

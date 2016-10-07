@@ -20,8 +20,8 @@
 #include "config.h"
 #include <gst/gst.h>
 #include "../../libs/gst/trace/gsttrace.h"
+#include "../../libs/gst/trace/spycommon.h"
 #include "gstinstruments.h"
-#include "spycommon.h"
 
 GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
 #define GST_CAT_DEFAULT gst_instruments_debug
@@ -61,19 +61,24 @@ optional_init ()
 }
 
 static void
-do_push_buffer_pre
-(GObject *self,
-GstClockTime ts,
-GstPad *sender_pad,
-GstBuffer *buffer)
+do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffer *buffer)
 {
+  if (GST_IS_GHOST_PAD (sender_pad))
+    return;
+  
   optional_init ();
   
+  GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
+  if (GST_IS_GHOST_PAD (receiver_pad))
+    return;
+  receiver_pad = get_source_pad (receiver_pad);
+  
+  sender_pad = get_source_pad (sender_pad);
+  
   GstElement *sender_element = get_real_pad_parent (sender_pad);
-  GstElement *receiver_element = get_downstack_element (sender_pad);
+  GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
-  GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
   
   GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
   gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -89,18 +94,25 @@ GstBuffer *buffer)
   gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
 }
 
-void
-do_push_buffer_list_pre
-(GObject *self,
-GstClockTime ts,
-GstPad *sender_pad,
-GstBufferList *list)
+static void
+do_push_buffer_list_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBufferList *list)
 {
+  if (GST_IS_GHOST_PAD (sender_pad))
+    return;
+  
+  optional_init ();
+  
+  GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
+  if (GST_IS_GHOST_PAD (receiver_pad))
+    return;
+  receiver_pad = get_source_pad (receiver_pad);
+  
+  sender_pad = get_source_pad (sender_pad);
+  
   GstElement *sender_element = get_real_pad_parent (sender_pad);
-  GstElement *receiver_element = get_downstack_element (sender_pad);
+  GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
-  GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
   
   ListInfo list_info;
   gst_buffer_list_foreach (list, for_each_buffer, &list_info);
@@ -128,12 +140,27 @@ do_pull_range_pre(GObject *self,
 {
   optional_init ();
   
-  GstElement *receiver_element = get_real_pad_parent (receiver_pad);
   GstElement *sender_element = get_downstack_element (receiver_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
+
+}
+
+void
+do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuffer *buffer, GstFlowReturn res)
+{
+  if (GST_IS_GHOST_PAD (receiver_pad))
+    return;
+  
+  optional_init ();
+  
+  GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
+  GstElement *sender_element = get_downstack_element (receiver_pad);
+  GstPipeline *pipeline = trace_heir (sender_element);
   
   GstPad *sender_pad = GST_PAD_PEER (receiver_pad);
+  
+  if (buffer)
   {
     GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -145,27 +172,18 @@ do_pull_range_pre(GObject *self,
     entry->sender_pad = sender_pad;
     entry->receiver_pad = receiver_pad;
     entry->buffers_count = 1;
-    entry->bytes_count = size;
+    entry->bytes_count = gst_buffer_get_size (buffer);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
 }
- 
-static void
-do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *pad)
-{
-  optional_init ();
- 
-}
 
-static void
-do_pull_range_post (GstTracer * self, guint64 ts, GstPad * pad)
-{
-  optional_init ();
-  
-  GstElement *element = get_real_pad_parent (pad);
-  GstPipeline *pipeline = trace_heir (element);
-  dump_hierarchy_info_if_needed (current_trace, pipeline, element);
-}
+//static void
+//do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *pad)
+//{
+//  optional_init ();
+// 
+//}
+
 
 static void
 do_push_event_pre (GstTracer *self, guint64 ts, GstPad *pad, GstEvent *ev)
@@ -236,10 +254,10 @@ gst_instruments_tracer_init (GstInstrumentsTracer * self)
   
   gst_tracing_register_hook (tracer, "pad-push-pre",
                              G_CALLBACK (do_push_buffer_pre));
-//  gst_tracing_register_hook (tracer, "pad-push-list-pre",
-//                             G_CALLBACK (do_push_buffer_pre));
-  gst_tracing_register_hook (tracer, "pad-push-post",
-                             G_CALLBACK (do_push_buffer_post));
+  gst_tracing_register_hook (tracer, "pad-push-list-pre",
+                             G_CALLBACK (do_push_buffer_list_pre));
+//  gst_tracing_register_hook (tracer, "pad-push-post",
+//                             G_CALLBACK (do_push_buffer_post));
 //  gst_tracing_register_hook (tracer, "pad-push-list-post",
 //                             G_CALLBACK (do_push_buffer_post));
   gst_tracing_register_hook (tracer, "pad-pull-range-pre",
@@ -247,7 +265,7 @@ gst_instruments_tracer_init (GstInstrumentsTracer * self)
   gst_tracing_register_hook (tracer, "pad-pull-range-post",
                              G_CALLBACK (do_pull_range_post));
   gst_tracing_register_hook (tracer, "pad-push-event-pre",
-                               G_CALLBACK (do_push_event_pre));
+                            G_CALLBACK (do_push_event_pre));
   
 }
 
