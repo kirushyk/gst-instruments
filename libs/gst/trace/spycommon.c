@@ -155,3 +155,12 @@ dump_hierarchy_info_if_needed (GstTrace *trace, GstPipeline *pipeline, GstElemen
   g_value_unset (&item);
   gst_iterator_free (it);
 }
+
+gboolean
+for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
+{
+  ListInfo *info = user_data;
+  info->buffers_count++;
+  info->size += gst_buffer_get_size (*buffer);
+  return TRUE;
+}

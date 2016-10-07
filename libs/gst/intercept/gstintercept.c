@@ -249,21 +249,6 @@ lgi_pad_push (GstPad *pad, GstBuffer *buffer)
   return result;
 }
 
-typedef struct ListInfo
-{
-  guint64 size;
-  guint buffers_count;
-} ListInfo;
-
-gboolean
-for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
-{
-  ListInfo *info = user_data;
-  info->buffers_count++;
-  info->size += gst_buffer_get_size (*buffer);
-  return TRUE;
-}
-
 GstFlowReturn
 lgi_pad_push_list (GstPad *pad, GstBufferList *list)
 {

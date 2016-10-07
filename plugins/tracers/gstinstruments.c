@@ -89,6 +89,36 @@ GstBuffer *buffer)
   gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
 }
 
+void
+do_push_buffer_list_pre
+(GObject *self,
+GstClockTime ts,
+GstPad *sender_pad,
+GstBufferList *list)
+{
+  GstElement *sender_element = get_real_pad_parent (sender_pad);
+  GstElement *receiver_element = get_downstack_element (sender_pad);
+  GstPipeline *pipeline = trace_heir (sender_element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
+  GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
+  
+  ListInfo list_info;
+  gst_buffer_list_foreach (list, for_each_buffer, &list_info);
+  
+  GstTraceDataSentEntry *entry = gst_trace_data_sent_entry_new ();
+  gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
+  gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+  gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+  entry->pad_mode = GST_PAD_MODE_PUSH;
+  entry->sender_element = sender_element;
+  entry->receiver_element = receiver_element;
+  entry->sender_pad = sender_pad;
+  entry->receiver_pad = receiver_pad;
+  entry->buffers_count = list_info.buffers_count;
+  entry->bytes_count = list_info.size;
+  gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
+}
+
 static void
 do_pull_range_pre(GObject *self,
   GstClockTime ts,
