@@ -160,13 +160,13 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
     gst_trace_element_entered_entry_set_downstack_element (entry, element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
   result = gst_element_change_state_orig (element, transition);
   
   guint64 end = get_cpu_time (thread);
-  guint64 duration = end - start;
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -177,7 +177,7 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, element);
-    gst_trace_element_exited_entry_set_duration (entry, duration);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
@@ -211,6 +211,7 @@ lgi_pad_push (GstPad *sender_pad, GstBuffer *buffer)
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, sender_element);
     gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
@@ -232,7 +233,6 @@ lgi_pad_push (GstPad *sender_pad, GstBuffer *buffer)
   result = gst_pad_push_orig (sender_pad, buffer);
   
   guint64 end = get_cpu_time (thread);
-  guint64 duration = end - start;
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -243,7 +243,7 @@ lgi_pad_push (GstPad *sender_pad, GstBuffer *buffer)
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
-    gst_trace_element_exited_entry_set_duration (entry, duration);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
 
@@ -275,6 +275,7 @@ lgi_pad_push_list (GstPad *sender_pad, GstBufferList *list)
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, sender_element);
     gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
@@ -291,15 +292,14 @@ lgi_pad_push_list (GstPad *sender_pad, GstBufferList *list)
   entry->sender_element = sender_element;
   entry->receiver_element = receiver_element;
   entry->sender_pad = sender_pad;
-  entry->receiver_pad = receiver_pad;
-  entry->buffers_count = list_info.buffers_count;
+
+  entry->receiver_pad = receiver_pad;  entry->buffers_count = list_info.buffers_count;
   entry->bytes_count = list_info.size;
   gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   
   result = gst_pad_push_list_orig (sender_pad, list);
     
   guint64 end = get_cpu_time (thread);
-  guint64 duration = end - start;
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -310,7 +310,7 @@ lgi_pad_push_list (GstPad *sender_pad, GstBufferList *list)
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
-    gst_trace_element_exited_entry_set_duration (entry, duration);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
@@ -349,6 +349,7 @@ lgi_pad_push_event (GstPad *sender_pad, GstEvent *event)
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
       gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
+      gst_trace_element_entered_entry_set_enter_time (entry, start);
       gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
     }
   }
@@ -356,7 +357,6 @@ lgi_pad_push_event (GstPad *sender_pad, GstEvent *event)
   result = gst_pad_push_event_orig (sender_pad, event);
   
   guint64 end = get_cpu_time (thread);
-  guint64 duration = end - start;
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -368,7 +368,7 @@ lgi_pad_push_event (GstPad *sender_pad, GstEvent *event)
       gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
       gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
       gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
-      gst_trace_element_exited_entry_set_duration (entry, duration);
+      gst_trace_element_exited_entry_set_exit_time (entry, end);
       gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
     }
   }
@@ -403,6 +403,7 @@ lgi_pad_pull_range (GstPad *receiver_pad, guint64 offset, guint size, GstBuffer 
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_entered_entry_set_upstack_element (entry, receiver_element);
     gst_trace_element_entered_entry_set_downstack_element (entry, sender_element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
@@ -429,7 +430,6 @@ lgi_pad_pull_range (GstPad *receiver_pad, guint64 offset, guint size, GstBuffer 
   }
   
   guint64 end = get_cpu_time (thread);
-  guint64 duration = end - start;
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -440,7 +440,7 @@ lgi_pad_pull_range (GstPad *receiver_pad, guint64 offset, guint size, GstBuffer 
     gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
     gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
     gst_trace_element_exited_entry_set_downstack_element (entry, sender_element);
-    gst_trace_element_exited_entry_set_duration (entry, duration);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
 

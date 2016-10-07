@@ -140,6 +140,7 @@ gst_trace_element_entered_entry_init (GstTraceElementEnteredEntry *entry)
   entry->downstack_element_id = NULL;
   entry->upstack_element_name[0] = '\0';
   entry->downstack_element_name[0] = '\0';
+  entry->enter_time = GST_CLOCK_TIME_NONE;
 }
 
 GstTraceElementEnteredEntry *
@@ -165,20 +166,26 @@ gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEnt
 }
 
 void
-gst_trace_element_entered_exited_init (GstTraceElementExitedEntry *entry)
+gst_trace_element_exited_init (GstTraceElementExitedEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED;
   entry->downstack_element_id = NULL;
   entry->downstack_element_name[0] = '\0';
-  entry->duration = GST_CLOCK_TIME_NONE;
+  entry->exit_time = GST_CLOCK_TIME_NONE;
+}
+
+void
+gst_trace_element_entered_entry_set_enter_time (GstTraceElementEnteredEntry *entry, GstClockTime enter_time)
+{
+  entry->enter_time = enter_time;
 }
 
 GstTraceElementExitedEntry *
 gst_trace_element_exited_entry_new (void)
 {
   GstTraceElementExitedEntry *entry = g_new0(GstTraceElementExitedEntry, 1);
-  gst_trace_element_entered_exited_init (entry);
+  gst_trace_element_exited_init (entry);
   return entry;
 }
 
@@ -190,9 +197,9 @@ gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry
 }
 
 void
-gst_trace_element_exited_entry_set_duration (GstTraceElementExitedEntry *entry, GstClockTime duration)
+gst_trace_element_exited_entry_set_exit_time (GstTraceElementExitedEntry *entry, GstClockTime exit_time)
 {
-  entry->duration = duration;
+  entry->exit_time = exit_time;
 }
 
 void

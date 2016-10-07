@@ -68,6 +68,7 @@ struct GstTraceElementEnteredEntry
   gpointer downstack_element_id;
   gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
+  GstClockTime enter_time;
 };
 
 typedef struct GstTraceElementExitedEntry GstTraceElementExitedEntry;
@@ -78,7 +79,7 @@ struct GstTraceElementExitedEntry
   // gchar upstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
   gpointer downstack_element_id;
   gchar downstack_element_name[GST_ELEMENT_NAME_LENGTH_MAX];
-  guint64 duration;
+  GstClockTime exit_time;
 };
 
 typedef struct GstTraceDataSentEntry GstTraceDataSentEntry;
@@ -126,12 +127,15 @@ void        gst_trace_element_entered_entry_set_upstack_element   (GstTraceEleme
 
 void        gst_trace_element_entered_entry_set_downstack_element (GstTraceElementEnteredEntry *entry,  GstElement *element);
 
+void                gst_trace_element_entered_entry_set_enter_time  (GstTraceElementEnteredEntry      *entry,
+                                                                   GstClockTime        enter_time);
+
 GstTraceElementExitedEntry    * gst_trace_element_exited_entry_new (void);
 
 void        gst_trace_element_exited_entry_set_downstack_element (GstTraceElementExitedEntry *entry,  GstElement *element);
 
-void                gst_trace_element_exited_entry_set_duration  (GstTraceElementExitedEntry      *entry,
-                                                                  GstClockTime        duration);
+void                gst_trace_element_exited_entry_set_exit_time  (GstTraceElementExitedEntry      *entry,
+                                                                  GstClockTime        exit_time);
 
 GstTraceDataSentEntry * gst_trace_data_sent_entry_new (void);
 

@@ -132,11 +132,7 @@ do_push_buffer_list_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, Gst
 }
 
 static void
-do_pull_range_pre(GObject *self,
-  GstClockTime ts,
-  GstPad *receiver_pad,
-  guint64 offset,
-  guint size)
+do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64 offset, guint size)
 {
   optional_init ();
   
@@ -178,13 +174,12 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
   }
 }
 
-//static void
-//do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *pad)
-//{
-//  optional_init ();
-// 
-//}
-
+static void
+do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *pad)
+{
+  optional_init ();
+ 
+}
 
 static void
 do_push_event_pre (GstTracer *self, guint64 ts, GstPad *pad, GstEvent *ev)
@@ -205,23 +200,14 @@ gst_instruments_tracer_class_init (GstInstrumentsTracerClass * klass)
 }
 
 void
-do_element_change_state_pre
-(GObject *self,
- GstClockTime ts,
- GstElement *element,
- GstStateChange transition)
+do_element_change_state_pre (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition)
 {
   optional_init ();
   
 }
 
 void
-do_element_change_state_post
-(GObject *self,
- GstClockTime ts,
- GstElement *element,
- GstStateChange transition,
- GstStateChangeReturn result)
+do_element_change_state_post (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition, GstStateChangeReturn result)
 {
   optional_init ();
   

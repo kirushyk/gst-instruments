@@ -101,6 +101,18 @@ for_each_element (gpointer key, gpointer value, gpointer user_data)
   g_array_append_val (graveyard->elements_sorted, value);
 }
 
+ElementEnter *
+gst_graveyard_find_element_enter (GstGraveyard *graveyard, gpointer element_id, gpointer thread_id)
+{
+  for (GList *iterator = graveyard->enters; iterator != NULL; iterator = iterator->next) {
+    ElementEnter *current = (ElementEnter *)iterator->data;
+    if ((current->element_id == element_id) && (current->thread_id == thread_id)) {
+      return current;
+    }
+  }
+  return NULL;
+}
+
 GstGraveyard *
 gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockTime till, gboolean query_duration_only)
 {
@@ -111,6 +123,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   
   GstGraveyard *graveyard = g_new0(GstGraveyard, 1);
   graveyard->dsec = 0;
+  graveyard->enters = NULL;
   
   graveyard->tasks = g_hash_table_new (g_direct_hash, g_direct_equal);
   graveyard->elements = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -154,6 +167,13 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           GstElementHeadstone *element = gst_graveyard_get_element (graveyard, ee_entry->downstack_element_id, ee_entry->downstack_element_name);
           
           g_assert_true (element != NULL);
+          
+          /// @todo: Extrude to procedure
+          ElementEnter *element_enter = g_new0(ElementEnter, 1);
+          element_enter->element_id = ee_entry->downstack_element_id;
+          element_enter->thread_id = ee_entry->entry.thread_id;
+          element_enter->enter_time = ee_entry->enter_time;
+          graveyard->enters = g_list_prepend(graveyard->enters, element_enter);
           
           GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, entry->thread_id);
           if (!task) {
@@ -203,10 +223,15 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
             g_print ("couldn't find element %p: %s\n", ee_entry->downstack_element_id, ee_entry->downstack_element_name);
             goto error;
           }
-          if (TIMESTAMP_FITS (event_timestamp, from, till)) {
-            element->total_cpu_time += ee_entry->duration - task->current_downstack_time;
+          ElementEnter *element_enter = gst_graveyard_find_element_enter (graveyard, ee_entry->downstack_element_id, ee_entry->entry.thread_id);
+          if (element_enter) {
+            if (TIMESTAMP_FITS (event_timestamp, from, till)) {
+              element->total_cpu_time += (ee_entry->exit_time - element_enter->enter_time) - task->current_downstack_time;
+            }
+            task->current_downstack_time = (ee_entry->exit_time - element_enter->enter_time);
+          } else {
+            /// @note: We detected exit from downstack element but we have no clue when we entered it
           }
-          task->current_downstack_time = ee_entry->duration;
           if (element->is_subtopstack) {
             task->upstack_enter_timestamp = entry->timestamp;
             task->currently_in_upstack_element = TRUE;

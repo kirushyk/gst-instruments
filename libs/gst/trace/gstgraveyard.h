@@ -23,9 +23,15 @@
 #include <glib.h>
 #include <gst/gst.h>
 
+typedef struct ElementEnter
+{
+  gpointer element_id;
+  gpointer thread_id;
+  GstClockTime enter_time;
+} ElementEnter;
+
 typedef struct GstGraveyard
 {
-  int dsec;
   GHashTable                           *tasks;
   GHashTable                           *elements;
   GArray                               *elements_sorted;
@@ -35,6 +41,11 @@ typedef struct GstGraveyard
   GstClockTime                          till;
 
   GstClockTime                          duration;
+  /// private
+  
+  int dsec;
+  GList *enters; /** @todo: Add mutex for parallel processing */
+  
 } GstGraveyard;
 
 GstGraveyard *      gst_graveyard_new_from_trace           (const char              *filename,
