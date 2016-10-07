@@ -140,10 +140,9 @@ do_pull_range_pre(GObject *self,
 {
   optional_init ();
   
-  GstElement *sender_element = get_downstack_element (receiver_pad);
-  GstPipeline *pipeline = trace_heir (sender_element);
-  dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
-
+  GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
+  GstPipeline *pipeline = trace_heir (receiver_element);
+  dump_hierarchy_info_if_needed (current_trace, pipeline, receiver_element);
 }
 
 void
@@ -154,11 +153,13 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
   
   optional_init ();
   
+  GstPad *sender_pad = GST_PAD_PEER (receiver_pad);
+  sender_pad = get_source_pad (sender_pad);
+  
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
-  GstElement *sender_element = get_downstack_element (receiver_pad);
+  GstElement *sender_element = GST_PAD_PARENT (sender_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   
-  GstPad *sender_pad = GST_PAD_PEER (receiver_pad);
   
   if (buffer)
   {
@@ -195,7 +196,6 @@ do_push_event_pre (GstTracer *self, guint64 ts, GstPad *pad, GstEvent *ev)
     GstPipeline *pipeline = trace_heir (element);
     dump_hierarchy_info_if_needed (current_trace, pipeline, element);
   }
-  
 }
 
 static void

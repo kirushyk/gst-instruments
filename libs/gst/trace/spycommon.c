@@ -92,23 +92,6 @@ get_source_pad (GstPad *pad)
   return pad;
 }
 
-gpointer
-get_downstack_element (gpointer pad)
-{
-  gpointer element = pad;
-  do {
-    gpointer peer = GST_PAD_PEER (element);
-    if (peer) {
-      element = GST_PAD_PARENT (peer);
-    } else {
-      return NULL;
-    }
-  }
-  while (!GST_IS_ELEMENT (element));
-  
-  return element;
-}
-
 GHashTable *pipeline_by_element = NULL;
 
 void

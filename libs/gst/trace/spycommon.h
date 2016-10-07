@@ -39,8 +39,6 @@ GstPad *           get_source_pad                (GstPad      *pad);
 
 gpointer           trace_heir                    (GstElement  *element);
 
-gpointer           get_downstack_element         (gpointer     pad);
-
 void               dump_hierarchy_info_if_needed (GstTrace    *trace,
                                                   GstPipeline *pipeline,
                                                   GstElement  *new_element);
