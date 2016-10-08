@@ -79,6 +79,7 @@ do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffe
   GstPipeline *pipeline = trace_heir (sender_element);
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
   
+  /** @note: Do I need mach_port_deallocate call after logging event ? */
   guint64 start = get_cpu_time (mach_thread_self ());
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
