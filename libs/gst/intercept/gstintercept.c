@@ -152,7 +152,6 @@ lgi_element_change_state (GstElement *element, GstStateChange transition)
   pipeline = trace_heir (element);
   
   guint64 start = get_cpu_time (thread);
-  
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -203,7 +202,6 @@ lgi_pad_push (GstPad *sender_pad, GstBuffer *buffer)
   GstPipeline *pipeline = trace_heir (sender_element);
   
   guint64 start = get_cpu_time (thread);
-  
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -267,7 +265,6 @@ lgi_pad_push_list (GstPad *sender_pad, GstBufferList *list)
   GstPipeline *pipeline = trace_heir (sender_element);
   
   guint64 start = get_cpu_time (thread);
-  
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -342,16 +339,14 @@ lgi_pad_push_event (GstPad *sender_pad, GstEvent *event)
   guint64 start = get_cpu_time (thread);
   
   if (sender_element && receiver_element) {
-    {
-      GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
-      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
-      gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
-      gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-      gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
-      gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
-      gst_trace_element_entered_entry_set_enter_time (entry, start);
-      gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
-    }
+    GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
+    gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_entered_entry_set_upstack_element (entry, NULL);
+    gst_trace_element_entered_entry_set_downstack_element (entry, receiver_element);
+    gst_trace_element_entered_entry_set_enter_time (entry, start);
+    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
   result = gst_pad_push_event_orig (sender_pad, event);
@@ -362,15 +357,13 @@ lgi_pad_push_event (GstPad *sender_pad, GstEvent *event)
 #endif
   
   if (sender_element && receiver_element) {
-    {
-      GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
-      gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
-      gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
-      gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
-      gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
-      gst_trace_element_exited_entry_set_exit_time (entry, end);
-      gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
-    }
+    GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
+    gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
+    gst_trace_entry_set_pipeline ((GstTraceEntry *)entry, pipeline);
+    gst_trace_entry_set_thread_id ((GstTraceEntry *)entry, g_thread_self ());
+    gst_trace_element_exited_entry_set_downstack_element (entry, receiver_element);
+    gst_trace_element_exited_entry_set_exit_time (entry, end);
+    gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
   return result;
@@ -395,7 +388,6 @@ lgi_pad_pull_range (GstPad *receiver_pad, guint64 offset, guint size, GstBuffer 
   pipeline = trace_heir (sender_element);
   
   guint64 start = get_cpu_time (thread);
-  
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -430,6 +422,7 @@ lgi_pad_pull_range (GstPad *receiver_pad, guint64 offset, guint size, GstBuffer 
   }
   
   guint64 end = get_cpu_time (thread);
+  
 #if __MACH__
   mach_port_deallocate (mach_task_self (), thread);
 #endif
@@ -478,12 +471,12 @@ lgi_element_set_state (GstElement *element, GstState state)
 
 #if __MACH__
 # define INTERPOSE(_replacment, _replacee) \
-__attribute__((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
+__attribute__ ((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
 __attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee };
-INTERPOSE(lgi_pad_push, gst_pad_push);
-INTERPOSE(lgi_pad_push_list, gst_pad_push_list);
-INTERPOSE(lgi_pad_push_event, gst_pad_push_event);
-INTERPOSE(lgi_pad_pull_range, gst_pad_pull_range);
-INTERPOSE(lgi_element_set_state, gst_element_set_state);
-INTERPOSE(lgi_element_change_state, gst_element_change_state);
+INTERPOSE (lgi_pad_push, gst_pad_push);
+INTERPOSE (lgi_pad_push_list, gst_pad_push_list);
+INTERPOSE (lgi_pad_push_event, gst_pad_push_event);
+INTERPOSE (lgi_pad_pull_range, gst_pad_pull_range);
+INTERPOSE (lgi_element_set_state, gst_element_set_state);
+INTERPOSE (lgi_element_change_state, gst_element_change_state);
 #endif
