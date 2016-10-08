@@ -26,6 +26,7 @@ gboolean insert_libraries = FALSE;
 gint
 main (gint argc, gchar *argv[])
 {
+  /** @todo: Use -- to separate gst-top options from program and its arguments */
   if (argc < 2) {
     g_print ("Usage: %s PROG [ARGS]\n", argv[0]);
     return EXIT_FAILURE;
