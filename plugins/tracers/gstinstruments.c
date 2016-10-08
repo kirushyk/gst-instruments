@@ -29,8 +29,7 @@ GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
 #define _do_init \
 GST_DEBUG_CATEGORY_INIT (gst_instruments_debug, "instruments", 0, "instruments tracer");
 #define gst_instruments_tracer_parent_class parent_class
-G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_TRACER,
-                         _do_init);
+G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_TRACER,  _do_init);
 
 GstTrace *current_trace = NULL;
 
@@ -81,7 +80,6 @@ do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffe
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
   
   guint64 start = get_cpu_time (mach_thread_self ());
-  
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -178,7 +176,6 @@ do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64
     gst_trace_element_entered_entry_set_enter_time (entry, start);
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
-
   
   dump_hierarchy_info_if_needed (current_trace, pipeline, receiver_element);
 }
@@ -215,7 +212,6 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
   }
   
   guint64 end = get_cpu_time (mach_thread_self ());
-  
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -244,7 +240,6 @@ do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
   GstPipeline *pipeline = trace_heir (sender_element);
   
   guint64 end = get_cpu_time (mach_thread_self ());
-  
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -273,7 +268,6 @@ do_push_buffer_list_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
   GstPipeline *pipeline = trace_heir (sender_element);
   
   guint64 end = get_cpu_time (mach_thread_self ());
-  
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -307,14 +301,12 @@ void
 do_element_change_state_pre (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition)
 {
   optional_init ();
-  
 }
 
 void
 do_element_change_state_post (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition, GstStateChangeReturn result)
 {
   optional_init ();
-  
   switch (transition) {
     case GST_STATE_CHANGE_READY_TO_NULL:
       if (GST_IS_PIPELINE (element)) {
@@ -338,25 +330,23 @@ gst_instruments_tracer_init (GstInstrumentsTracer * self)
 {
   GstTracer *tracer = GST_TRACER (self);
   gst_tracing_register_hook (tracer, "element-change-state-pre",
-                             G_CALLBACK (do_element_change_state_pre));
+    G_CALLBACK (do_element_change_state_pre));
   gst_tracing_register_hook (tracer, "element-change-state-post",
-                             G_CALLBACK (do_element_change_state_post));
-  
+    G_CALLBACK (do_element_change_state_post));
   gst_tracing_register_hook (tracer, "pad-push-pre",
-                             G_CALLBACK (do_push_buffer_pre));
+    G_CALLBACK (do_push_buffer_pre));
   gst_tracing_register_hook (tracer, "pad-push-list-pre",
-                             G_CALLBACK (do_push_buffer_list_pre));
+    G_CALLBACK (do_push_buffer_list_pre));
   gst_tracing_register_hook (tracer, "pad-push-post",
-                             G_CALLBACK (do_push_buffer_post));
+    G_CALLBACK (do_push_buffer_post));
   gst_tracing_register_hook (tracer, "pad-push-list-post",
-                             G_CALLBACK (do_push_buffer_list_post));
+    G_CALLBACK (do_push_buffer_list_post));
   gst_tracing_register_hook (tracer, "pad-pull-range-pre",
-                             G_CALLBACK (do_pull_range_pre));
+    G_CALLBACK (do_pull_range_pre));
   gst_tracing_register_hook (tracer, "pad-pull-range-post",
-                             G_CALLBACK (do_pull_range_post));
+    G_CALLBACK (do_pull_range_post));
   gst_tracing_register_hook (tracer, "pad-push-event-pre",
-                            G_CALLBACK (do_push_event_pre));
-  
+    G_CALLBACK (do_push_event_pre));
 }
 
 static gboolean

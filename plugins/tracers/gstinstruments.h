@@ -21,21 +21,14 @@ G_BEGIN_DECLS
 typedef struct _GstInstrumentsTracer GstInstrumentsTracer;
 typedef struct _GstInstrumentsTracerClass GstInstrumentsTracerClass;
 
-/**
- * GstInstrumentsTracer:
- *
- * Opaque #GstInstrumentsTracer data structure
- */
 struct _GstInstrumentsTracer {
   GstTracer 	 parent;
-
-  /*< private >*/
+  
 };
 
 struct _GstInstrumentsTracerClass {
   GstTracerClass parent_class;
-
-  /* signals */
+  
 };
 
 G_GNUC_INTERNAL GType gst_instruments_tracer_get_type (void);
@@ -43,4 +36,3 @@ G_GNUC_INTERNAL GType gst_instruments_tracer_get_type (void);
 G_END_DECLS
 
 #endif
-
