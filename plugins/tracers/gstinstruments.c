@@ -80,7 +80,11 @@ do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffe
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
   
   /** @note: Do I need mach_port_deallocate call after logging event ? */
-  guint64 start = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 start = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -126,7 +130,11 @@ do_push_buffer_list_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, Gst
   GstPipeline *pipeline = trace_heir (sender_element);
   dump_hierarchy_info_if_needed (current_trace, pipeline, sender_element);
   
-  guint64 start = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 start = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -166,7 +174,11 @@ do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64
   GstPipeline *pipeline = trace_heir (receiver_element);
   GstElement *sender_element = GST_PAD_PARENT (sender_pad);
   
-  guint64 start = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 start = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementEnteredEntry *entry = gst_trace_element_entered_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -212,7 +224,11 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
     gst_trace_add_entry (current_trace, pipeline, (GstTraceEntry *)entry);
   }
   
-  guint64 end = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 end = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -240,7 +256,11 @@ do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   
-  guint64 end = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 end = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
@@ -268,7 +288,11 @@ do_push_buffer_list_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
   GstPipeline *pipeline = trace_heir (sender_element);
   
-  guint64 end = get_cpu_time (mach_thread_self ());
+  THREAD thread = mach_thread_self ();
+  guint64 end = get_cpu_time (thread);
+#if __MACH__
+  mach_port_deallocate (mach_task_self (), thread);
+#endif
   {
     GstTraceElementExitedEntry *entry = gst_trace_element_exited_entry_new ();
     gst_trace_entry_set_timestamp ((GstTraceEntry *)entry, current_monotonic_time ());
