@@ -17,11 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "config.h"
-#include <gst/gst.h>
+#include "gstinstruments.h"
 #include "../../libs/gst/trace/gsttrace.h"
 #include "../../libs/gst/trace/spycommon.h"
-#include "gstinstruments.h"
+#include "config.h"
 
 GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
 #define GST_CAT_DEFAULT gst_instruments_debug
