@@ -28,8 +28,8 @@
 #include <gst/gst.h>
 #include <gst/gstpad.h>
 #include "../trace/gsttrace.h"
-#include <config.h>
 #include "../trace/spycommon.h"
+#include <config.h>
 
 #if __MACH__
 #else
