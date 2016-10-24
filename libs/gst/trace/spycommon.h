@@ -1,13 +1,5 @@
-//
-//  spycommon.h
-//  instruments
-//
-//  Created by Cyril on 10/7/16.
-//  Copyright © 2016 §	. All rights reserved.
-//
-
-#ifndef spycommon_h
-#define spycommon_h
+#ifndef __SPYCOMMON_H__
+#define __SPYCOMMON_H__
 
 #include <gst/gst.h>
 #include <gst/gstpad.h>
@@ -49,4 +41,5 @@ gboolean           for_each_buffer               (GstBuffer  **buffer,
 
 extern GHashTable *pipeline_by_element;
 
-#endif /* spycommon_h */
+#endif
+
