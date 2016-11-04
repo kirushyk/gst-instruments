@@ -3,6 +3,7 @@ AC_CONFIG_SRCDIR([tools/gst-top.c])
 AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC
+AC_PROG_CC_STDC
 LT_INIT
 
 AC_CONFIG_MACRO_DIR([m4])
