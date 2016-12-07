@@ -128,7 +128,7 @@ gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntr
   entry->element_id = element;
   g_strlcpy (entry->element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
   g_strlcpy (entry->element_type_name, LGI_OBJECT_TYPE_NAME (element), GST_ELEMENT_TYPE_NAME_LENGTH_MAX);
-  entry->parent_element_id = GST_ELEMENT_PARENT (element);
+  entry->parent_element_id = element ? GST_ELEMENT_PARENT (element) : NULL;
 }
 
 void
