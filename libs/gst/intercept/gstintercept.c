@@ -198,7 +198,7 @@ lgi_pad_push (GstPad *sender_pad, GstBuffer *buffer)
   sender_pad = get_source_pad (sender_pad);
   
   GstElement *sender_element = GST_PAD_PARENT (sender_pad);
-  GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
+  GstElement *receiver_element = receiver_pad ? GST_PAD_PARENT (receiver_pad) : NULL;
   GstPipeline *pipeline = trace_heir (sender_element);
   
   guint64 start = get_cpu_time (thread);
