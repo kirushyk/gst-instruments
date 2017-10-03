@@ -43,7 +43,7 @@ Inspired by top and perf-top, this utility displays performance report for the p
 
 Intercepts GStreamer ABI calls and records communication between the app and GStreamer into the trace file.
 
-### OSX example
+### macOS example
 
 	$ DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib \
 		DYLD_FORCE_FLAT_NAMESPACE= \
