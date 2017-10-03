@@ -1,12 +1,20 @@
-GStreamer Instruments
-=====================
+# GStreamer Instruments
 
 Set of performance analyzing tools for time profiling and data flow inspection in GStreamer apps.
 
+## gst-instruments
+
+gst-instruments displays the trace file.
+
 ![GStreamer Instruments UI](https://pp.vk.me/c631317/v631317037/f67e/uPWTkFy5ZCE.jpg)
 
-gst-top
--------
+Opening the file from the command-line is supported:
+
+```
+$ gst-instruments-1.0 pipeline0.gsttrace
+```
+
+## gst-top
 
 Inspired by top and perf-top, this utility displays performance report for the particular command, analyzing GStreamer ABI calls.
 
@@ -31,29 +39,38 @@ Inspired by top and perf-top, this utility displays performance report for the p
 	pipeline0        0.0    0.0      0 ns
 	$
 
-libgstintercept
----------------
+## Generating the trace file
 
-Intercepts GStreamer ABI calls and records communication between the app and GStreamer into the trace file. 
+Intercepts GStreamer ABI calls and records communication between the app and GStreamer into the trace file.
+
+### OSX example
 
 	$ DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib \
 		DYLD_FORCE_FLAT_NAMESPACE= \
 		GST_DEBUG_DUMP_TRACE_DIR=. \
-		gst-play-1.0 ~/Music/Snowman.mp3 --audiosink=fakesink
-	Press 'k' to see a list of keyboard shortcuts.
-	Now playing /Users/cyril/Music/Snowman.mp3
-	0:04:29.5 / 0:04:29.5       
-	Reached end of play list.
+        gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
+    Setting pipeline to PAUSED ...
+    [...]
+    Freeing pipeline ...
 	$ ls *.gsttrace
-	playbin.gsttrace
-	$ 
+	pipeline0.gsttrace
 
-gst-report
-----------
+### Linux example
+
+    $ LD_PRELOAD=/usr/lib/libgstintercept.so\
+    GST_DEBUG_DUMP_TRACE_DIR=. \
+    gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
+    Setting pipeline to PAUSED ...
+    [...]
+    Freeing pipeline ...
+	$ ls *.gsttrace
+	pipeline0.gsttrace
+
+## gst-report
 
 Generates performance report for input trace file.
 
-	$ gst-report-1.0 playbin.gsttrace 
+	$ gst-report-1.0 playbin.gsttrace
 	ELEMENT               %CPU   %TIME   TIME
 	mad0                   33.4   26.5    806 ms
 	source                 10.5    8.3    253 ms
@@ -78,5 +95,5 @@ Generates performance report for input trace file.
 	$
 
 You can generate performance graph in DOT format:
- 
+
 	gst-report-1.0 --dot playbin.gsttrace | dot -Tsvg > perf.svg
