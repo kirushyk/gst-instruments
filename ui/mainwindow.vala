@@ -68,7 +68,7 @@ public class MainWindow: Gtk.ApplicationWindow
         child.destroy ();
       }
 
-      string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot --from=$begin --till=$end $working_trace_path | dot -Tsvg > gst-instruments-temp.svg";
+      string command = @"gst-report-1.0 --nested --textpads --dot --from=$begin --till=$end $working_trace_path | dot -Tsvg > gst-instruments-temp.svg";
       Posix.system (command);
 
       var graph = new Gtk.Image.from_file ("gst-instruments-temp.svg");
@@ -120,7 +120,7 @@ public class MainWindow: Gtk.ApplicationWindow
     try
     {
       Process.spawn_sync (null,
-                          {"/usr/local/bin/gst-report-1.0", "--duration", path},
+                          { "gst-report-1.0", "--duration", path},
                           null,
                           SpawnFlags.SEARCH_PATH,
                           null,
@@ -136,7 +136,7 @@ public class MainWindow: Gtk.ApplicationWindow
 
     working_trace_path = path;
 
-    string command = @"/usr/local/bin/gst-report-1.0 --nested --textpads --dot $path | dot -Tpng > gst-instruments-temp.bmp";
+    string command = @"gst-report-1.0 --nested --textpads --dot $path | dot -Tpng > gst-instruments-temp.bmp";
     Posix.system (command);
 
     var graph = new Gtk.Image.from_file ("gst-instruments-temp.bmp");
