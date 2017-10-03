@@ -1,4 +1,5 @@
 SUBDIRS = \
+  data \
   tools \
   libs/gst/intercept \
   plugins/tracers \
