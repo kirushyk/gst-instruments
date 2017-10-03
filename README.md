@@ -45,26 +45,26 @@ Intercepts GStreamer ABI calls and records communication between the app and GSt
 
 ### macOS example
 
-	$ DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib \
-		DYLD_FORCE_FLAT_NAMESPACE= \
-		GST_DEBUG_DUMP_TRACE_DIR=. \
+    $ DYLD_INSERT_LIBRARIES=/usr/local/lib/libgstintercept.dylib \
+        DYLD_FORCE_FLAT_NAMESPACE= \
+        GST_DEBUG_DUMP_TRACE_DIR=. \
         gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
     Setting pipeline to PAUSED ...
     [...]
     Freeing pipeline ...
-	$ ls *.gsttrace
-	pipeline0.gsttrace
+    $ ls *.gsttrace
+    pipeline0.gsttrace
 
 ### Linux example
 
-    $ LD_PRELOAD=/usr/lib/libgstintercept.so\
-    GST_DEBUG_DUMP_TRACE_DIR=. \
-    gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
+    $ LD_PRELOAD=/usr/lib/libgstintercept.so \
+        GST_DEBUG_DUMP_TRACE_DIR=. \
+        gst-launch-1.0 audiotestsrc num-buffers=1000 ! vorbisenc ! vorbisdec ! fakesink
     Setting pipeline to PAUSED ...
     [...]
     Freeing pipeline ...
-	$ ls *.gsttrace
-	pipeline0.gsttrace
+    $ ls *.gsttrace
+    pipeline0.gsttrace
 
 ## gst-report
 
