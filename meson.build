@@ -9,10 +9,19 @@ project('gst-instruments', 'c', 'vala',
   ]
 )
 
+gst_api_version = '1.0'
+
+glib = dependency('glib-2.0')
+gstreamer = dependency('gstreamer-' + gst_api_version)
+
 conf = configuration_data()
 conf.set_quoted('GST_TOP_TRACE_FILENAME_BASE', 'gst-top')
 conf.set('GST_ELEMENT_TYPE_NAME_LENGTH_MAX', 128)
 conf.set('GST_ELEMENT_NAME_LENGTH_MAX', 128)
 conf.set('GST_TRACE_ENTRY_SIZE', 512)
-conf.set_quoted('GST_API_VERSION', '1.0')
+conf.set_quoted('GST_API_VERSION', gst_api_version)
 configure_file(output : 'config.h', configuration : conf)
+
+inc = include_directories('.')
+
+subdir('libs/gst')
