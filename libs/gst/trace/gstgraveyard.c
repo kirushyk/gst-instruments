@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#define TIMESTAMP_FITS(ts, min, max) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
+#define TIMESTAMP_FITS(ts, from, till) (((ts) >= (from)) || ((from) == GST_CLOCK_TIME_NONE)) && \
   (((ts) <= (till)) || ((till) == GST_CLOCK_TIME_NONE))
 
 #include <config.h>
