@@ -17,9 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <config.h>
 #include <glib.h>
 #include <stdlib.h>
-#include <config.h>
 
 gboolean insert_libraries = TRUE;
 
