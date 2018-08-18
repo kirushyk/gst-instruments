@@ -2,7 +2,7 @@ gstinstruments_sources = [
   'gstinstruments.c'
 ]
 
-gstinstruments_sources = library('gstinstruments', 
+gstinstruments = library('gstinstruments', 
   gstinstruments_sources,
   dependencies : [
     glib,
