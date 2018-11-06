@@ -156,7 +156,7 @@ dump_hierarchy_info_if_needed (GstTrace *trace, GstPipeline *pipeline, GstElemen
 }
 
 gboolean
-for_each_buffer (GstBuffer **buffer, guint idx, gpointer user_data)
+for_each_buffer (GstBuffer **buffer, G_GNUC_UNUSED guint idx, gpointer user_data)
 {
   ListInfo *info = user_data;
   info->buffers_count++;

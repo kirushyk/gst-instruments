@@ -77,7 +77,7 @@ gst_trace_free (GstTrace *trace)
 }
 
 void
-gst_trace_add_entry (GstTrace *trace, GstPipeline *pipeline, GstTraceEntry *entry)
+gst_trace_add_entry (GstTrace *trace, G_GNUC_UNUSED GstPipeline *pipeline, GstTraceEntry *entry)
 {
   if (trace == NULL) {
     return;

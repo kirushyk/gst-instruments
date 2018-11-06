@@ -70,7 +70,7 @@ element_headstone_compare (gconstpointer a, gconstpointer b)
 }
 
 void
-for_each_task (gpointer key, gpointer value, gpointer user_data)
+for_each_task (G_GNUC_UNUSED gpointer key, gpointer value, gpointer user_data)
 {
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
   GstTaskHeadstone *task = value;
@@ -81,7 +81,7 @@ for_each_task (gpointer key, gpointer value, gpointer user_data)
 }
 
 void
-for_each_element (gpointer key, gpointer value, gpointer user_data)
+for_each_element (G_GNUC_UNUSED gpointer key, gpointer value, gpointer user_data)
 {
   GstGraveyard *graveyard = (GstGraveyard *)user_data;
   GstElementHeadstone *element = (GstElementHeadstone *)value;
