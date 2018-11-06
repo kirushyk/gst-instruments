@@ -18,6 +18,7 @@
  */
 
 #include <config.h>
+#include <gst/gsttracer.h>
 #include "gstinstruments.h"
 #include "../../libs/gst/trace/gsttrace.h"
 #include "../../libs/gst/trace/spycommon.h"
@@ -28,7 +29,7 @@ GST_DEBUG_CATEGORY_STATIC (gst_instruments_debug);
 #define _do_init \
 GST_DEBUG_CATEGORY_INIT (gst_instruments_debug, "instruments", 0, "instruments tracer");
 #define gst_instruments_tracer_parent_class parent_class
-G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_TRACER,  _do_init);
+G_DEFINE_TYPE_WITH_CODE (GstInstrumentsTracer, gst_instruments_tracer, GST_TYPE_TRACER,  _do_init)
 
 GstTrace *current_trace = NULL;
 
@@ -59,7 +60,7 @@ optional_init ()
 }
 
 static void
-do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffer *buffer)
+do_push_buffer_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstPad *sender_pad, GstBuffer *buffer)
 {
   if (GST_IS_GHOST_PAD (sender_pad))
     return;
@@ -110,7 +111,7 @@ do_push_buffer_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBuffe
 }
 
 static void
-do_push_buffer_list_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, GstBufferList *list)
+do_push_buffer_list_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstPad *sender_pad, GstBufferList *list)
 {
   if (GST_IS_GHOST_PAD (sender_pad))
     return;
@@ -163,7 +164,7 @@ do_push_buffer_list_pre (GObject *self, GstClockTime ts, GstPad *sender_pad, Gst
 }
 
 static void
-do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64 offset, guint size)
+do_pull_range_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstPad *receiver_pad, G_GNUC_UNUSED guint64 offset, G_GNUC_UNUSED guint size)
 {
   optional_init ();
   
@@ -193,7 +194,7 @@ do_pull_range_pre (GObject *self, GstClockTime ts, GstPad *receiver_pad, guint64
 }
 
 void
-do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuffer *buffer, GstFlowReturn res)
+do_pull_range_post (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstPad *receiver_pad, GstBuffer *buffer, G_GNUC_UNUSED GstFlowReturn res)
 {
   if (GST_IS_GHOST_PAD (receiver_pad))
     return;
@@ -240,7 +241,7 @@ do_pull_range_post (GObject *self, GstClockTime ts, GstPad *receiver_pad, GstBuf
 }
 
 static void
-do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
+do_push_buffer_post (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 ts, GstPad *sender_pad)
 {
   optional_init ();
   
@@ -272,7 +273,7 @@ do_push_buffer_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
 }
 
 static void
-do_push_buffer_list_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
+do_push_buffer_list_post (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 ts, GstPad *sender_pad)
 {
   optional_init ();
   
@@ -304,7 +305,7 @@ do_push_buffer_list_post (GstTracer *self, guint64 ts, GstPad *sender_pad)
 }
 
 static void
-do_push_event_pre (GstTracer *self, guint64 ts, GstPad *pad, GstEvent *ev)
+do_push_event_pre (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 ts, GstPad *pad, G_GNUC_UNUSED GstEvent *ev)
 {
   optional_init ();
   
@@ -316,19 +317,19 @@ do_push_event_pre (GstTracer *self, guint64 ts, GstPad *pad, GstEvent *ev)
 }
 
 static void
-gst_instruments_tracer_class_init (GstInstrumentsTracerClass * klass)
+gst_instruments_tracer_class_init (G_GNUC_UNUSED GstInstrumentsTracerClass * klass)
 {
   
 }
 
 void
-do_element_change_state_pre (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition)
+do_element_change_state_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, G_GNUC_UNUSED GstElement *element, G_GNUC_UNUSED GstStateChange transition)
 {
   optional_init ();
 }
 
 void
-do_element_change_state_post (GObject *self, GstClockTime ts, GstElement *element, GstStateChange transition, GstStateChangeReturn result)
+do_element_change_state_post (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstElement *element, GstStateChange transition, G_GNUC_UNUSED GstStateChangeReturn result)
 {
   optional_init ();
   switch (transition) {
@@ -383,4 +384,4 @@ plugin_init (GstPlugin * plugin)
 
 GST_PLUGIN_DEFINE (GST_VERSION_MAJOR, GST_VERSION_MINOR, instruments,
     "gst-instruments tracer", plugin_init, VERSION, "LGPL",
-    "instruments", "GST_PACKAGE_ORIGIN");
+    "instruments", "GST_PACKAGE_ORIGIN")
