@@ -51,13 +51,13 @@ static GOptionEntry entries[] =
     "Use μ (mu) symbol instead of u as micro prefix",   NULL },
   { "duration",  0, 0, G_OPTION_ARG_NONE,   &dur_only,
     "Only show duration",                               NULL },
-  { NULL }
+  { NULL,        0, 0, G_OPTION_ARG_NONE,   NULL, NULL, NULL }
 };
 
 void
 render_space (gsize space)
 {
-  int j;
+  gsize j;
   for (j = 0; j < space; j++) {
     g_print (" ");
   }
