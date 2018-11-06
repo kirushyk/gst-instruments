@@ -49,7 +49,7 @@ gchar *
 format_memory_size (gsize bytes)
 {
   if (bytes < 1024) {
-    return g_strdup_printf ("%" G_GUINT64_FORMAT " B", bytes);
+    return g_strdup_printf ("%" G_GSIZE_FORMAT " B", bytes);
   } else if (bytes < 10240) {
     return g_strdup_printf ("%.2f KiB", bytes / 1024.f);
   } else if (bytes < 102400) {
