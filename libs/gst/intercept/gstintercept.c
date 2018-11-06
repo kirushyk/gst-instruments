@@ -472,7 +472,7 @@ lgi_element_set_state (GstElement *element, GstState state)
 #if __MACH__
 # define INTERPOSE(_replacment, _replacee) \
 __attribute__ ((used)) static struct { const void* replacment; const void* replacee; } _interpose_##_replacee \
-__attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee };
+__attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacment, (const void*)(unsigned long)&_replacee }
 INTERPOSE (lgi_pad_push, gst_pad_push);
 INTERPOSE (lgi_pad_push_list, gst_pad_push_list);
 INTERPOSE (lgi_pad_push_event, gst_pad_push_event);

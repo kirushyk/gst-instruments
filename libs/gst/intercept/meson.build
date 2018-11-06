@@ -8,6 +8,9 @@ gstintercept = library('gstintercept',
     glib,
     gstreamer
   ],
+  c_args : [
+    '-DGST_USE_UNSTABLE_API'
+  ],
   include_directories : inc,
   link_with : gsttrace,
   install : true
