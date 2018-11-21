@@ -19,7 +19,7 @@ which "aclocal" 2>/dev/null || {
 }
 
 echo "Checking for libtool..."
-which "libtool" 2>/dev/null || {
+which "libtoolize" 2>/dev/null || {
   echo "Please install libtool."
   exit 1
 }
