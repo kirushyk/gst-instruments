@@ -8,7 +8,7 @@ gstintercept_deps = [
 ]
 
 if host_machine.system() == 'linux'
-  gstinstruments_deps += cc.find_library('dl', required : true)
+  gstintercept_deps += cc.find_library('dl', required : true)
 endif
 
 gstintercept = library('gstintercept', 
