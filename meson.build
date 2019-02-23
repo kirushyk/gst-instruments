@@ -9,6 +9,8 @@ project('gst-instruments', 'c', 'vala',
   ]
 )
 
+cc = meson.get_compiler('c')
+
 gst_api_version = '1.0'
 
 glib = dependency('glib-2.0')
