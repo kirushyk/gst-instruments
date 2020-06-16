@@ -1,4 +1,4 @@
-project('gst-instruments', 'c', 'vala',
+project('gst-instruments', 'c',
   version : '0.2.4',
   license : ['LGPL'],
   meson_version : '>= 0.37.1',
