@@ -18,7 +18,7 @@
  */
 
 #include <config.h>
-#include <gst/gsttracer.h>
+#include <gst/gst.h>
 #include "gstinstruments.h"
 #include "../../libs/gst/trace/gsttrace.h"
 #include "../../libs/gst/trace/spycommon.h"
