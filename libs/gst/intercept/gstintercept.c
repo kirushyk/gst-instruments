@@ -132,7 +132,7 @@ optional_init ()
     GST_ERROR ("can not link to gst_element_set_state\n");
     return;
   } else {
-    GST_INFO ("gst_element_set_state linked: %p\n", gst_element_set_state_orig);
+    GST_INFO ("gst_element_set_state linked: %p\n", (void *)gst_element_set_state_orig);
   }
   
 #endif
