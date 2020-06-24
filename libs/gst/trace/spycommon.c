@@ -30,6 +30,7 @@ get_cpu_time (THREAD thread) {
   
   return (guint64) info.pth_user_time + info.pth_system_time;
 #else
+  (void)thread;
   struct timespec ts;
   if (clock_gettime (CLOCK_THREAD_CPUTIME_ID, &ts))
     return 0;
