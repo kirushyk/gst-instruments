@@ -136,7 +136,6 @@ public class Timeline: Gtk.DrawingArea
 
     var region = window.get_clip_region ();
     window.invalidate_region (region, true);
-    window.process_updates (true);
   }
 
   public bool update ()
