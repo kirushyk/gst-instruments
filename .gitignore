@@ -1,4 +1,3 @@
 build/
 builddir/
 .vscode/
-ui/*.c
