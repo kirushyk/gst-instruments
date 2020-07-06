@@ -46,6 +46,10 @@ public class App: Gtk.Application
 
   public static int main (string[] args)
   {
+    if (Posix.system ("dot -?") != 0) {
+      stderr.printf ("graphviz not found\n");
+      return 1;
+    }
     App app = new App ();
     return app.run (args);
   }
