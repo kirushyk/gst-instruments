@@ -281,8 +281,8 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element,
 void
 check_simple_pads ()
 {
-  FILE *pull = fopen(DATADIR "/" PACKAGE "/pull.svg", "rt");
-  FILE *push = fopen(DATADIR "/" PACKAGE "/push.svg", "rt");
+  FILE *pull = fopen(DATADIR "/pull.svg", "rt");
+  FILE *push = fopen(DATADIR "/push.svg", "rt");
   simple_pads = !(pull && push);
   if (push)
     fclose(push);
