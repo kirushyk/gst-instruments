@@ -13,5 +13,6 @@ gstinstruments = library('gstinstruments',
   dependencies : gstinstruments_deps,
   include_directories : inc,
   link_with : gsttrace,
-  install : true
+  install : true,
+  install_dir : plugins_install_dir
 )

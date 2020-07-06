@@ -16,6 +16,8 @@ gst_api_version = '1.0'
 glib = dependency('glib-2.0')
 gstreamer = dependency('gstreamer-' + gst_api_version)
 
+plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
+
 conf = configuration_data()
 conf.set_quoted('GST_TOP_TRACE_FILENAME_BASE', 'gst-top')
 conf.set('GST_ELEMENT_TYPE_NAME_LENGTH_MAX', 128)
