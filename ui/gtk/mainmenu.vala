@@ -63,7 +63,7 @@ public class MainMenu: Gtk.MenuBar
     file_menu.add (open_item);
     open_item.activate.connect (() =>
     {
-      var file_chooser = new Gtk.FileChooserDialog ("Open File", window, Gtk.FileChooserAction.OPEN, Gtk.Stock.CANCEL, Gtk.ResponseType.CANCEL, Gtk.Stock.OPEN, Gtk.ResponseType.ACCEPT);
+      var file_chooser = new Gtk.FileChooserDialog ("Open File", window, Gtk.FileChooserAction.OPEN, "_Cancel", Gtk.ResponseType.CANCEL, "_Open", Gtk.ResponseType.ACCEPT);
       var filter = new Gtk.FileFilter ();
       filter.set_filter_name ("GStreamer Trace (*.gsttrace)");
       filter.add_pattern ("*.gsttrace");
