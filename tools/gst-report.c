@@ -17,11 +17,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "formatters.h"
 #include <config.h>
+#include <stdio.h>
+#include "formatters.h"
 #include "../libs/gst/trace/gstgraveyard.h"
-#include "../libs/gst/trace//gstpadheadstone.h"
-#include "../libs/gst/trace//gstelementheadstone.h"
+#include "../libs/gst/trace/gstpadheadstone.h"
+#include "../libs/gst/trace/gstelementheadstone.h"
 
 gdouble from = 0, till = 0;
 GstClockTime from_ns = GST_CLOCK_TIME_NONE, till_ns = GST_CLOCK_TIME_NONE;
@@ -144,10 +145,6 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element,
     g_print ("nodesep=.1;\n");
     render_space (space);
     g_print ("ranksep=.1;\n");
-#ifdef __APPLE__
-    render_space (space);
-    g_print ("fontname=\"Avenir Next\";\n");
-#endif
     render_space (space);
     g_print ("fontsize=\"14\";\n");
     render_space (space);
@@ -157,20 +154,10 @@ render_headstone (GstGraveyard *graveyard, GstElementHeadstone *element,
     render_space (space);
     g_print ("label=\"pipeline0\";\n");
     render_space (space);
-#ifdef __APPLE__
-    g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", "
-             "fontname=\"Avenir Next\", margin=\"0.1,0.1\"];\n");
-#else
     g_print ("node [style=\"filled\", shape=box, fontsize=\"14\", "
              "margin=\"0.1,0.1\"];\n");
-#endif
     render_space (space);
-#ifdef __APPLE__
-    g_print ("edge [labelfontsize=\"14\", fontsize=\"14\", "
-             "fontname=\"Avenir Next\"];\n");
-#else
     g_print ("edge [labelfontsize=\"14\", fontsize=\"14\"];\n");
-#endif
   }
   
   if (dot) {
@@ -289,6 +276,16 @@ render_container (GstGraveyard *graveyard, GstElementHeadstone *element,
     render_space (element->nesting_level);
     g_print ("}\n");
   }
+}
+
+void
+check_simple_pads ()
+{
+  FILE *pull = fopen(DATADIR "/" PACKAGE "/pull.svg", "rt");
+  FILE *push = fopen(DATADIR "/" PACKAGE "/push.svg", "rt");
+  simple_pads = pull && push;
+  fclose(push);
+  fclose(pull);
 }
 
 gint
