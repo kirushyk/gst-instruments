@@ -8,7 +8,6 @@ gst_top = executable('gst-top-' + gst_api_version,
     glib
   ],
   include_directories : inc,
-  link_with : gsttrace,
   install : true
 )
 
