@@ -42,6 +42,8 @@ static GOptionEntry entries[] =
     "Show types of elements",                           NULL },
   { "hierarchy", 0, 0, G_OPTION_ARG_NONE,   &hierarchy,
     "Show hierarchy of elements",                       NULL },
+  { "textpads",  0, 0, G_OPTION_ARG_NONE,   &simple_pads,
+    "Show simple pad nodes (without SVG inclusion)",    NULL },
   { "nested",    0, 0, G_OPTION_ARG_NONE,   &nested_time,
     "Include CPU time spent by nested elements",        NULL },
   { "dot",       0, 0, G_OPTION_ARG_NONE,   &dot,
@@ -281,7 +283,7 @@ check_simple_pads ()
 {
   FILE *pull = fopen(DATADIR "/" PACKAGE "/pull.svg", "rt");
   FILE *push = fopen(DATADIR "/" PACKAGE "/push.svg", "rt");
-  simple_pads = pull && push;
+  simple_pads = !(pull && push);
   fclose(push);
   fclose(pull);
 }
@@ -317,7 +319,9 @@ main (gint argc, gchar *argv[])
     hierarchy = TRUE;
     show_types = TRUE;
     show_memory = TRUE;
-    check_simple_pads ();
+    if (!simple_pads) {
+      check_simple_pads ();
+    }
   }
   
   GstGraveyard *graveyard = gst_graveyard_new_from_trace (argv[argc - 1],
