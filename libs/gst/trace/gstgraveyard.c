@@ -217,12 +217,12 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, entry->thread_id);
           if (!task) {
             g_print ("couldn't find task %p\n", entry->thread_id);
-            goto error;
+            break;
           }
           GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, ee_entry->downstack_element_id);
           if (!element) {
             g_print ("couldn't find element %p: %s\n", ee_entry->downstack_element_id, ee_entry->downstack_element_name);
-            goto error;
+            break;
           }
           ElementEnter *element_enter = gst_graveyard_pick_element_enter (graveyard, ee_entry->downstack_element_id, ee_entry->entry.thread_id);
           if (element_enter) {
