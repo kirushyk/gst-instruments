@@ -17,6 +17,7 @@ glib = dependency('glib-2.0')
 gstreamer = dependency('gstreamer-' + gst_api_version)
 
 plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
+data_install_dir = join_paths(get_option('datadir'), meson.project_name())
 
 conf = configuration_data()
 conf.set_quoted('GST_TOP_TRACE_FILENAME_BASE', 'gst-top')
@@ -36,4 +37,5 @@ inc = include_directories('.')
 subdir('libs/gst')
 subdir('plugins')
 subdir('tools')
+subdir('data')
 subdir('ui')
