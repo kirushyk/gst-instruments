@@ -5,7 +5,7 @@ project('gst-instruments', 'c',
   default_options : [
     'warning_level=3',
     'buildtype=debug',
-    'c_std=c99'
+    'c_std=gnu99'
   ]
 )
 
