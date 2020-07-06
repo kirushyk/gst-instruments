@@ -3,7 +3,7 @@ project('gst-instruments', 'c',
   license : ['LGPL'],
   meson_version : '>= 0.47.0',
   default_options : [
-    'warning_level=3',
+    'warning_level=2',
     'buildtype=debug',
     'c_std=gnu99'
   ]
