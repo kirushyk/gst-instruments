@@ -13,6 +13,7 @@ if have_vala
   ]
   executable('gst-instruments-' + gst_api_version,
     gst_instruments_sources,
-    dependencies: gst_instruments_deps
+    dependencies : gst_instruments_deps,
+    install : true
   )
 endif
