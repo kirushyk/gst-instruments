@@ -1,5 +1,5 @@
-option('enable-ui',
-  type : 'boolean',
-  value : true,
+option('ui',
+  type : 'feature',
+  value : 'enabled',
   description : 'Enables Gtk+ User Interface.'
 )
