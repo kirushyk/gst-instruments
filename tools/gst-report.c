@@ -284,8 +284,10 @@ check_simple_pads ()
   FILE *pull = fopen(DATADIR "/" PACKAGE "/pull.svg", "rt");
   FILE *push = fopen(DATADIR "/" PACKAGE "/push.svg", "rt");
   simple_pads = !(pull && push);
-  fclose(push);
-  fclose(pull);
+  if (push)
+    fclose(push);
+  if (pull)
+    fclose(pull);
 }
 
 gint
