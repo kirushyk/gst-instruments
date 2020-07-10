@@ -217,7 +217,15 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
           GstTaskHeadstone *task = g_hash_table_lookup (graveyard->tasks, entry->thread_id);
           if (!task) {
             g_print ("couldn't find task %p\n", entry->thread_id);
-            break;
+            /** @todo: Move lookup + new task allocation in single function */
+            task = g_new0 (GstTaskHeadstone, 1);
+            task->identifier = entry->thread_id;
+            task->total_upstack_time = 0;
+            task->upstack_enter_timestamp = 0;
+            task->currently_in_upstack_element = TRUE;
+            task->name = NULL;
+            task->upstack_element_identifier = NULL;
+            g_hash_table_insert (graveyard->tasks, entry->thread_id, task);
           }
           GstElementHeadstone *element = g_hash_table_lookup (graveyard->elements, ee_entry->downstack_element_id);
           if (!element) {
@@ -309,7 +317,7 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   
   return graveyard;
   
-error:
+/* error:*/
   gst_graveyard_free (graveyard);
   return NULL;
 }
