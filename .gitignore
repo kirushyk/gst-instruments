@@ -1,3 +1,5 @@
 build/
 builddir/
 .vscode/
+.DS_Store
+
