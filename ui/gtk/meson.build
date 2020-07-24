@@ -5,7 +5,7 @@ gst_instruments_sources = [
   'mainwindow.vala'
 ]
 
-have_vala = add_languages('vala', required: get_option('ui'))
+have_vala = add_languages('vala', native: false, required: get_option('ui'))
 if have_vala
   gst_instruments_deps = [
     dependency('gtk+-3.0'),

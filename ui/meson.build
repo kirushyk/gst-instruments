@@ -1,1 +1,2 @@
 subdir('gtk')
+subdir('macos')
