@@ -312,7 +312,6 @@ gst_graveyard_new_from_trace (const char *filename, GstClockTime from, GstClockT
   
   return graveyard;
   
-/* error:*/
   gst_graveyard_free (graveyard);
   return NULL;
 }
