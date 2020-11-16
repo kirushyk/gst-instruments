@@ -14,4 +14,5 @@ if have_swift
     dependencies : gst_instruments_macos_deps,
     install : true
   )
+  install_data('Info.plist', install_dir : 'Contents')
 endif
