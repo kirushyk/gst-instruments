@@ -4,7 +4,7 @@ Set of performance profiling and data flow inspection tools for GStreamer pipeli
 
 ## gst-instruments
 
-gst-instruments displays the trace file.
+gst-instruments displays the trace file. Cross-platform Gtk+ and native macOS versions provided.
 
 ![GStreamer Instruments UI](https://pp.vk.me/c631317/v631317037/f67e/uPWTkFy5ZCE.jpg)
 
