@@ -24,23 +24,22 @@
 
 gboolean insert_libraries = TRUE;
 GMainLoop *main_loop = NULL;
-GPid child_pid;
+GPid child_pid = 0;
 
 static void
 on_sigint (int signo) {
-  if (signo == SIGINT) {
-    g_main_loop_quit (main_loop);
+  if (signo == SIGINT && child_pid) {
+    kill(child_pid, SIGINT);
   }
 }
 
 static void
 on_child_exit (GPid pid, gint status, gpointer user_data) {
-  (void)pid;
   const gchar *program_name = (const gchar *)user_data;
   if (status == EXIT_SUCCESS) {
     system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
   } else {
-    g_warning ("%s exited with code %d", program_name, status);
+    g_warning ("%s (%" G_PID_FORMAT ") exited with code %d", program_name, pid, status);
   }
   g_main_loop_quit (main_loop);
 }
@@ -93,7 +92,7 @@ main (gint argc, gchar *argv[])
   } else {
     g_critical ("%s", error->message);
   }
-  g_spawn_close_pid (pid);
+  g_spawn_close_pid (child_pid);
     
   return EXIT_SUCCESS;
 }
