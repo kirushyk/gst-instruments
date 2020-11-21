@@ -18,10 +18,32 @@
  */
 
 #include <config.h>
-#include <glib.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <glib.h>
 
 gboolean insert_libraries = TRUE;
+GMainLoop *main_loop = NULL;
+GPid child_pid;
+
+static void
+on_sigint (int signo) {
+  if (signo == SIGINT) {
+    g_main_loop_quit (main_loop);
+  }
+}
+
+static void
+on_child_exit (GPid pid, gint status, gpointer user_data) {
+  (void)pid;
+  const gchar *program_name = (const gchar *)user_data;
+  if (status == EXIT_SUCCESS) {
+    system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
+  } else {
+    g_warning ("%s exited with code %d", program_name, status);
+  }
+  g_main_loop_quit (main_loop);
+}
 
 gint
 main (gint argc, gchar *argv[])
@@ -57,17 +79,21 @@ main (gint argc, gchar *argv[])
   g_setenv ("GST_DEBUG_DUMP_TRACE_DIR", ".", TRUE);
   g_setenv ("GST_DEBUG_DUMP_TRACE_FILENAME", GST_TOP_TRACE_FILENAME_BASE, TRUE);
   
-  gint status = 0;
   GError *error = NULL;
-  g_spawn_sync (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &status, &error);
-  
-  if (error) {
-    g_critical ("%s", error->message);
-  } else if (status != EXIT_SUCCESS) {
-    g_warning ("%s exited with code %d", argv[1], status);
+  g_spawn_async (NULL, argv + 1, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &child_pid, &error);
+  if (error == NULL) {
+    main_loop = g_main_loop_new (NULL, FALSE);
+    g_child_watch_add (child_pid, on_child_exit, argv[1]);
+    if (signal(SIGINT, on_sigint) == SIG_ERR) {
+      g_critical ("An error occurred while setting a signal handler.\n");
+      return EXIT_FAILURE;
+    }
+    g_main_loop_run (main_loop);
+    g_main_loop_unref (main_loop);
   } else {
-    system (BINDIR "/gst-report-1.0 " GST_TOP_TRACE_FILENAME_BASE ".gsttrace");
+    g_critical ("%s", error->message);
   }
+  g_spawn_close_pid (pid);
     
   return EXIT_SUCCESS;
 }
