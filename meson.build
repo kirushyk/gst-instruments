@@ -30,6 +30,8 @@ conf.set_quoted('GST_API_VERSION', gst_api_version)
 conf.set_quoted('BINDIR', join_paths(get_option('prefix'), get_option('bindir')))
 conf.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
 conf.set_quoted('DATADIR', join_paths(get_option('prefix'), get_option('datadir'), meson.project_name()))
+conf.set_quoted('GST_PLUGIN_PATH', join_paths(get_option('prefix'), plugins_install_dir))
+
 configure_file(output : 'config.h', configuration : conf)
 
 inc = include_directories('.')
