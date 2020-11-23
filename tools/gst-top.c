@@ -72,6 +72,7 @@ main (gint argc, gchar *argv[])
   } else {
     /** @todo: Check tracer module presence */
     /** @todo: Read GST_TRACERS and append it with our tracer instead of just re-set it */
+    g_setenv ("GST_PLUGIN_PATH", GST_PLUGIN_PATH, TRUE);
     g_setenv ("GST_TRACERS", "instruments", TRUE);
   }
   
