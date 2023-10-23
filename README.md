@@ -2,18 +2,6 @@
 
 Set of performance profiling and data flow inspection tools for GStreamer pipelines.
 
-## gst-instruments
-
-gst-instruments displays the trace file.
-
-![GStreamer Instruments UI](https://pp.vk.me/c631317/v631317037/f67e/uPWTkFy5ZCE.jpg)
-
-Opening the file from the command-line is supported:
-
-```
-$ gst-instruments-1.0 pipeline0.gsttrace
-```
-
 ## gst-top
 
 Inspired by top and perf-top, this utility displays performance report for the particular command, analyzing GStreamer ABI calls.
