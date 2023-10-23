@@ -1,5 +1,0 @@
-option('ui',
-  type : 'feature',
-  value : 'auto',
-  description : 'Enables Gtk+ User Interface.'
-)
