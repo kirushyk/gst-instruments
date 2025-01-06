@@ -25,9 +25,9 @@ void
 gst_trace_entry_init (GstTraceEntry *entry)
 {
   g_assert (entry != NULL);
-  entry->type = GST_TRACE_ENTRY_TYPE_UNKNOWN;
+  entry->type      = GST_TRACE_ENTRY_TYPE_UNKNOWN;
   entry->timestamp = GST_CLOCK_TIME_NONE;
-  entry->pipeline = NULL;
+  entry->pipeline  = NULL;
   entry->thread_id = NULL;
 }
 
@@ -77,7 +77,7 @@ size_t
 gst_trace_entry_get_size (GstTraceEntry *entry)
 {
   g_return_val_if_fail (entry != NULL, 0);
-  
+
   switch (entry->type) {
   case GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED:
     return sizeof (GstTraceElementDiscoveredEntry);
@@ -108,10 +108,10 @@ gst_trace_element_discoved_entry_init (GstTraceElementDiscoveredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_DISCOVERED;
-  entry->element_id = NULL;
-  entry->element_name[0] = '\0';
-  entry->element_type_name[0] = '\0';
-  entry->parent_element_id = NULL;
+  entry->element_id              = NULL;
+  entry->element_name[0]         = '\0';
+  entry->element_type_name[0]    = '\0';
+  entry->parent_element_id       = NULL;
 }
 
 GstTraceElementDiscoveredEntry *
@@ -123,7 +123,7 @@ gst_trace_element_discoved_entry_new (void)
 }
 
 void
-gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry,  GstElement *element)
+gst_trace_element_discoved_entry_init_set_element (GstTraceElementDiscoveredEntry *entry, GstElement *element)
 {
   entry->element_id = element;
   g_strlcpy (entry->element_name, LGI_ELEMENT_NAME (element), GST_ELEMENT_NAME_LENGTH_MAX);
@@ -135,12 +135,12 @@ void
 gst_trace_element_entered_entry_init (GstTraceElementEnteredEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
-  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED;
-  entry->upstack_element_id = NULL;
-  entry->downstack_element_id = NULL;
-  entry->upstack_element_name[0] = '\0';
+  ((GstTraceEntry *)entry)->type   = GST_TRACE_ENTRY_TYPE_ELEMENT_ENTERED;
+  entry->upstack_element_id        = NULL;
+  entry->downstack_element_id      = NULL;
+  entry->upstack_element_name[0]   = '\0';
   entry->downstack_element_name[0] = '\0';
-  entry->enter_time = GST_CLOCK_TIME_NONE;
+  entry->enter_time                = GST_CLOCK_TIME_NONE;
 }
 
 GstTraceElementEnteredEntry *
@@ -169,10 +169,10 @@ void
 gst_trace_element_exited_init (GstTraceElementExitedEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
-  ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED;
-  entry->downstack_element_id = NULL;
+  ((GstTraceEntry *)entry)->type   = GST_TRACE_ENTRY_TYPE_ELEMENT_EXITED;
+  entry->downstack_element_id      = NULL;
   entry->downstack_element_name[0] = '\0';
-  entry->exit_time = GST_CLOCK_TIME_NONE;
+  entry->exit_time                 = GST_CLOCK_TIME_NONE;
 }
 
 void
@@ -184,7 +184,7 @@ gst_trace_element_entered_entry_set_enter_time (GstTraceElementEnteredEntry *ent
 GstTraceElementExitedEntry *
 gst_trace_element_exited_entry_new (void)
 {
-  GstTraceElementExitedEntry *entry = g_new0(GstTraceElementExitedEntry, 1);
+  GstTraceElementExitedEntry *entry = g_new0 (GstTraceElementExitedEntry, 1);
   gst_trace_element_exited_init (entry);
   return entry;
 }
@@ -207,19 +207,19 @@ gst_trace_data_sent_entry_init (GstTraceDataSentEntry *entry)
 {
   gst_trace_entry_init ((GstTraceEntry *)entry);
   ((GstTraceEntry *)entry)->type = GST_TRACE_ENTRY_TYPE_DATA_SENT;
-  entry->pad_mode = GST_PAD_MODE_NONE;
-  entry->sender_element = NULL;
-  entry->receiver_element = NULL;
-  entry->sender_pad = NULL;
-  entry->receiver_pad = NULL;
-  entry->buffers_count = 0;
-  entry->bytes_count = 0;
+  entry->pad_mode                = GST_PAD_MODE_NONE;
+  entry->sender_element          = NULL;
+  entry->receiver_element        = NULL;
+  entry->sender_pad              = NULL;
+  entry->receiver_pad            = NULL;
+  entry->buffers_count           = 0;
+  entry->bytes_count             = 0;
 }
 
 GstTraceDataSentEntry *
 gst_trace_data_sent_entry_new (void)
 {
-  GstTraceDataSentEntry *entry = g_new0(GstTraceDataSentEntry, 1);
+  GstTraceDataSentEntry *entry = g_new0 (GstTraceDataSentEntry, 1);
   gst_trace_data_sent_entry_init (entry);
   return entry;
 }

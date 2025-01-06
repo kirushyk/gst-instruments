@@ -18,30 +18,30 @@
  */
 
 #include "gsttrace.h"
+#include <stdio.h>
 #include <sys/time.h>
 #include <glib.h>
-#include <stdio.h>
 #include "../trace/gsttrace.h"
 #include "../trace/gsttraceentry.h"
 
 struct GstTrace
 {
-  GMutex        mutex;
-  GList        *entries;
-  GstClockTime  startup_time;
+  GMutex       mutex;
+  GList       *entries;
+  GstClockTime startup_time;
 };
 
 void
 gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const gchar *filename)
 {
   g_assert (trace != NULL);
-  
+
   GList *iterator;
-  
+
   FILE *output = fopen (filename, "wb");
   if (output == NULL)
     return;
-      
+
   g_mutex_lock (&trace->mutex);
   for (iterator = g_list_last (trace->entries); iterator != NULL; iterator = iterator->prev) {
     GstTraceEntry *entry = (GstTraceEntry *)iterator->data;
@@ -52,16 +52,16 @@ gst_trace_dump_pipeline_to_file (GstTrace *trace, GstPipeline *pipeline, const g
     }
   }
   g_mutex_unlock (&trace->mutex);
-  
+
   fclose (output);
 }
 
 GstTrace *
 gst_trace_new (void)
 {
-  GstTrace *trace = g_new0 (GstTrace, 1);
+  GstTrace *trace     = g_new0 (GstTrace, 1);
   trace->startup_time = GST_CLOCK_TIME_NONE;
-  trace->entries = NULL;
+  trace->entries      = NULL;
   g_mutex_init (&trace->mutex);
   return trace;
 }

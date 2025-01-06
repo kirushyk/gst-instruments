@@ -35,7 +35,7 @@ gst_element_headstone_add_child (GstElementHeadstone *parent, GstElementHeadston
 guint64
 gst_element_headstone_get_nested_time (GstElementHeadstone *element)
 {
-  GList *child;
+  GList  *child;
   guint64 result = element->total_cpu_time;
   for (child = element->children; child != NULL; child = child->next) {
     result += gst_element_headstone_get_nested_time (child->data);

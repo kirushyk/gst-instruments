@@ -1,0 +1,42 @@
+BasedOnStyle: GNU
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AllowShortIfStatementsOnASingleLine: false
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignTrailingComments: true
+ColumnLimit: 120
+PointerBindsToType: false
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true        # Braces on a new line for functions
+  AfterClass: true           # Braces on a new line for classes/structs
+  AfterControlStatement: false
+  AfterEnum: true            # Braces on a new line for enums
+  AfterNamespace: true       # Braces on a new line for namespaces
+  AfterObjCDeclaration: false
+  AfterStruct: true          # Braces on a new line for structs
+  AfterUnion: true           # Braces on a new line for unions
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+ContinuationIndentWidth: 4
+AlignAfterOpenBracket: true
+AllowShortFunctionsOnASingleLine: Inline
+IncludeCategories:
+  - Regex: '^[<"].*config\.h[>"]' # Build configuration headers (usually auto-generated)
+    Priority: 1
+  - Regex: '^<(aio|arpa/inet|assert|complex|cpio|ctype|dirent|dlfcn|errno|fcntl|fenv|float|fmtmsg|fnmatch|ftw|glob|grp|iconv|inttypes|iso646|langinfo|libgen|limits|locale|math|monetary|mqueue|ndbm|netdb|net/if|netinet/in|netinet/tcp|nl_types|poll|pthread|pwd|regex|sched|search|semaphore|setjmp|signal|spawn|stdarg|stdbool|stddef|stdint|stdio|stdlib|string|strings|stropts|sys/ipc|sys/mman|sys/msg|sys/resource|sys/select|sys/sem|sys/shm|sys/socket|sys/stat|sys/statvfs|sys/time|sys/times|sys/types|sys/uio|sys/un|sys/utsname|sys/wait|tar|termios|tgmath|time|trace|ulimit|unistd|utime|utmpx|wchar|wctype|wordexp)\.h>$' # Standard library, POSIX and system headers
+    Priority: 2
+  - Regex: '^<[^/]*>'      # Other third-party library headers
+    Priority: 3
+  - Regex: '^<le/.*\.h>$'  # Project-specific headers
+    Priority: 4
+  - Regex: '^<ext/.*\.h>$' # Extension headers (e.g., plugins or add-ons)
+    Priority: 5
+  - Regex: '^".*"'         # Relative headers (including those in subdirs or parent dirs)
+    Priority: 6
+IncludeBlocks: Preserve
+IndentPPDirectives: AfterHash

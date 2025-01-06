@@ -25,17 +25,17 @@
 
 typedef struct GstPadHeadstone
 {
-  gpointer                              identifier;
+  gpointer identifier;
   /// @note: We do not care about pad's names
-  gpointer                              parent_element;
-  
-  gpointer                              peer;
-  gpointer                              peer_element;
-  
-  guint64                               bytes;
-  GstPadMode                            mode;
-  GstPadDirection                       direction;
-  
+  gpointer parent_element;
+
+  gpointer peer;
+  gpointer peer_element;
+
+  guint64         bytes;
+  GstPadMode      mode;
+  GstPadDirection direction;
+
 } GstPadHeadstone;
 
 #endif
