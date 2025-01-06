@@ -1,5 +1,5 @@
 project('gst-instruments', 'c',
-  version : '0.3.1',
+  version : '0.3.2',
   license : ['LGPL'],
   meson_version : '>= 0.49.0',
   default_options : [

@@ -85,3 +85,9 @@ Generates performance report for input trace file.
 You can generate performance graph in DOT format:
 
 	gst-report-1.0 --dot playbin.gsttrace | dot -Tsvg > perf.svg
+
+## License
+
+Copyright &copy; 2015 Kyrylo Polezhaiev. All rights reserved.
+
+**gst-instruments** is released under the [LGPL](LICENSE).
